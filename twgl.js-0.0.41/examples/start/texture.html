@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>texture</title>
+    <link href="../default_css.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <!-- 传入 attribute 形成一个正方形，再添加贴图  -->
+  <body>
+    <canvas id="c"></canvas>
+
+    <script type="module">
+      import twgl from '../../src/twgl.js';
+      import programs from '../../src/programs.js';
+      import attributes from '../../src/attributes.js';
+      import textures from '../../src/textures.js';
+
+      const vs = `
+        attribute vec4 position;
+        attribute vec2 texcoord; // 名字改成 uv 就会出错， 有点奇怪
+
+        varying vec2 vUv;
+
+        void main() {
+          gl_Position = position;
+          
+          vUv = texcoord;
+        }`;
+
+      const fs = `precision mediump float;
+
+        varying vec2 vUv;
+
+        uniform sampler2D texture;
+
+        void main() {
+          vec4 color = texture2D(texture, vUv);
+
+          gl_FragColor = color;
+          // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }`;
+
+      const gl = twgl.getWebGLContext(document.getElementById("c"), { antialias: true });
+
+      const programInfo = programs.createProgramInfo(gl, [vs, fs]);
+
+      const tex = textures.createTexture(gl, {
+        // min: gl.NEAREST,
+        // mag: gl.NEAREST,
+        src: "../assets/logo1.JPG",
+        crossOrigin: "", // either this or use twgl.setDefaults
+      });
+
+      const uniforms = {
+        texture: tex,
+      };
+
+      const arrays = {
+        position: [
+          -0.5, 0.5, 0,
+          0.5, 0.5, 0,
+          0.5, -0.5, 0,
+          -0.5, -0.5, 0
+        ],
+        texcoord: [
+          1, 0,
+          0, 0,
+          0, 1,
+          1, 1,
+        ],
+        indices: [
+          0, 2, 1,
+          0, 3, 2
+        ],
+      };
+
+      const bufferInfo = attributes.createBufferInfoFromArrays(gl, arrays);
+
+      window.addEventListener('resize', onWindowResize);
+
+      function onWindowResize(){
+        twgl.resizeCanvasToDisplaySize(gl.canvas, 1);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      }
+      onWindowResize()
+
+      function render(time){
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.useProgram(programInfo.program);
+
+        // programs.setUniforms(programInfo, uniforms);
+        programs.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+
+        gl.drawElements(gl.TRIANGLES, bufferInfo.numElements, gl.UNSIGNED_SHORT, 0);
+
+        requestAnimationFrame(render);
+      }
+      
+      requestAnimationFrame(render);
+    </script>
+  </body>
+</html>

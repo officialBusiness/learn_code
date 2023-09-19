@@ -1,0 +1,88 @@
+
+twgl.getWebGLContext
+	canvas.getContext
+
+programs.createProgramInfo
+
+	createProgramFromSources
+		loadShader
+			gl.createShader
+			gl.shaderSource
+			gl.compileShader
+			gl.getShaderParameter
+			gl.getShaderInfoLog
+			gl.deleteShader
+
+		createProgram
+			gl.createProgram
+			gl.attachShader
+			gl.linkProgram
+			gl.getProgramParameter
+			gl.getProgramInfoLog
+			gl.deleteProgram
+
+
+	createProgramInfoFromProgram
+
+		createUniformSetters
+			gl.getProgramParameter
+			gl.getActiveUniform
+
+			createUniformSetter
+				gl.getUniformLocation
+				gl.uniform
+				gl.activeTexture
+				gl.bindTexture
+
+		createAttributeSetters
+
+			createAttributeSetters
+				gl.getProgramParameter
+				gl.getActiveAttrib
+				gl.getAttribLocation
+
+				createAttribSetter
+					gl.bindBuffer
+					gl.enableVertexAttribArray
+					gl.vertexAttribPointer
+
+
+attributes.createBufferInfoFromArrays
+
+	createAttribsFromArrays
+
+		makeTypedArray
+
+		createBufferFromTypedArray
+			gl.createBuffer
+
+			setBufferFromTypedArray
+				gl.bindBuffer
+				gl.bufferData
+
+		guessNumComponentsFromName
+
+		getNormalizationForTypedArray
+
+		getGLTypeForTypedArray
+
+	makeTypedArray
+
+	createBufferFromTypedArray
+		gl.createBuffer
+
+		setBufferFromTypedArray
+			gl.bindBuffer
+			gl.bufferData
+
+	getNumElementsFromNonIndexedArrays
+
+programs.setBuffersAndAttributes
+	
+	setAttributes
+
+	gl.bindBuffer
+
+
+
+

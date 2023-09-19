@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>triangle_matrix4</title>
+  </head>
+
+  <body >
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <script type="module">
+      import { getWebGLContext, createProgram } from '../../lib/programs.js';
+      import Matrix4 from '../../lib/m4.js';
+
+      const VSHADER_SOURCE =
+        'attribute vec4 a_Position;\n' +
+        'uniform mat4 u_ModelMatrix;\n' +
+        'void main() {\n' +
+        '  gl_Position = u_ModelMatrix * a_Position;\n' +
+        '}\n';
+
+      // Fragment shader program
+      const FSHADER_SOURCE =
+        'void main() {\n' +
+        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+        '}\n';
+
+      const canvas = document.getElementById('webgl');
+
+      // Get the rendering context for WebGL
+      const gl = getWebGLContext(canvas);
+
+      const program = createProgram(gl, VSHADER_SOURCE, FSHADER_SOURCE);
+
+      const a_Position = gl.getAttribLocation(program, 'a_Position');
+
+      const n = initVertexBuffers(gl);
+
+      const modelMatrix = new Matrix4();
+
+      const ANGLE = 90.0;
+
+      modelMatrix.scale(0.5, 0.5, 0);
+      modelMatrix.rotate(ANGLE, 0, 0, 1);
+      modelMatrix.translate(1, 1, 0);
+      // modelMatrix.scale(0.5, 0.5, 0);
+
+      // modelMatrix.rotate(90, 0, 0, 1);
+      // modelMatrix.translate(1, 0, 0);
+      // modelMatrix.scale(0.5, 0.5, 0.5);
+      // modelMatrix.translate(-1, 0, 0);
+
+      const u_ModelMatrix = gl.getUniformLocation(program, 'u_ModelMatrix');
+
+      gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+
+      // Specify the color for clearing <canvas>
+      gl.clearColor(0, 0, 0, 1);
+
+      // Clear <canvas>
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      // Draw three points
+      gl.drawArrays(gl.TRIANGLES, 0, n);
+
+      function initVertexBuffers(gl) {
+        const vertices = new Float32Array([
+          0.0, 0.5,   -0.5, -0.5,   0.5, -0.5
+        ]);
+        const n = 3; // The number of vertices
+
+        // Create a buffer object
+        const vertexBuffer = gl.createBuffer();
+        if (!vertexBuffer) {
+          console.log('Failed to create the buffer object');
+          return -1;
+        }
+
+        // Bind the buffer object to target
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        // Write date into the buffer object
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        const a_Position = gl.getAttribLocation(program, 'a_Position');
+        if (a_Position < 0) {
+          console.log('Failed to get the storage location of a_Position');
+          return -1;
+        }
+        // Assign the buffer object to a_Position variable
+        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+
+        // Enable the assignment to a_Position variable
+        gl.enableVertexAttribArray(a_Position);
+
+        return n;
+      }
+
+    </script>
+  </body>
+</html>

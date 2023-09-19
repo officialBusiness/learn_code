@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>start</title>
+    <link href="./default_css.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <!-- 最简单的平面正方形  -->
+  <body>
+    <canvas id="c"></canvas>
+
+    <script type="module">
+      import twgl from '../src/twgl.js';
+      import programs from '../src/programs.js';
+      import attributes from '../src/attributes.js';
+      import textures from '../src/textures.js';
+
+      import m4 from '../src/m4.js';
+
+      const vs = `
+        uniform mat4 u_modelMatrix;
+        uniform mat4 u_viewMatrix;
+        uniform mat4 u_projectionMatrix;
+
+        uniform vec3 u_lightWorldPos;
+        uniform mat4 u_viewInverse;
+
+        attribute vec4 a_position;
+        attribute vec3 a_normal;
+        attribute vec2 a_texcoord;
+
+        varying vec4 v_position;
+        varying vec2 v_texCoord;
+        varying vec3 v_normal;
+        varying vec3 v_surfaceToLight;
+        varying vec3 v_surfaceToView;
+
+        void main() {
+          v_texCoord = a_texcoord;
+
+          v_normal = a_normal;
+          v_surfaceToLight = u_lightWorldPos - (a_position).xyz;
+          v_surfaceToView = (u_viewInverse[3] - (a_position)).xyz;
+          gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * a_position;
+        }`;
+
+      const fs = `precision mediump float;
+        varying vec2 v_texCoord;
+        varying vec3 v_normal;
+        varying vec3 v_surfaceToLight;
+        varying vec3 v_surfaceToView;
+
+        uniform vec4 u_lightColor;
+        uniform vec4 u_ambient;
+        uniform sampler2D u_diffuse;
+        uniform vec4 u_specular;
+        uniform float u_shininess;
+        uniform float u_specularFactor;
+
+        vec4 lit(float l ,float h, float m) {
+          return vec4(1.0,
+                      max(l, 0.0),
+                      (l > 0.0) ? pow(max(0.0, h), m) : 0.0,
+                      1.0);
+        }
+
+        void main() {
+          vec4 diffuseColor = texture2D(u_diffuse, v_texCoord);
+          vec3 a_normal = normalize(v_normal);
+          vec3 surfaceToLight = normalize(v_surfaceToLight);
+          vec3 surfaceToView = normalize(v_surfaceToView);
+          vec3 halfVector = normalize(surfaceToLight + surfaceToView);
+          vec4 litR = lit(dot(a_normal, surfaceToLight),
+                            dot(a_normal, halfVector), u_shininess);
+
+          gl_FragColor = diffuseColor;
+        }`;
+
+      const gl = twgl.getWebGLContext(document.getElementById("c"), { antialias: true });
+
+      const programInfo = programs.createProgramInfo(gl, [vs, fs]);
+
+      const arrays = {
+        a_position: [
+          -1, 1, -1,
+          1, 1, -1,
+          1, -1, -1,
+          -1, -1, -1
+        ],
+        a_normal: [
+          0, 0, -1,
+          0, 0, -1,
+          0, 0, -1,
+          0, 0, -1
+        ],
+        a_texcoord: [
+          1, 0,
+          0, 0,
+          0, 1,
+          1, 1
+        ],
+        indices: [
+          0, 1, 2,
+          0, 2, 3
+        ],
+      };
+
+      const bufferInfo = attributes.createBufferInfoFromArrays(gl, arrays);
+
+      const tex = textures.createTexture(gl, {
+        min: gl.NEAREST,
+        mag: gl.NEAREST,
+        src: "./assets/logo1.JPG",
+        crossOrigin: "", // either this or use twgl.setDefaults
+      });
+
+      const uniforms = {
+        u_lightWorldPos: [1, 5, -10],
+        u_lightColor: [1, 1, 1, 1],
+        u_ambient: [0, 0, 0, 1],
+        u_specular: [1, 1, 1, 1],
+        u_shininess: 1,
+        u_specularFactor: 0,
+        u_diffuse: tex,
+      };
+
+
+      window.addEventListener('resize', onWindowResize);
+
+      let projection = m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 1, 100);
+      let eye = [0, 0, -10];
+      let target = [0, 0, 0];
+      let up = [0, 1, 0];
+      let camera = m4.lookAt(eye, target, up);
+      let modelMatrix = m4.rotationY(0);
+
+      function onWindowResize(){
+        twgl.resizeCanvasToDisplaySize(gl.canvas, 1);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        projection = m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 1, 100);
+      }
+      onWindowResize()
+
+      function render(time){
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        uniforms.u_viewInverse = camera;
+
+        uniforms.u_modelMatrix = modelMatrix;
+        uniforms.u_viewMatrix = m4.inverse(camera);
+        uniforms.u_projectionMatrix = projection;
+
+        gl.useProgram(programInfo.program);
+        programs.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+        programs.setUniforms(programInfo, uniforms);
+        gl.drawElements(gl.TRIANGLES, bufferInfo.numElements, gl.UNSIGNED_SHORT, 0);
+
+        requestAnimationFrame(render);
+      }
+      
+      requestAnimationFrame(render);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>colored_points</title>
+  </head>
+
+  <body>
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+
+    <script type="module">
+      import { getWebGLContext, createProgram } from '../../lib/programs.js';
+
+      const VSHADER_SOURCE =
+        'attribute vec4 a_Position;\n' +
+        'void main() {\n' +
+        '  gl_Position = a_Position;\n' +
+        '  gl_PointSize = 10.0;\n' +
+        '}\n';
+
+      // Fragment shader program
+      const FSHADER_SOURCE =
+        'precision mediump float;\n' +
+        'uniform vec4 u_FragColor;\n' +  // uniform変数
+        'void main() {\n' +
+        '  gl_FragColor = u_FragColor;\n' +
+        '}\n';
+
+      const canvas = document.getElementById('webgl');
+
+      // Get the rendering context for WebGL
+      const gl = getWebGLContext(canvas);
+
+      const program = createProgram(gl, VSHADER_SOURCE, FSHADER_SOURCE);
+
+      const a_Position = gl.getAttribLocation(program, 'a_Position');
+
+      const u_FragColor = gl.getUniformLocation(program, 'u_FragColor');
+
+      // Specify the color for clearing <canvas>
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+      // Clear <canvas>
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      const gPoints = []; // The array for the position of a mouse press
+      const gColors = [];  // The array to store the color of a point
+
+      canvas.onmousedown = function(ev){
+
+        const rect = ev.target.getBoundingClientRect() ;
+
+        const x = ((ev.clientX - rect.left) - canvas.width/2)/(canvas.width/2);
+        const y = (canvas.height/2 - (ev.clientY - rect.top))/(canvas.height/2);
+
+        gPoints.push([x, y]);
+        // Store the coordinates to g_points array
+        if (x >= 0.0 && y >= 0.0) {      // First quadrant
+          gColors.push([1.0, 0.0, 0.0, 1.0]);  // Red
+        } else if (x < 0.0 && y < 0.0) { // Third quadrant
+          gColors.push([0.0, 1.0, 0.0, 1.0]);  // Green
+        } else {                         // Others
+          gColors.push([1.0, 1.0, 1.0, 1.0]);  // White
+        }
+
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        for(let i = 0; i < gPoints.length; i ++) {
+          // Pass the position of a point to a_Position variable
+          const xy = gPoints[i];
+          const rgba = gColors[i];
+
+          gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
+          gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+
+          // Draw
+          gl.drawArrays(gl.POINTS, 0, 1);
+        }
+      };
+    </script>
+  </body>
+</html>

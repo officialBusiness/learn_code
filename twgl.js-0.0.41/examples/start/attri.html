@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+    <title>start</title>
+    <link href="../default_css.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <!-- 传入 attribute 形成一个正方形  -->
+  <body>
+    <canvas id="c"></canvas>
+
+    <script type="module">
+      import twgl from '../../src/twgl.js';
+      import programs from '../../src/programs.js';
+      import attributes from '../../src/attributes.js';
+      import textures from '../../src/textures.js';
+
+      import m4 from '../../src/m4.js';
+
+      const vs = `
+        attribute vec4 a_position;
+
+        void main() {
+          gl_Position = a_position;
+        }`;
+
+      const fs = `precision mediump float;
+
+        void main() {
+          gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }`;
+
+      const gl = twgl.getWebGLContext(document.getElementById("c"), { antialias: true });
+
+      const programInfo = programs.createProgramInfo(gl, [vs, fs]);
+
+      const arrays = {
+        a_position: [
+          -0.5, 0.5, 0,
+          0.5, 0.5, 0,
+          0.5, -0.5, 0,
+          -0.5, -0.5, 0
+        ],
+        indices: [
+          0, 2, 1,
+          0, 3, 2
+        ],
+      };
+
+      const bufferInfo = attributes.createBufferInfoFromArrays(gl, arrays);
+
+      window.addEventListener('resize', onWindowResize);
+
+      function onWindowResize(){
+        twgl.resizeCanvasToDisplaySize(gl.canvas, 1);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      }
+      onWindowResize()
+
+      function render(time){
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.useProgram(programInfo.program);
+        programs.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+
+        gl.drawElements(gl.TRIANGLES, bufferInfo.numElements, gl.UNSIGNED_SHORT, 0);
+
+        requestAnimationFrame(render);
+      }
+      
+      requestAnimationFrame(render);
+    </script>
+  </body>
+</html>
