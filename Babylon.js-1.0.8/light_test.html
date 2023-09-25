@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<!-- <link rel="icon" href="../../icon.png"> -->
+		<title>light_test</title>
+		<link href="./default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<!--  -->
+	<body>
+		<script src="Babylon/Tools/babylon.math.js"></script>
+    <script src="Babylon/Tools/babylon.tools.js"></script>
+    <script src="Babylon/babylon.engine.js"></script>
+    <script src="Babylon/Culling/babylon.boundingSphere.js"></script>
+    <script src="Babylon/Culling/babylon.boundingBox.js"></script>
+    <script src="Babylon/Culling/babylon.boundingInfo.js"></script>
+    <script src="Babylon/Lights/babylon.light.js"></script>
+    <script src="Babylon/Lights/babylon.pointLight.js"></script>
+    <script src="Babylon/Lights/babylon.spotLight.js"></script>
+    <script src="Babylon/Lights/babylon.hemisphericLight.js"></script>
+    <script src="Babylon/Lights/babylon.directionalLight.js"></script>
+    <script src="Babylon/Collisions/babylon.collisionPlane.js"></script>
+    <script src="Babylon/Collisions/babylon.collider.js"></script>
+    <script src="Babylon/Cameras/babylon.camera.js"></script>
+    <script src="Babylon/Cameras/babylon.freeCamera.js"></script>
+    <script src="Babylon/Cameras/babylon.touchCamera.js"></script>
+    <script src="Babylon/Cameras/babylon.arcRotateCamera.js"></script>
+    <script src="Babylon/babylon.scene.js"></script>
+    <script src="Babylon/Mesh/babylon.mesh.js"></script>
+    <script src="Babylon/Mesh/babylon.subMesh.js"></script>
+    <script src="Babylon/Materials/textures/babylon.baseTexture.js"></script>
+    <script src="Babylon/Materials/textures/babylon.texture.js"></script>
+    <script src="Babylon/Materials/textures/babylon.cubeTexture.js"></script>
+    <script src="Babylon/Materials/textures/babylon.renderTargetTexture.js"></script>
+    <script src="Babylon/Materials/textures/babylon.mirrorTexture.js"></script>
+    <script src="Babylon/Materials/textures/babylon.dynamicTexture.js"></script>
+    <script src="Babylon/Materials/textures/babylon.videoTexture.js"></script>
+    <script src="Babylon/Materials/babylon.effect.js"></script>
+    <script src="Babylon/Materials/babylon.material.js"></script>
+    <script src="Babylon/Materials/babylon.standardMaterial.js"></script>
+    <script src="Babylon/Materials/babylon.multiMaterial.js"></script>
+    <script src="Babylon/Tools/babylon.sceneLoader.js"></script>
+    <script src="Babylon/Sprites/babylon.spriteManager.js"></script>
+    <script src="Babylon/Sprites/babylon.sprite.js"></script>
+    <script src="Babylon/Layer/babylon.layer.js"></script>
+    <script src="Babylon/Particles/babylon.particle.js"></script>
+    <script src="Babylon/Particles/babylon.particleSystem.js"></script>
+    <script src="Babylon/Animations/babylon.animation.js"></script>
+    <script src="Babylon/Animations/babylon.animatable.js"></script>
+		<canvas id="renderCanvas"></canvas>
+		<script type="text/javascript">
+			// import BABYLON from './Babylon/Babylon.js';
+			// console.log('BABYLON:', BABYLON);
+			// Babylon
+			const canvas = document.getElementById('renderCanvas');
+			var engine = new BABYLON.Engine(canvas, true);
+
+			var CreateLightsTestScene = function (engine) {
+			    var scene = new BABYLON.Scene(engine);
+			    var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+			    var light0 = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(0, 10, 0), scene);
+			    var light1 = new BABYLON.PointLight("Omni1", new BABYLON.Vector3(0, -10, 0), scene);
+			    var light2 = new BABYLON.PointLight("Omni2", new BABYLON.Vector3(10, 0, 0), scene);
+			    var light3 = new BABYLON.DirectionalLight("Dir0", new BABYLON.Vector3(1, -1, 0), scene);
+			    var material = new BABYLON.StandardMaterial("kosh", scene);
+			    var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
+
+			    camera.setPosition(new BABYLON.Vector3(-10, 10, 0));
+			    
+			    // Creating light sphere
+			    var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 0.5, scene);
+			    var lightSphere1 = BABYLON.Mesh.CreateSphere("Sphere1", 16, 0.5, scene);
+			    var lightSphere2 = BABYLON.Mesh.CreateSphere("Sphere2", 16, 0.5, scene);
+			    
+			    lightSphere0.material = new BABYLON.StandardMaterial("red", scene);
+			    lightSphere0.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+			    lightSphere0.material.specularColor = new BABYLON.Color3(0, 0, 0);
+			    lightSphere0.material.emissiveColor = new BABYLON.Color3(1, 0, 0);
+
+			    lightSphere1.material = new BABYLON.StandardMaterial("green", scene);
+			    lightSphere1.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+			    lightSphere1.material.specularColor = new BABYLON.Color3(0, 0, 0);
+			    lightSphere1.material.emissiveColor = new BABYLON.Color3(0, 1, 0);
+
+			    lightSphere2.material = new BABYLON.StandardMaterial("blue", scene);
+			    lightSphere2.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+			    lightSphere2.material.specularColor = new BABYLON.Color3(0, 0, 0);
+			    lightSphere2.material.emissiveColor = new BABYLON.Color3(0, 0, 1);
+
+			    // Sphere material
+			    material.diffuseColor = new BABYLON.Color3(1, 1, 1);
+			    sphere.material = material;
+
+			    // Lights colors
+			    light0.diffuse = new BABYLON.Color3(1, 0, 0);
+			    light0.specular = new BABYLON.Color3(1, 0, 0);
+			    
+			    light1.diffuse = new BABYLON.Color3(0, 1, 0);
+			    light1.specular = new BABYLON.Color3(0, 1, 0);
+			    
+			    light2.diffuse = new BABYLON.Color3(0, 0, 1);
+			    light2.specular = new BABYLON.Color3(0, 0, 1);
+			    
+			    light3.diffuse = new BABYLON.Color3(1, 1, 1);
+			    light3.specular = new BABYLON.Color3(1, 1, 1);
+			    
+			    // Skybox
+			    var skybox = BABYLON.Mesh.CreateBox("skyBox", 100.0, scene);
+			    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+			    skyboxMaterial.backFaceCulling = false;
+			    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./Assets/skybox/skybox", scene);
+			    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+			    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+			    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+			    skybox.material = skyboxMaterial;
+
+			    // Animations
+			    var alpha = 0;
+			    scene.registerBeforeRender(function () {
+			        light0.position = new BABYLON.Vector3(10 * Math.sin(alpha), 0, 10 * Math.cos(alpha));
+			        light1.position = new BABYLON.Vector3(10 * Math.sin(alpha), 0, -10 * Math.cos(alpha));
+			        light2.position = new BABYLON.Vector3(10 * Math.cos(alpha), 0, 10 * Math.sin(alpha));
+
+			        lightSphere0.position = light0.position;
+			        lightSphere1.position = light1.position;
+			        lightSphere2.position = light2.position;
+
+			        alpha += 0.01;
+			    });
+
+			    return scene;
+			};
+
+			const scene = CreateLightsTestScene(engine);
+
+      engine.runRenderLoop(()=>{
+      	scene.render();
+      });
+
+		</script>
+	</body>
+</html>
