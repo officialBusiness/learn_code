@@ -9,7 +9,7 @@ export default function ArcRotateCamera(name, alpha, beta, radius, target, scene
 	this.beta = beta;
 	this.radius = radius;
 	this.target = target;
-
+	
 	this._keys = [];
 	this.keysUp = [38];
 	this.keysDown = [40];
@@ -19,7 +19,7 @@ export default function ArcRotateCamera(name, alpha, beta, radius, target, scene
 	this._scene = scene;
 
 	scene.cameras.push(this);
-
+	
 	if (!scene.activeCamera) {
 		scene.activeCamera = this;
 	}

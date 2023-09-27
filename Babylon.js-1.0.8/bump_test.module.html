@@ -12,54 +12,34 @@
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-			import BABYLON from './Babylon/Babylon.js';
+			import * as BABYLON from './Babylon.module/Babylon.js';
 			// console.log('BABYLON:', BABYLON);
 			// Babylon
 			const canvas = document.getElementById('renderCanvas');
 			var engine = new BABYLON.Engine(canvas, true);
-			
-			var CreateFogScene = function(engine) {
-			    var scene = new BABYLON.Scene(engine);
-			    var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 0, -20), scene);
-			    var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(20, 100, 2), scene);
-			    var sphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 3, scene);
-			    var sphere1 = BABYLON.Mesh.CreateSphere("Sphere1", 16, 3, scene);
-			    var sphere2 = BABYLON.Mesh.CreateSphere("Sphere2", 16, 3, scene);
 
-			    var material0 = new BABYLON.StandardMaterial("mat0", scene);
-			    material0.diffuseColor = new BABYLON.Color3(1, 0, 0);
-			    sphere0.material = material0;
-			    sphere0.position = new BABYLON.Vector3(-10, 0, 0);
+			var CreateBumpScene = function (engine) {
+		    var scene = new BABYLON.Scene(engine);
+		    var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+		    var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(20, 100, 2), scene);
+		    var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
+		    var material = new BABYLON.StandardMaterial("kosh", scene);
+		    // material.bumpTexture = new BABYLON.Texture("./Assets/normalMap.jpg", scene);
+		    material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+		    
+		    sphere.material = material;
+		    
+		    camera.setPosition(new BABYLON.Vector3(-5, 5, 0));
 
-			    var material1 = new BABYLON.StandardMaterial("mat1", scene);
-			    material1.diffuseColor = new BABYLON.Color3(1, 1, 0);
-			    sphere1.material = material1;
+		    // Animations
+		    scene.registerBeforeRender(function() {
+		        sphere.rotation.y += 0.02;
+		    });
 
-			    var material2 = new BABYLON.StandardMaterial("mat2", scene);
-			    material2.diffuseColor = new BABYLON.Color3(1, 0, 1);
-			    sphere2.material = material2;
-			    sphere2.position = new BABYLON.Vector3(10, 0, 0);
-			    
-			    camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-			    
-			    // Fog
-			    scene.fogMode = BABYLON.Scene.FOGMODE_EXP;
-			    scene.fogDensity = 0.1;
-
-			    // Animations
-			    var alpha = 0;
-			    scene.registerBeforeRender(function () {
-			        sphere0.position.z = 4 * Math.cos(alpha);
-			        sphere1.position.z = 4 * Math.sin(alpha);
-			        sphere2.position.z = 4 * Math.cos(alpha);
-
-			        alpha += 0.1;
-			    });
-
-			    return scene;
+		    return scene;
 			};
 
-			const scene = CreateFogScene(engine);
+			const scene = CreateBumpScene(engine);
 
       engine.runRenderLoop(()=>{
       	scene.render();

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<title>start</title>
+		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+			import * as BABYLON from '../Babylon.module.learn/BABYLON.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			var CreateScene = function (engine) {
+				var scene = new BABYLON.Scene(engine);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+
+				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
+				var material = new BABYLON.StandardMaterial("kosh", scene);
+				// material.bumpTexture = new BABYLON.Texture("./Assets/normalMap.jpg", scene);
+				// material.emissiveColor = new BABYLON.Color3(1, 0, 0);
+
+				console.log('emissiveColor:', material.emissiveColor);
+
+				sphere.material = material;
+
+				camera.setPosition(new BABYLON.Vector3(-5, 5, 0));
+
+				// Animations
+				scene.registerBeforeRender(function() {
+						sphere.rotation.y += 0.02;
+				});
+
+				return scene;
+			};
+
+			const scene = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+				scene.render();
+			});
+
+		</script>
+	</body>
+</html>
