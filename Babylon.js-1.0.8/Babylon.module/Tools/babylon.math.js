@@ -125,8 +125,8 @@ Ray.prototype.intersectsSphere = function (sphere) {
 Ray.prototype.intersectsTriangle = function (vertex0, vertex1, vertex2) {
 	var edge1 = vertex1.subtract(vertex0);
 	var edge2 = vertex2.subtract(vertex0);
-	var pvec = BABYLON.Vector3.Cross(this.direction, edge2);
-	var det = BABYLON.Vector3.Dot(edge1, pvec);
+	var pvec = Vector3.Cross(this.direction, edge2);
+	var det = Vector3.Dot(edge1, pvec);
 
 	if (det === 0) {
 		return {
@@ -141,7 +141,7 @@ Ray.prototype.intersectsTriangle = function (vertex0, vertex1, vertex2) {
 
 	var tvec = this.origin.subtract(vertex0);
 
-	var bu = BABYLON.Vector3.Dot(tvec, pvec) * invdet;
+	var bu = Vector3.Dot(tvec, pvec) * invdet;
 
 	if (bu < 0 || bu > 1.0) {
 		return {
@@ -152,9 +152,9 @@ Ray.prototype.intersectsTriangle = function (vertex0, vertex1, vertex2) {
 		};
 	}
 
-	var qvec = BABYLON.Vector3.Cross(tvec, edge1);
+	var qvec = Vector3.Cross(tvec, edge1);
 
-	bv = BABYLON.Vector3.Dot(this.direction, qvec) * invdet;
+	bv = Vector3.Dot(this.direction, qvec) * invdet;
 
 	if (bv < 0 || bu + bv > 1.0) {
 		return {
@@ -165,7 +165,7 @@ Ray.prototype.intersectsTriangle = function (vertex0, vertex1, vertex2) {
 		};
 	}
 
-	distance = BABYLON.Vector3.Dot(edge2, qvec) * invdet;
+	distance = Vector3.Dot(edge2, qvec) * invdet;
 
 	return {
 		hit: true,
@@ -177,13 +177,13 @@ Ray.prototype.intersectsTriangle = function (vertex0, vertex1, vertex2) {
 
 // Statics
 Ray.CreateNew = function (x, y, viewportWidth, viewportHeight, world, view, projection) {
-	var start = BABYLON.Vector3.Unproject(new BABYLON.Vector3(x, y, 0), viewportWidth, viewportHeight, world, view, projection);
-	var end = BABYLON.Vector3.Unproject(new BABYLON.Vector3(x, y, 1), viewportWidth, viewportHeight, world, view, projection);
+	var start = Vector3.Unproject(new Vector3(x, y, 0), viewportWidth, viewportHeight, world, view, projection);
+	var end = Vector3.Unproject(new Vector3(x, y, 1), viewportWidth, viewportHeight, world, view, projection);
 
 	var direction = end.subtract(start);
 	direction.normalize();
 
-	return new BABYLON.Ray(start, direction);
+	return new Ray(start, direction);
 };
 
 
@@ -232,15 +232,15 @@ export function Color4(initialR, initialG, initialB, initialA) {
 
 // Operators
 Color4.prototype.add = function (right) {
-	return new BABYLON.Color4(this.r + right.r, this.g + right.g, this.b + right.b, this.a + right.a);
+	return new Color4(this.r + right.r, this.g + right.g, this.b + right.b, this.a + right.a);
 };
 
 Color4.prototype.subtract = function (right) {
-	return new BABYLON.Color4(this.r - right.r, this.g - right.g, this.b - right.b, this.a - right.a);
+	return new Color4(this.r - right.r, this.g - right.g, this.b - right.b, this.a - right.a);
 };
 
 Color4.prototype.scale = function (scale) {
-	return new BABYLON.Color4(this.r * scale, this.g * scale, this.b * scale, this.a * scale);
+	return new Color4(this.r * scale, this.g * scale, this.b * scale, this.a * scale);
 };
 
 Color4.prototype.toString = function () {
@@ -248,7 +248,7 @@ Color4.prototype.toString = function () {
 };
 
 Color4.prototype.clone = function () {
-	return new BABYLON.Color4(this.r, this.g, this.b, this.a);
+	return new Color4(this.r, this.g, this.b, this.a);
 };
 
 // Statics
@@ -258,7 +258,7 @@ Color4.Lerp = function(left, right, amount) {
 	var b = left.b + (right.b - left.b) * amount;
 	var a = left.a + (right.a - left.a) * amount;
 
-	return new BABYLON.Color4(r, g, b, a);
+	return new Color4(r, g, b, a);
 };
 
 Color4.FromArray = function (array, offset) {
@@ -395,7 +395,7 @@ Vector2.Minimize = function (left, right) {
 	var x = (left.x < right.x) ? left.x : right.x;
 	var y = (left.y < right.y) ? left.y : right.y;
 
-	return new BABYLON.Vector2(x, y);
+	return new Vector2(x, y);
 };
 
 Vector2.Maximize = function (left, right) {
@@ -438,19 +438,19 @@ Vector3.prototype.toString = function () {
 
 // Operators
 Vector3.prototype.add = function (otherVector) {
-	return new BABYLON.Vector3(this.x + otherVector.x, this.y + otherVector.y, this.z + otherVector.z);
+	return new Vector3(this.x + otherVector.x, this.y + otherVector.y, this.z + otherVector.z);
 };
 
 Vector3.prototype.subtract = function (otherVector) {
-	return new BABYLON.Vector3(this.x - otherVector.x, this.y - otherVector.y, this.z - otherVector.z);
+	return new Vector3(this.x - otherVector.x, this.y - otherVector.y, this.z - otherVector.z);
 };
 
 Vector3.prototype.negate = function () {
-	return new BABYLON.Vector3(-this.x, -this.y, -this.z);
+	return new Vector3(-this.x, -this.y, -this.z);
 };
 
 Vector3.prototype.scale = function (scale) {
-	return new BABYLON.Vector3(this.x * scale, this.y * scale, this.z * scale);
+	return new Vector3(this.x * scale, this.y * scale, this.z * scale);
 };
 
 Vector3.prototype.equals = function (otherVector) {
@@ -458,11 +458,11 @@ Vector3.prototype.equals = function (otherVector) {
 };
 
 Vector3.prototype.multiply = function (otherVector) {
-	return new BABYLON.Vector3(this.x * otherVector.x, this.y * otherVector.y, this.z * otherVector.z);
+	return new Vector3(this.x * otherVector.x, this.y * otherVector.y, this.z * otherVector.z);
 };
 
 Vector3.prototype.divide = function (otherVector) {
-	return new BABYLON.Vector3(this.x / otherVector.x, this.y / otherVector.y, this.z / otherVector.z);
+	return new Vector3(this.x / otherVector.x, this.y / otherVector.y, this.z / otherVector.z);
 };
 
 // Properties
@@ -489,7 +489,7 @@ Vector3.prototype.normalize = function () {
 };
 
 Vector3.prototype.clone = function () {
-	return new BABYLON.Vector3(this.x, this.y, this.z);
+	return new Vector3(this.x, this.y, this.z);
 };
 
 // Statics
@@ -498,15 +498,15 @@ Vector3.FromArray = function (array, offset) {
 		offset = 0;
 	}
 
-	return new BABYLON.Vector3(array[offset], array[offset + 1], array[offset + 2]);
+	return new Vector3(array[offset], array[offset + 1], array[offset + 2]);
 };
 
 Vector3.Zero = function () {
-	return new BABYLON.Vector3(0, 0, 0);
+	return new Vector3(0, 0, 0);
 };
 
 Vector3.Up = function () {
-	return new BABYLON.Vector3(0, 1.0, 0);
+	return new Vector3(0, 1.0, 0);
 };
 
 Vector3.TransformCoordinates = function (vector, transformation) {
@@ -515,7 +515,7 @@ Vector3.TransformCoordinates = function (vector, transformation) {
 	var z = (vector.x * transformation.m[2]) + (vector.y * transformation.m[6]) + (vector.z * transformation.m[10]) + transformation.m[14];
 	var w = (vector.x * transformation.m[3]) + (vector.y * transformation.m[7]) + (vector.z * transformation.m[11]) + transformation.m[15];
 
-	return new BABYLON.Vector3(x / w, y / w, z / w);
+	return new Vector3(x / w, y / w, z / w);
 };
 
 Vector3.TransformNormal = function (vector, transformation) {
@@ -523,7 +523,7 @@ Vector3.TransformNormal = function (vector, transformation) {
 	var y = (vector.x * transformation.m[1]) + (vector.y * transformation.m[5]) + (vector.z * transformation.m[9]);
 	var z = (vector.x * transformation.m[2]) + (vector.y * transformation.m[6]) + (vector.z * transformation.m[10]);
 
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 
@@ -543,7 +543,7 @@ Vector3.CatmullRom = function (value1, value2, value3, value4, amount) {
 			(((((2.0 * value1.z) - (5.0 * value2.z)) + (4.0 * value3.z)) - value4.z) * squared)) +
 		((((-value1.z + (3.0 * value2.z)) - (3.0 * value3.z)) + value4.z) * cubed));
 
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Clamp = function (value, min, max) {
@@ -559,7 +559,7 @@ Vector3.Clamp = function (value, min, max) {
 	z = (z > max.z) ? max.z : z;
 	z = (z < min.z) ? min.z : z;
 
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Hermite = function (value1, tangent1, value2, tangent2, amount) {
@@ -574,7 +574,7 @@ Vector3.Hermite = function (value1, tangent1, value2, tangent2, amount) {
 	var y = (((value1.y * part1) + (value2.y * part2)) + (tangent1.y * part3)) + (tangent2.y * part4);
 	var z = (((value1.z * part1) + (value2.z * part2)) + (tangent1.z * part3)) + (tangent2.z * part4);
 
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Lerp = function (start, end, amount) {
@@ -582,7 +582,7 @@ Vector3.Lerp = function (start, end, amount) {
 	var y = start.y + ((end.y - start.y) * amount);
 	var z = start.z + ((end.z - start.z) * amount);
 
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Dot = function (left, right) {
@@ -594,7 +594,7 @@ Vector3.Cross = function (left, right) {
 	var y = left.z * right.x - left.x * right.z;
 	var z = left.x * right.y - left.y * right.x;
 
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Normalize = function (vector) {
@@ -608,10 +608,10 @@ Vector3.Unproject = function (source, viewportWidth, viewportHeight, world, view
 	matrix.invert();
 	source.x = source.x / viewportWidth * 2 - 1;
 	source.y = -(source.y / viewportHeight * 2 - 1);
-	var vector = BABYLON.Vector3.TransformCoordinates(source, matrix);
+	var vector = Vector3.TransformCoordinates(source, matrix);
 	var num = source.x * matrix.m[3] + source.y * matrix.m[7] + source.z * matrix.m[11] + matrix.m[15];
 
-	if (BABYLON.Tools.WithinEpsilon(num, 1.0)) {
+	if (Tools.WithinEpsilon(num, 1.0)) {
 		vector = vector.scale(1.0 / num);
 	}
 
@@ -622,18 +622,18 @@ Vector3.Minimize = function (left, right) {
 	var x = (left.x < right.x) ? left.x : right.x;
 	var y = (left.y < right.y) ? left.y : right.y;
 	var z = (left.z < right.z) ? left.z : right.z;
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Maximize = function (left, right) {
 	var x = (left.x > right.x) ? left.x : right.x;
 	var y = (left.y > right.y) ? left.y : right.y;
 	var z = (left.z > right.z) ? left.z : right.z;
-	return new BABYLON.Vector3(x, y, z);
+	return new Vector3(x, y, z);
 };
 
 Vector3.Distance = function (value1, value2) {
-	return Math.sqrt(BABYLON.Vector3.DistanceSquared(value1, value2));
+	return Math.sqrt(Vector3.DistanceSquared(value1, value2));
 };
 
 Vector3.DistanceSquared = function (value1, value2) {
@@ -821,7 +821,7 @@ Matrix.prototype.invert = function () {
 };
 
 Matrix.prototype.multiply = function (other) {
-	var result = new BABYLON.Matrix();
+	var result = new Matrix();
 
 	result.m[0] = this.m[0] * other.m[0] + this.m[1] * other.m[4] + this.m[2] * other.m[8] + this.m[3] * other.m[12];
 	result.m[1] = this.m[0] * other.m[1] + this.m[1] * other.m[5] + this.m[2] * other.m[9] + this.m[3] * other.m[13];
@@ -854,7 +854,7 @@ Matrix.prototype.equals = function (value) {
 };
 
 Matrix.prototype.clone = function () {
-	return BABYLON.Matrix.FromValues(this.m[0], this.m[1], this.m[2], this.m[3],
+	return Matrix.FromValues(this.m[0], this.m[1], this.m[2], this.m[3],
 		this.m[4], this.m[5], this.m[6], this.m[7],
 		this.m[8], this.m[9], this.m[10], this.m[11],
 		this.m[12], this.m[13], this.m[14], this.m[15]);
@@ -866,7 +866,7 @@ Matrix.FromValues = function (initialM11, initialM12, initialM13, initialM14,
 	initialM31, initialM32, initialM33, initialM34,
 	initialM41, initialM42, initialM43, initialM44) {
 
-	var result = new BABYLON.Matrix();
+	var result = new Matrix();
 	
 	result.m[0] = initialM11;
 	result.m[1] = initialM12;
@@ -889,21 +889,21 @@ Matrix.FromValues = function (initialM11, initialM12, initialM13, initialM14,
 };
 
 Matrix.Identity = function () {
-	return BABYLON.Matrix.FromValues(1.0, 0, 0, 0,
+	return Matrix.FromValues(1.0, 0, 0, 0,
 		0, 1.0, 0, 0,
 		0, 0, 1.0, 0,
 		0, 0, 0, 1.0);
 };
 
 Matrix.Zero = function () {
-	return BABYLON.Matrix.FromValues(0, 0, 0, 0,
+	return Matrix.FromValues(0, 0, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0,
 		0, 0, 0, 0);
 };
 
 Matrix.RotationX = function (angle) {
-	var result = BABYLON.Matrix.Zero();
+	var result = Matrix.Zero();
 	var s = Math.sin(angle);
 	var c = Math.cos(angle);
 
@@ -919,7 +919,7 @@ Matrix.RotationX = function (angle) {
 };
 
 Matrix.RotationY = function (angle) {
-	var result = BABYLON.Matrix.Zero();
+	var result = Matrix.Zero();
 	var s = Math.sin(angle);
 	var c = Math.cos(angle);
 
@@ -935,7 +935,7 @@ Matrix.RotationY = function (angle) {
 };
 
 Matrix.RotationZ = function (angle) {
-	var result = BABYLON.Matrix.Zero();
+	var result = Matrix.Zero();
 	var s = Math.sin(angle);
 	var c = Math.cos(angle);
 
@@ -956,7 +956,7 @@ Matrix.RotationAxis = function (axis, angle) {
 	var c1 = 1 - c;
 
 	axis.normalize();
-	var result = BABYLON.Matrix.Zero();
+	var result = Matrix.Zero();
 
 	result.m[0] = (axis.x * axis.x) * c1 + c;
 	result.m[1] = (axis.x * axis.y) * c1 - (axis.z * s);
@@ -979,11 +979,11 @@ Matrix.RotationAxis = function (axis, angle) {
 };
 
 Matrix.RotationYawPitchRoll = function (yaw, pitch, roll) {
-	return BABYLON.Matrix.RotationZ(roll).multiply(BABYLON.Matrix.RotationX(pitch)).multiply(BABYLON.Matrix.RotationY(yaw));
+	return Matrix.RotationZ(roll).multiply(Matrix.RotationX(pitch)).multiply(Matrix.RotationY(yaw));
 };
 
 Matrix.Scaling = function (x, y, z) {
-	var result = BABYLON.Matrix.Zero();
+	var result = Matrix.Zero();
 
 	result.m[0] = x;
 	result.m[5] = y;
@@ -994,7 +994,7 @@ Matrix.Scaling = function (x, y, z) {
 };
 
 Matrix.Translation = function (x, y, z) {
-	var result = BABYLON.Matrix.Identity();
+	var result = Matrix.Identity();
 
 	result.m[12] = x;
 	result.m[13] = y;
@@ -1009,19 +1009,19 @@ Matrix.LookAtLH = function (eye, target, up) {
 	zAxis.normalize();
 
 	// X axis
-	var xAxis = BABYLON.Vector3.Cross(up, zAxis);
+	var xAxis = Vector3.Cross(up, zAxis);
 	xAxis.normalize();
 
 	// Y axis
-	var yAxis = BABYLON.Vector3.Cross(zAxis, xAxis);
+	var yAxis = Vector3.Cross(zAxis, xAxis);
 	yAxis.normalize();
 
 	// Eye angles
-	var ex = -BABYLON.Vector3.Dot(xAxis, eye);
-	var ey = -BABYLON.Vector3.Dot(yAxis, eye);
-	var ez = -BABYLON.Vector3.Dot(zAxis, eye);
+	var ex = -Vector3.Dot(xAxis, eye);
+	var ey = -Vector3.Dot(yAxis, eye);
+	var ez = -Vector3.Dot(zAxis, eye);
 
-	return BABYLON.Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0,
+	return Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0,
 		xAxis.y, yAxis.y, zAxis.y, 0,
 		xAxis.z, yAxis.z, zAxis.z, 0,
 		ex, ey, ez, 1);
@@ -1033,14 +1033,14 @@ Matrix.OrthoLH = function (width, height, znear, zfar) {
 	var id = 1.0 / (zfar - znear);
 	var nid = znear / (znear - zfar);
 
-	return BABYLON.Matrix.FromValues(hw, 0, 0, 0,
+	return Matrix.FromValues(hw, 0, 0, 0,
 		0, hh, 0, 0,
 		0, 0, id, 0,
 		0, 0, nid, 1);
 };
 
 Matrix.OrthoOffCenterLH = function (left, right, bottom, top, znear, zfar) {
-	var matrix = BABYLON.Matrix.Zero();
+	var matrix = Matrix.Zero();
 
 	matrix.m[0] = 2.0 / (right - left);
 	matrix.m[1] = matrix.m[2] = matrix.m[3] = 0;
@@ -1057,7 +1057,7 @@ Matrix.OrthoOffCenterLH = function (left, right, bottom, top, znear, zfar) {
 };
 
 Matrix.PerspectiveLH = function (width, height, znear, zfar) {
-	var matrix = BABYLON.Matrix.Zero();
+	var matrix = Matrix.Zero();
 
 	matrix.m[0] = (2.0 * znear) / width;
 	matrix.m[1] = matrix.m[2] = matrix.m[3] = 0.0;
@@ -1073,7 +1073,7 @@ Matrix.PerspectiveLH = function (width, height, znear, zfar) {
 };
 
 Matrix.PerspectiveFovLH = function (fov, aspect, znear, zfar) {
-	var matrix = BABYLON.Matrix.Zero();
+	var matrix = Matrix.Zero();
 
 	var tan = 1.0 / (Math.tan(fov * 0.5));
 
@@ -1103,7 +1103,7 @@ Matrix.GetFinalMatrix = function (viewport, world, view, projection) {
 	var zmin = viewport.minZ;
 	var zmax = viewport.maxZ;
 
-	var viewportMatrix = new BABYLON.Matrix(cw / 2.0, 0, 0, 0,
+	var viewportMatrix = new Matrix(cw / 2.0, 0, 0, 0,
 		0, -ch / 2.0, 0, 0,
 		0, 0, zmax - zmin, 0,
 		cx + cw / 2.0, ch / 2.0 + cy, zmin, 1);
@@ -1112,7 +1112,7 @@ Matrix.GetFinalMatrix = function (viewport, world, view, projection) {
 };
 
 Matrix.Transpose = function (matrix) {
-	var result = new BABYLON.Matrix();
+	var result = new Matrix();
 
 	result.m[0] = matrix.m[0];
 	result.m[1] = matrix.m[4];
@@ -1192,7 +1192,7 @@ Plane.prototype.normalize = function () {
 };
 
 Plane.prototype.transform = function(transformation) {
-	var transposedMatrix = BABYLON.Matrix.Transpose(transformation);
+	var transposedMatrix = Matrix.Transpose(transformation);
 	var x = this.normal.x;
 	var y = this.normal.y;
 	var z = this.normal.z;
@@ -1203,7 +1203,7 @@ Plane.prototype.transform = function(transformation) {
 	var normalZ = (((x * transposedMatrix.m[8]) + (y * transposedMatrix.m[9])) + (z * transposedMatrix.m[10])) + (d * transposedMatrix.m[11]);
 	var finalD = (((x * transposedMatrix.m[12]) + (y * transposedMatrix.m[13])) + (z * transposedMatrix.m[14])) + (d * transposedMatrix.m[15]);
 
-	return new BABYLON.Plane(normalX, normalY, normalZ, finalD);
+	return new Plane(normalX, normalY, normalZ, finalD);
 };
 
 
@@ -1213,7 +1213,7 @@ Plane.prototype.dotCoordinate = function (point) {
 
 // Statics
 Plane.FromArray = function (array) {
-	return new BABYLON.Plane(array[0], array[1], array[2], array[3]);
+	return new Plane(array[0], array[1], array[2], array[3]);
 };
 
 Plane.FromPoints = function(point1, point2, point3) {
@@ -1234,9 +1234,9 @@ Plane.FromPoints = function(point1, point2, point3) {
 	else
 		invPyth = 0;
 
-	var normal = new BABYLON.Vector3(yz * invPyth, xz * invPyth, xy * invPyth);
+	var normal = new Vector3(yz * invPyth, xz * invPyth, xy * invPyth);
 	var d = -((normal.x * point1.x) + (normal.y * point1.y) + (normal.z * point1.z));
-	return new BABYLON.Plane(normal.x, normal.y, normal.z, d);
+	return new Plane(normal.x, normal.y, normal.z, d);
 };
 
 ////////////////////////////////// Frustum //////////////////////////////////
@@ -1245,42 +1245,42 @@ export const Frustum = {};
 // Statics
 Frustum.GetPlanes = function (transform) {
 	var frustumPlanes = [];
-	frustumPlanes.push(new BABYLON.Plane( // near
+	frustumPlanes.push(new Plane( // near
 		transform.m[3] + transform.m[2],
 		transform.m[7] + transform.m[6],
 		transform.m[10] + transform.m[10],
 		transform.m[15] + transform.m[14]));
 	frustumPlanes[0].normalize();
 
-	frustumPlanes.push(new BABYLON.Plane( // far 
+	frustumPlanes.push(new Plane( // far 
 		transform.m[3] - transform.m[2],
 		transform.m[7] - transform.m[6],
 		transform.m[11] - transform.m[10],
 		transform.m[15] - transform.m[14]));
 	frustumPlanes[1].normalize();
 
-	frustumPlanes.push(new BABYLON.Plane( // left
+	frustumPlanes.push(new Plane( // left
 		transform.m[3] + transform.m[0],
 		transform.m[7] + transform.m[4],
 		transform.m[11] + transform.m[8],
 		transform.m[15] + transform.m[12]));
 	frustumPlanes[2].normalize();
 
-	frustumPlanes.push(new BABYLON.Plane( // right
+	frustumPlanes.push(new Plane( // right
 		transform.m[3] - transform.m[0],
 		transform.m[7] - transform.m[4],
 		transform.m[11] - transform.m[8],
 		transform.m[15] - transform.m[12]));
 	frustumPlanes[3].normalize();
 
-	frustumPlanes.push(new BABYLON.Plane( // top
+	frustumPlanes.push(new Plane( // top
 		transform.m[3] - transform.m[1],
 		transform.m[7] - transform.m[5],
 		transform.m[11] - transform.m[9],
 		transform.m[15] - transform.m[13]));
 	frustumPlanes[4].normalize();
 
-	frustumPlanes.push(new BABYLON.Plane( // bottom
+	frustumPlanes.push(new Plane( // bottom
 		transform.m[3] + transform.m[1],
 		transform.m[7] + transform.m[5],
 		transform.m[11] + transform.m[9],

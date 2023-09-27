@@ -12,9 +12,8 @@
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-			import BABYLON from './Babylon/Babylon.js';
-			// console.log('BABYLON:', BABYLON);
-			// Babylon
+			import * as BABYLON from './Babylon.module/Babylon.js';
+			
 			const canvas = document.getElementById('renderCanvas');
 			var engine = new BABYLON.Engine(canvas, true);
 
