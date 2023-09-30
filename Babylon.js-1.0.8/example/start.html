@@ -16,25 +16,32 @@
 
 			var engine = new BABYLON.Engine(canvas, true);
 
+			BABYLON.Engine.ShadersRepository = '../Babylon/Shaders/';
+
 			var CreateScene = function (engine) {
 				var scene = new BABYLON.Scene(engine);
 				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
 
-				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
-				var material = new BABYLON.StandardMaterial("kosh", scene);
-				// material.bumpTexture = new BABYLON.Texture("./Assets/normalMap.jpg", scene);
-				// material.emissiveColor = new BABYLON.Color3(1, 0, 0);
-
-				console.log('emissiveColor:', material.emissiveColor);
-
-				sphere.material = material;
-
 				camera.setPosition(new BABYLON.Vector3(-5, 5, 0));
 
-				// Animations
-				scene.registerBeforeRender(function() {
-						sphere.rotation.y += 0.02;
-				});
+				camera.attachControl(canvas);
+
+				var mesh = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
+				// var mesh = BABYLON.Mesh.CreatePlane("Plane", 2, scene, true);
+				var material = new BABYLON.StandardMaterial("kosh", scene);
+				// material.bumpTexture = new BABYLON.Texture("../Assets/normalMap.jpg", scene);
+				material.emissiveColor = new BABYLON.Color3(1, 0, 0);
+				material.backFaceCulling = true;
+
+		    var light0 = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(0, 10, 10), scene);
+		    light0.diffuse = new BABYLON.Color3(1, 0, 0);
+		    light0.specular = new BABYLON.Color3(1, 0, 0);
+
+				material.emissiveColor.r = 0.2;
+				material.emissiveColor.g = 0.2;
+				material.emissiveColor.b = 0.2;
+
+				mesh.material = material;
 
 				return scene;
 			};
