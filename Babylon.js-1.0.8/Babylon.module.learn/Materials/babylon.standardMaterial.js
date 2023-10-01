@@ -186,16 +186,6 @@ StandardMaterial.prototype.isReady = function (mesh) {
 	return true;
 };
 
-StandardMaterial.prototype.getRenderTargetTextures = function () {
-	var results = [];
-
-	if (this.reflectionTexture && this.reflectionTexture.isRenderTarget) {
-		results.push(this.reflectionTexture);
-	}
-
-	return results;
-};
-
 StandardMaterial.prototype.unbind = function () {
 	if (this.reflectionTexture && this.reflectionTexture.isRenderTarget) {
 		this._effect.setTexture("reflection2DSampler", null);
@@ -317,40 +307,6 @@ StandardMaterial.prototype.bind = function (world, mesh) {
 		this._effect.setFloat4("vFogInfos", this._scene.fogMode, this._scene.fogStart, this._scene.fogEnd, this._scene.fogDensity);
 		this._effect.setColor3("vFogColor", this._scene.fogColor);
 	}
-};
-
-StandardMaterial.prototype.getAnimatables = function () {
-	var results = [];
-
-	if (this.diffuseTexture && this.diffuseTexture.animations && this.diffuseTexture.animations.length > 0) {
-		results.push(this.diffuseTexture);
-	}
-
-	if (this.ambientTexture && this.ambientTexture.animations && this.ambientTexture.animations.length > 0) {
-		results.push(this.ambientTexture);
-	}
-
-	if (this.opacityTexture && this.opacityTexture.animations && this.opacityTexture.animations.length > 0) {
-		results.push(this.opacityTexture);
-	}
-
-	if (this.reflectionTexture && this.reflectionTexture.animations && this.reflectionTexture.animations.length > 0) {
-		results.push(this.reflectionTexture);
-	}
-
-	if (this.emissiveTexture && this.emissiveTexture.animations && this.emissiveTexture.animations.length > 0) {
-		results.push(this.emissiveTexture);
-	}
-
-	if (this.specularTexture && this.specularTexture.animations && this.specularTexture.animations.length > 0) {
-		results.push(this.specularTexture);
-	}
-	
-	if (this.bumpTexture && this.bumpTexture.animations && this.bumpTexture.animations.length > 0) {
-		results.push(this.bumpTexture);
-	}
-
-	return results;
 };
 
 StandardMaterial.prototype.dispose = function () {

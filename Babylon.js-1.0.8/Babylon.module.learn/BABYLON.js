@@ -9,8 +9,6 @@ export { default as Mesh } from './Mesh/babylon.mesh.js';
 
 export { default as StandardMaterial } from './Materials/babylon.standardMaterial.js';
 
-export { default as Texture } from './Materials/textures/babylon.texture.js';
-
 export { default as DirectionalLight } from './Light/babylon.directionalLight.js';
 export { default as PointLight } from './Light/babylon.pointLight.js';
 
