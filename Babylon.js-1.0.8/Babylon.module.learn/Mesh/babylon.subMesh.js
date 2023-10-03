@@ -20,7 +20,7 @@ SubMesh.prototype.getBoundingInfo = function() {
 
 SubMesh.prototype.getMaterial = function () {
 	var rootMaterial = this._mesh.material;
-	
+
 	if (rootMaterial && rootMaterial.getSubMaterial) {
 		return rootMaterial.getSubMaterial(this.materialIndex);
 	}
@@ -33,9 +33,6 @@ SubMesh.prototype.getMaterial = function () {
 };
 
 // Methods
-SubMesh.prototype._checkCollision = function (collider) {
-	return this._boundingInfo._checkCollision(collider);
-};
 
 SubMesh.prototype.updateBoundingInfo = function(world, scale) {
 	this._boundingInfo._update(world, scale);

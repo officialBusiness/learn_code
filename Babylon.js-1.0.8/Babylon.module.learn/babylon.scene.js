@@ -153,8 +153,6 @@ Scene.prototype._localRender = function (opaqueSubMeshes, alphaTestSubMeshes, tr
 };
 
 Scene.prototype.render = function () {
-	var startDate = new Date();
-	this._particlesDuration = 0;
 	var engine = this._engine;
 	
 	// Camera
@@ -162,10 +160,12 @@ Scene.prototype.render = function () {
 		throw new Error("Active camera not set");
 	}
 
-	this.setTransformMatrix(this.activeCamera.getViewMatrix(), this.activeCamera.getProjectionMatrix());
+	this.setTransformMatrix(
+		this.activeCamera.getViewMatrix(),
+		this.activeCamera.getProjectionMatrix()
+	);
 
 	// Meshes
-	var beforeEvaluateActiveMeshesDate = new Date();
 	this._evaluateActiveMeshes();
 
 	// Clear
@@ -176,10 +176,5 @@ Scene.prototype.render = function () {
 
 	// Update camera
 	this.activeCamera._update();
-
-	// After render
-	if (this.afterRender) {
-		this.afterRender();
-	}
 
 };

@@ -117,7 +117,7 @@ Engine.prototype.clear = function (color, backBuffer, depthStencil) {
 };
 
 Engine.prototype.beginFrame = function () {
-	Tools._MeasureFps();
+	// Tools._MeasureFps();
 
 	this._gl.viewport(0, 0, this._renderingCanvas.width, this._renderingCanvas.height);
 };
@@ -401,15 +401,15 @@ Engine.prototype.getAlphaTesting = function () {
 	return this._alphaTest;
 };
 
-Engine.prototype.bindSamplers = function (effect) {
-	this._gl.useProgram(effect.getProgram());
-	var samplers = effect.getSamplers();
-	for (var index = 0; index < samplers.length; index++) {
-		var uniform = effect.getUniform(samplers[index]);
-		this._gl.uniform1i(uniform, index);
-	}
-	this._currentEffect = null;
-};
+// Engine.prototype.bindSamplers = function (effect) {
+// 	this._gl.useProgram(effect.getProgram());
+// 	var samplers = effect.getSamplers();
+// 	for (var index = 0; index < samplers.length; index++) {
+// 		var uniform = effect.getUniform(samplers[index]);
+// 		this._gl.uniform1i(uniform, index);
+// 	}
+// 	this._currentEffect = null;
+// };
 
 // Dispose
 Engine.prototype.dispose = function () {

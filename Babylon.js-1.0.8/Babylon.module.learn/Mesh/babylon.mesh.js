@@ -107,24 +107,29 @@ Mesh.prototype._needToSynchonizeChildren = function () {
 };
 
 Mesh.prototype.isSynchronized = function () {
-	if (this.billboardMode !== Mesh.BILLBOARDMODE_NONE)
+	if (this.billboardMode !== Mesh.BILLBOARDMODE_NONE){
 		return false;
+	}
 
 	if (!this._cache.position || !this._cache.rotation || !this._cache.scaling) {
 		return false;
 	}
 
-	if (!this._cache.position.equals(this.position))
+	if (!this._cache.position.equals(this.position)){
 		return false;
+	}
 
-	if (!this._cache.rotation.equals(this.rotation))
+	if (!this._cache.rotation.equals(this.rotation)){
 		return false;
+	}
 
-	if (!this._cache.scaling.equals(this.scaling))
+	if (!this._cache.scaling.equals(this.scaling)){
 		return false;
+	}
 
-	if (this.parent)
+	if (this.parent){
 		return !this.parent._needToSynchonizeChildren();
+	}
 
 	return true;
 };
@@ -170,6 +175,7 @@ Mesh.prototype.computeWorldMatrix = function () {
 
 	// Billboarding
 	var matTranslation = Matrix.Translation(this.position.x, this.position.y, this.position.z);
+
 	if (this.billboardMode !== Mesh.BILLBOARDMODE_NONE) {
 		var localPosition = this.position.clone();
 		var zero = this._scene.activeCamera.position.clone();
@@ -214,16 +220,17 @@ Mesh.prototype.computeWorldMatrix = function () {
 		this._scaleFactor = Math.max(this.scaling.x, this.scaling.y);
 		this._scaleFactor = Math.max(this._scaleFactor, this.scaling.z);
 
-		if (this.parent)
+		if (this.parent){
 			this._scaleFactor = this._scaleFactor * this.parent._scaleFactor;
+		}
 
 		this._boundingInfo._update(localWorld, this._scaleFactor);
 
-		// for (var subIndex = 0; subIndex < this.subMeshes.length; subIndex++) {
-		// 	var subMesh = this.subMeshes[subIndex];
+		for (var subIndex = 0; subIndex < this.subMeshes.length; subIndex++) {
+			var subMesh = this.subMeshes[subIndex];
 
-		// 	subMesh.updateBoundingInfo(localWorld, this._scaleFactor);
-		// }
+			subMesh.updateBoundingInfo(localWorld, this._scaleFactor);
+		}
 	}
 
 	return localWorld;
@@ -236,24 +243,6 @@ Mesh.prototype._createGlobalSubMesh = function () {
 
 	this.subMeshes = [];
 	return new SubMesh(0, 0, this._totalVertices, 0, this._indices.length, this);
-};
-
-
-Mesh.prototype.subdivide = function(count) {
-	if (count < 1) {
-		return;
-	}
-	
-	var subdivisionSize = this._indices.length / count;
-	var offset = 0;
-	
-	this.subMeshes = [];
-	for (var index = 0; index < count; index++)
-	{
-		SubMesh.CreateFromIndices(0, offset, Math.min(subdivisionSize, this._indices.length - offset), this);
-
-		offset += subdivisionSize;
-	}
 };
 
 Mesh.prototype.setVertices = function (vertices, uvCount, updatable) {
@@ -427,3 +416,31 @@ Mesh.CreateSphere = function (name, segments, diameter, scene, updatable) {
 	return sphere;
 };
 
+// Plane
+Mesh.CreatePlane = function (name, size, scene, updatable) {
+	var plane = new Mesh(name, [3, 3, 2], scene);
+
+	var indices = [];
+	var vertices = [];
+
+	// Vertices
+	var halfSize = size / 2.0;
+	vertices.push(-halfSize, -halfSize, 0, 0, 0, -1.0, 0.0, 0.0);
+	vertices.push(halfSize, -halfSize, 0, 0, 0, -1.0, 1.0, 0.0);
+	vertices.push(halfSize, halfSize, 0, 0, 0, -1.0, 1.0, 1.0);
+	vertices.push(-halfSize, halfSize, 0, 0, 0, -1.0, 0.0, 1.0);
+
+	// Indices
+	indices.push(0);
+	indices.push(1);
+	indices.push(2);
+
+	indices.push(0);
+	indices.push(2);
+	indices.push(3);
+
+	plane.setVertices(vertices, 1, updatable);
+	plane.setIndices(indices);
+
+	return plane;
+};

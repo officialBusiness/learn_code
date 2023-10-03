@@ -16,6 +16,8 @@
 
 			var engine = new BABYLON.Engine(canvas, true);
 
+			window.engine = engine;
+
 			BABYLON.Engine.ShadersRepository = '../Babylon/Shaders/';
 
 			var CreateScene = function (engine) {
@@ -26,8 +28,12 @@
 
 				camera.attachControl(canvas);
 
-				var mesh = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
-				// var mesh = BABYLON.Mesh.CreatePlane("Plane", 2, scene, true);
+				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
+
+				var plane = BABYLON.Mesh.CreatePlane("Plane", 2, scene, true);
+
+				plane.position.y += 3;
+
 				var material = new BABYLON.StandardMaterial("kosh", scene);
 				// material.bumpTexture = new BABYLON.Texture("../Assets/normalMap.jpg", scene);
 				material.emissiveColor = new BABYLON.Color3(1, 0, 0);
@@ -41,7 +47,7 @@
 				material.emissiveColor.g = 0.2;
 				material.emissiveColor.b = 0.2;
 
-				mesh.material = material;
+				sphere.material = material;
 
 				return scene;
 			};
