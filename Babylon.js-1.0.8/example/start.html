@@ -10,7 +10,7 @@
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-			import * as BABYLON from '../Babylon.module.learn/BABYLON.js';
+			import * as BABYLON from '../Babylon.module/BABYLON.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -18,7 +18,7 @@
 
 			window.engine = engine;
 
-			BABYLON.Engine.ShadersRepository = '../Babylon/Shaders/';
+			BABYLON.Engine.ShadersRepository = '../Babylon.module/Shaders/';
 
 			var CreateScene = function (engine) {
 				var scene = new BABYLON.Scene(engine);
@@ -30,22 +30,26 @@
 
 				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
 
-				var plane = BABYLON.Mesh.CreatePlane("Plane", 4, scene, true);
+				// var plane = BABYLON.Mesh.CreatePlane("Plane", 4, scene, true);
 
-				plane.position.y += 3;
+				// plane.position.y += 3;
 
 				var material = new BABYLON.StandardMaterial("kosh", scene);
-				// material.bumpTexture = new BABYLON.Texture("../Assets/normalMap.jpg", scene);
-				material.emissiveColor = new BABYLON.Color3(1, 0, 0);
-				material.backFaceCulling = true;
+				material.bumpTexture = new BABYLON.Texture("../Assets/normalMap.jpg", scene);
+				// material.emissiveColor = new BABYLON.Color3(1, 0, 0);
+				material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+				// material.backFaceCulling = true;
 
-		    var light0 = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(0, 10, 10), scene);
-		    light0.diffuse = new BABYLON.Color3(1, 0, 0);
-		    light0.specular = new BABYLON.Color3(1, 0, 0);
+		    var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(20, 100, 2), scene);
 
-				material.emissiveColor.r = 0.2;
-				material.emissiveColor.g = 0.2;
-				material.emissiveColor.b = 0.2;
+		    // var light0 = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(0, 10, 10), scene);
+
+		    // light0.diffuse = new BABYLON.Color3(1, 0, 0);
+		    // light0.specular = new BABYLON.Color3(1, 0, 0);
+
+				// material.emissiveColor.r = 0.2;
+				// material.emissiveColor.g = 0.2;
+				// material.emissiveColor.b = 0.2;
 
 				sphere.material = material;
 
