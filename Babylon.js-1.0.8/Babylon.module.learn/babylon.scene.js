@@ -46,21 +46,6 @@ Scene.prototype.getActiveVertices = function () {
 	return this._activeVertices;
 };
 
-Scene.prototype.getTotalVertices = function () {
-	return this._totalVertices;
-};
-
-// Ready
-Scene.prototype.isReady = function () {
-	for (var index = 0; index < this.materials.length; index++) {
-		if (!this.materials[index].isReady()) {
-			return false;
-		}
-	}
-
-	return true;
-};
-
 // Matrix
 Scene.prototype.getViewMatrix = function () {
 	return this._viewMatrix;
@@ -88,8 +73,6 @@ Scene.prototype._evaluateActiveMeshes = function () {
 	this._opaqueSubMeshes = [];
 	this._transparentSubMeshes = [];
 	this._alphaTestSubMeshes = [];
-	this._processedMaterials = [];
-	this._renderTargets = [];
 
 	var frustumPlanes = Frustum.GetPlanes(this._transformMatrix);
 

@@ -30,7 +30,7 @@
 
 				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
 
-				var plane = BABYLON.Mesh.CreatePlane("Plane", 2, scene, true);
+				var plane = BABYLON.Mesh.CreatePlane("Plane", 4, scene, true);
 
 				plane.position.y += 3;
 
@@ -53,6 +53,8 @@
 			};
 
 			const scene = CreateScene(engine);
+
+			window.scene = scene;
 
 			engine.runRenderLoop(()=>{
 				scene.render();

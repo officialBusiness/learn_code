@@ -1,6 +1,13 @@
 import BoundingInfo from '../Culling/babylon.boundingInfo.js';
 
-export default function SubMesh(materialIndex, verticesStart, verticesCount, indexStart, indexCount, mesh) {
+export default function SubMesh(
+	materialIndex,
+	verticesStart,
+	verticesCount,
+	indexStart,
+	indexCount,
+	mesh
+) {
 	this._mesh = mesh;
 	mesh.subMeshes.push(this);
 	this.materialIndex = materialIndex;

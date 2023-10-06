@@ -176,34 +176,6 @@ Mesh.prototype.computeWorldMatrix = function () {
 	// Billboarding
 	var matTranslation = Matrix.Translation(this.position.x, this.position.y, this.position.z);
 
-	if (this.billboardMode !== Mesh.BILLBOARDMODE_NONE) {
-		var localPosition = this.position.clone();
-		var zero = this._scene.activeCamera.position.clone();
-
-		if (this.parent) {
-			localPosition = localPosition.add(this.parent.position);
-			matTranslation = Matrix.Translation(localPosition.x, localPosition.y, localPosition.z);
-		}
-
-		if (this.billboardMode & Mesh.BILLBOARDMODE_ALL === Mesh.BILLBOARDMODE_ALL) {
-			zero = this._scene.activeCamera.position;
-		} else {
-			if (this.billboardMode & Mesh.BILLBOARDMODE_X)
-				zero.x = localPosition.x + Engine.epsilon;
-			if (this.billboardMode & Mesh.BILLBOARDMODE_Y)
-				zero.y = localPosition.y + Engine.epsilon;
-			if (this.billboardMode & Mesh.BILLBOARDMODE_Z)
-				zero.z = localPosition.z + Engine.epsilon;
-		}
-
-		var matBillboard = Matrix.LookAtLH(localPosition, zero, Vector3.Up());
-		matBillboard.m[12] = matBillboard.m[13] = matBillboard.m[14] = 0;
-
-		matBillboard.invert();
-
-		localWorld = Matrix.RotationY(Math.PI).multiply(localWorld.multiply(matBillboard));
-	}
-
 	localWorld = localWorld.multiply(matTranslation);
 
 	// Parent
