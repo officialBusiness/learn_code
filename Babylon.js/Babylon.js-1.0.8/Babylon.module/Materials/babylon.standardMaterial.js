@@ -1,10 +1,10 @@
 import { Color3, Vector3 } from '../Tools/babylon.math.js';
 import Material from './babylon.material.js';
 import Scene from '../babylon.scene.js';
-import SpotLight from '../Light/babylon.spotLight.js';
-import HemisphericLight from '../Light/babylon.hemisphericLight.js';
-import PointLight from '../Light/babylon.pointLight.js';
-import DirectionalLight from '../Light/babylon.directionalLight.js';
+import SpotLight from '../Lights/babylon.spotLight.js';
+import HemisphericLight from '../Lights/babylon.hemisphericLight.js';
+import PointLight from '../Lights/babylon.pointLight.js';
+import DirectionalLight from '../Lights/babylon.directionalLight.js';
 
 export default function StandardMaterial(name, scene) {
 	this.name = name;
