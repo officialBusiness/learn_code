@@ -1,109 +1,142 @@
 var BABYLON = BABYLON || {};
 
 (function () {
+	BABYLON.Scene = function (engine) {
+		this._engine = engine;
+		this.autoClear = true;
 
-	BABYLON.Engine = function (canvas, antialias) {
-	    this._renderingCanvas = canvas;
+		this.clearColor = new BABYLON.Color3(0.2, 0.2, 0.3);
+		this.ambientColor = new BABYLON.Color3(0, 0, 0);
 
-	    // GL
-	    try {
-	        this._gl = canvas.getContext("webgl", { antialias: antialias }) || canvas.getContext("experimental-webgl", { antialias: antialias });
-	    } catch (e) {
-	        throw new Error("WebGL not supported");
-	    }
+		engine.scenes.push(this);
 
-	    if (this._gl === undefined) {
-	        throw new Error("WebGL not supported");
-	    }
+		// Cameras
+		this.cameras = [];
+		this.activeCamera = null;
 
-	    // Options
-	    this.forceWireframe = false;
-	    this.cullBackFaces = true;
+		// Meshes
+		this.meshes = [];
+		this._activeMeshes = [];
 
-	    // Scenes
-	    this.scenes = [];
+		// Materials
+		this.materials = [];
+		this.multiMaterials = [];
+		this.defaultMaterial = new BABYLON.StandardMaterial("default material", this);
 
-	    // Textures
-	    this._workingCanvas = document.createElement("canvas");
-	    this._workingContext = this._workingCanvas.getContext("2d");
+	}
 
-	    // Viewport
-	    this._hardwareScalingLevel = 1.0 / window.devicePixelRatio || 1.0;
-	    this.resize();
-
-	    // Caps
-	    this._caps = {};
-	    this._caps.maxTexturesImageUnits = this._gl.getParameter(this._gl.MAX_TEXTURE_IMAGE_UNITS);
-	    this._caps.maxTextureSize = this._gl.getParameter(this._gl.MAX_TEXTURE_SIZE);
-	    this._caps.maxCubemapTextureSize = this._gl.getParameter(this._gl.MAX_CUBE_MAP_TEXTURE_SIZE);
-	    this._caps.maxRenderTextureSize = this._gl.getParameter(this._gl.MAX_RENDERBUFFER_SIZE);
-
-	    // Extensions
-	    var derivatives = this._gl.getExtension('OES_standard_derivatives');
-	    this._caps.standardDerivatives = (derivatives !== undefined);
-
-	    // Cache
-	    this._loadedTexturesCache = [];
-	    this._activeTexturesCache = [];
-	    this._buffersCache = {
-	        vertexBuffer: null,
-	        indexBuffer: null
-	    };
-	    this._currentEffect = null;
-	    this._currentState = {
-	        culling: null
-	    };
-
-	    this._compiledEffects = {};
-
-	    this._gl.enable(this._gl.DEPTH_TEST);
-	    this._gl.depthFunc(this._gl.LEQUAL);
-
-	    // Fullscreen
-	    this.isFullscreen = false;
-	    var that = this;
-	    document.addEventListener("fullscreenchange", function () {
-	        that.isFullscreen = document.fullscreen;
-	    }, false);
-
-	    document.addEventListener("mozfullscreenchange", function () {
-	        that.isFullscreen = document.mozFullScreen;
-	    }, false);
-
-	    document.addEventListener("webkitfullscreenchange", function () {
-	        that.isFullscreen = document.webkitIsFullScreen;
-	    }, false);
-
-	    document.addEventListener("msfullscreenchange", function () {
-	        that.isFullscreen = document.msIsFullScreen;
-	    }, false);
+	// Properties
+	BABYLON.Scene.prototype.getEngine = function () {
+		return this._engine;
 	};
 
-	BABYLON.Engine.prototype.runRenderLoop = function (renderFunction) {
-	    this._runningLoop = true;
-	    var that = this;
 
-	    var loop = function () {
-	        // Start new frame
-	        that.beginFrame();
 
-	        renderFunction();
-
-	        // Present
-	        that.endFrame();
-
-	        if (that._runningLoop) {
-	            // Register new frame
-	            BABYLON.Tools.QueueNewFrame(loop);
-	        }
-	    };
-
-	    BABYLON.Tools.QueueNewFrame(loop);
+	BABYLON.Scene.prototype.getTransformMatrix = function () {
+		return this._transformMatrix;
 	};
-	
-    BABYLON.Engine.prototype.resize = function () {
-        this._renderingCanvas.width = this._renderingCanvas.clientWidth / this._hardwareScalingLevel;
-        this._renderingCanvas.height = this._renderingCanvas.clientHeight / this._hardwareScalingLevel;
-        this._aspectRatio = this._renderingCanvas.width / this._renderingCanvas.height;
-    };
+
+	BABYLON.Scene.prototype.setTransformMatrix = function (
+		view,
+		projection
+	) {
+		this._viewMatrix = view;
+		this._projectionMatrix = projection;
+
+		this._transformMatrix = this._viewMatrix.multiply(this._projectionMatrix);
+	};
+
+	// Methods
+
+	BABYLON.Scene.prototype._evaluateActiveMeshes = function () {
+		this._activeMeshes = [];
+		this._opaqueSubMeshes = [];
+		this._transparentSubMeshes = [];
+		this._alphaTestSubMeshes = [];
+		this._processedMaterials = [];
+		this._renderTargets = [];
+		this._activeParticleSystems = [];
+
+		this._totalVertices = 0;
+		this._activeVertices = 0;
+
+		// meshes
+		for (var meshIndex = 0; meshIndex < this.meshes.length; meshIndex++) {
+			var mesh = this.meshes[meshIndex];
+
+			this._totalVertices += mesh.getTotalVertices();
+
+			// if (!mesh.isReady()) {
+			// 	continue;
+			// }
+
+			mesh.computeWorldMatrix();
+
+			for (var subIndex = 0; subIndex < mesh.subMeshes.length; subIndex++) {
+				var subMesh = mesh.subMeshes[subIndex];
+
+				if (mesh.subMeshes.length == 1) {
+					var material = subMesh.getMaterial();
+
+					if (this._activeMeshes.indexOf(mesh) === -1) {
+						this._activeMeshes.push(mesh);
+					}
+
+					if (material) {
+						// Dispatch
+						// if (material.needAlphaBlending() || mesh.visibility < 1.0) { // Transparent
+						// 	if (material.alpha > 0 || mesh.visibility < 1.0) {
+						// 		this._transparentSubMeshes.push(subMesh); // Opaque
+						// 	}
+						// } else if (material.needAlphaTesting()) { // Alpha test
+						// 	this._alphaTestSubMeshes.push(subMesh);
+						// } else {
+							this._opaqueSubMeshes.push(subMesh);
+						// }
+					}
+				}
+			}
+		}
+	};
+
+  BABYLON.Scene.prototype._localRender = function (opaqueSubMeshes, alphaTestSubMeshes, transparentSubMeshes, activeMeshes) {
+    var engine = this._engine;
+    // Opaque
+    var subIndex;
+    var submesh;
+    for (subIndex = 0; subIndex < opaqueSubMeshes.length; subIndex++) {
+      submesh = opaqueSubMeshes[subIndex];
+      this._activeVertices += submesh.verticesCount;
+
+      submesh.render();
+    }
+	};
+
+	BABYLON.Scene.prototype.render = function () {
+		var engine = this._engine;
+
+		// Camera
+		if (!this.activeCamera){
+			throw new Error("Active camera not set");
+		}
+
+		this.setTransformMatrix(
+			this.activeCamera.getViewMatrix(),
+			this.activeCamera.getProjectionMatrix()
+		);
+
+
+		this._evaluateActiveMeshes();
+
+		engine.clear(this.clearColor, this.autoClear, true);
+
+		// Render
+		this._localRender(this._opaqueSubMeshes, this._alphaTestSubMeshes, this._transparentSubMeshes);
+
+    // Update camera
+    this.activeCamera._update();
+
+	}
+
+
 })();

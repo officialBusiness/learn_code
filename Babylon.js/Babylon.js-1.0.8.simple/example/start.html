@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<title>start</title>
+		<link href="./default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<body>
+		<script src="../src/Math/babylon.color3.js"></script>
+		<script src="../src/Math/babylon.frustum.js"></script>
+		<script src="../src/Math/babylon.matrix.js"></script>
+		<script src="../src/Math/babylon.plane.js"></script>
+		<script src="../src/Math/babylon.quaternion.js"></script>
+		<script src="../src/Math/babylon.vector2.js"></script>
+		<script src="../src/Math/babylon.vector3.js"></script>
+
+		<script src="../src/Tools/babylon.tools.js"></script>
+
+		<script src="../src/Cameras/babylon.camera.js"></script>
+		<script src="../src/Cameras/babylon.arcRotateCamera.js"></script>
+
+		<script src="../src/Materials/babylon.effect.js"></script>
+		<script src="../src/Materials/babylon.material.js"></script>
+		<script src="../src/Materials/babylon.standardMaterial.js"></script>
+
+		<script src="../src/Mesh/babylon.mesh.js"></script>
+		<script src="../src/Mesh/babylon.subMesh.js"></script>
+
+		<script src="../src/babylon.engine.js"></script>
+		<script src="../src/babylon.scene.js"></script>
+
+		<canvas id="renderCanvas"></canvas>
+		<script type="text/javascript">
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			BABYLON.Engine.ShadersRepository = '../src/Shaders/';
+
+			var CreateScene = function (engine) {
+				var scene = new BABYLON.Scene(engine);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+
+				camera.setPosition(new BABYLON.Vector3(-5, 5, 0));
+				// camera.attachControl(canvas);
+
+				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 3, scene);
+
+				var material = new BABYLON.StandardMaterial("kosh", scene);
+
+				sphere.material = material;
+
+				return scene;
+			}
+
+			const scene = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+				scene.render();
+			});
+
+		</script>
+	</body>
+</html>
