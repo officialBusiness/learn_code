@@ -10,6 +10,9 @@ var BABYLON = BABYLON || {};
 
 		engine.scenes.push(this);
 
+		// Lights
+		this.lights = [];
+
 		// Cameras
 		this.cameras = [];
 		this.activeCamera = null;
@@ -29,8 +32,6 @@ var BABYLON = BABYLON || {};
 	BABYLON.Scene.prototype.getEngine = function () {
 		return this._engine;
 	};
-
-
 
 	BABYLON.Scene.prototype.getTransformMatrix = function () {
 		return this._transformMatrix;
@@ -99,7 +100,12 @@ var BABYLON = BABYLON || {};
 		}
 	};
 
-  BABYLON.Scene.prototype._localRender = function (opaqueSubMeshes, alphaTestSubMeshes, transparentSubMeshes, activeMeshes) {
+  BABYLON.Scene.prototype._localRender = function (
+  	opaqueSubMeshes,
+  	alphaTestSubMeshes,
+  	transparentSubMeshes,
+  	activeMeshes
+  ) {
     var engine = this._engine;
     // Opaque
     var subIndex;

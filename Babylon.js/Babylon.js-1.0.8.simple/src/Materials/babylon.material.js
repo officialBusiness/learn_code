@@ -9,8 +9,10 @@ var BABYLON = BABYLON || {};
 		scene.materials.push(this);
 	};
 
-	BABYLON.Material.prototype.backFaceCulling = true;
+	BABYLON.Material.prototype.alpha = 1.0;
 	BABYLON.Material.prototype.wireframe = false;
+	BABYLON.Material.prototype.backFaceCulling = true;
+	BABYLON.Material.prototype._effect = null;
 
 	BABYLON.Material.prototype.getEffect = function () {
 		return this._effect;
@@ -21,7 +23,5 @@ var BABYLON = BABYLON || {};
 
 		engine.enableEffect(this._effect);
 		engine.setState(this.backFaceCulling);
-
 	}
-
 })();

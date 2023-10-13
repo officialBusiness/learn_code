@@ -345,6 +345,8 @@ var BABYLON = BABYLON || {};
 		}
 	}
 
+	// Statics
+	BABYLON.Engine.ShadersRepository = "Babylon/Shaders/";
 
 
 

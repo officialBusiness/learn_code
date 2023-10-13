@@ -33,4 +33,21 @@ var BABYLON = BABYLON || {};
 		this.alpha = Math.atan(radiusv3.z / radiusv3.x);
 		this.beta = Math.acos(radiusv3.y / this.radius);
 	};
+
+	BABYLON.ArcRotateCamera.prototype.getViewMatrix = function () {
+		// Compute
+		if (this.beta > Math.PI)
+			this.beta = Math.PI;
+
+		if (this.beta <= 0)
+			this.beta = 0.01;
+
+		var cosa = Math.cos(this.alpha);
+		var sina = Math.sin(this.alpha);
+		var cosb = Math.cos(this.beta);
+		var sinb = Math.sin(this.beta);
+
+		this.position = this.target.add(new BABYLON.Vector3(this.radius * cosa * sinb, this.radius * cosb, this.radius * sina * sinb));
+		return new BABYLON.Matrix.LookAtLH(this.position, this.target, BABYLON.Vector3.Up());
+	};
 })();

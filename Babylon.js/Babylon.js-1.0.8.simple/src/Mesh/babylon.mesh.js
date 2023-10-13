@@ -29,6 +29,8 @@ var BABYLON = BABYLON || {};
 
 	}
 
+	BABYLON.Mesh.prototype.visibility = 1.0;
+
   // Properties
 
 	BABYLON.Mesh.prototype.getWorldMatrix = function () {
