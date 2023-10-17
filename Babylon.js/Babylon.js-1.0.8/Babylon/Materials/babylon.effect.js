@@ -1,8 +1,11 @@
 ﻿var BABYLON = BABYLON || {};
 
 (function () {
+    BABYLON.Effect = function (
+        baseName,
+        attributesNames, uniformsNames,
+        samplers, engine, defines) {
 
-    BABYLON.Effect = function (baseName, attributesNames, uniformsNames, samplers, engine, defines) {
         this._engine = engine;
         this.name = baseName;
         this.defines = defines;
@@ -14,7 +17,11 @@
 
         // Is in local store ?
         if (BABYLON.Effect.ShadersStore[baseName + "VertexShader"]) {
-            this._prepareEffect(BABYLON.Effect.ShadersStore[baseName + "VertexShader"], BABYLON.Effect.ShadersStore[baseName + "PixelShader"], attributesNames, defines);
+            this._prepareEffect(
+                BABYLON.Effect.ShadersStore[baseName + "VertexShader"],
+                BABYLON.Effect.ShadersStore[baseName + "PixelShader"],
+                attributesNames, defines
+            );
         } else {
             var shaderUrl = BABYLON.Engine.ShadersRepository + baseName;
             // Vertex shader
@@ -23,10 +30,12 @@
                     // Fragment shader
                     BABYLON.Tools.LoadFile(shaderUrl + ".fragment.fx",
                         function(fragmentSourceCode) {
-                            that._prepareEffect(vertexSourceCode, fragmentSourceCode, attributesNames, defines);
+                            that._prepareEffect(
+                                vertexSourceCode, fragmentSourceCode,
+                                attributesNames, defines
+                            );
                         });
-                }
-            );
+                });
         }
         
         // Cache
@@ -63,12 +72,22 @@
     };
     
     // Methods
-    BABYLON.Effect.prototype._prepareEffect = function (vertexSourceCode, fragmentSourceCode, attributesNames, defines) {
+    BABYLON.Effect.prototype._prepareEffect = function (
+        vertexSourceCode, fragmentSourceCode,
+        attributesNames, defines) {
         var engine = this._engine;
-        this._program = engine.createShaderProgram(vertexSourceCode, fragmentSourceCode, defines);
+        this._program = engine.createShaderProgram(
+                            vertexSourceCode,
+                            fragmentSourceCode,
+                            defines
+                        );
 
-        this._uniforms = engine.getUniforms(this._program, this._uniformsNames);
-        this._attributes = engine.getAttributes(this._program, attributesNames);
+        this._uniforms = engine.getUniforms(
+                        this._program, this._uniformsNames
+                        );
+        this._attributes = engine.getAttributes(
+                        this._program, attributesNames
+                        );
 
         for (var index = 0; index < this._samplers.length; index++) {
             var sampler = this.getUniform(this._samplers[index]);

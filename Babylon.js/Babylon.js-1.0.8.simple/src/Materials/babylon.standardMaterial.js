@@ -24,8 +24,30 @@ var BABYLON = BABYLON || {};
 
 		var defines = [];
 
-		var attribs = ['position', 'normal'];
+		var lightIndex = 0;
+		for (var index = 0; index < this._scene.lights.length; index++) {
+			var light = this._scene.lights[index];
 
+			if (!light.isEnabled) {
+				continue;
+			}
+
+			defines.push("#define LIGHT" + lightIndex);
+
+			if (light instanceof BABYLON.SpotLight) {
+				defines.push("#define SPOTLIGHT" + lightIndex);
+			} else if (light instanceof BABYLON.HemisphericLight) {
+				defines.push("#define HEMILIGHT" + lightIndex);
+			} else {
+				defines.push("#define POINTDIRLIGHT" + lightIndex);
+			}
+
+			lightIndex++;
+			if (lightIndex == 4)
+				break;
+		}
+
+		var attribs = ['position', 'normal'];
 		if( mesh ){
 			switch( mesh.uvCount ){
 				case 1:
@@ -78,6 +100,42 @@ var BABYLON = BABYLON || {};
 		this._effect.setColor4("vDiffuseColor", baseColor, this.alpha * mesh.visibility);
 		this._effect.setColor4("vSpecularColor", this.specularColor, this.specularPower);
 		this._effect.setColor3("vEmissiveColor", this.emissiveColor);
+
+
+		var lightIndex = 0;
+		for (var index = 0; index < this._scene.lights.length; index++) {
+			var light = this._scene.lights[index];
+
+			if (!light.isEnabled) {
+				continue;
+			}
+
+			if (light instanceof BABYLON.PointLight) {
+				// Point Light
+				this._effect.setFloat4("vLightData" + lightIndex, light.position.x, light.position.y, light.position.z, 0);
+			} else if (light instanceof BABYLON.DirectionalLight) {
+				// Directional Light
+				this._effect.setFloat4("vLightData" + lightIndex, light.direction.x, light.direction.y, light.direction.z, 1);
+			} else if (light instanceof BABYLON.SpotLight) {
+				// Spot Light
+				this._effect.setFloat4("vLightData" + lightIndex, light.position.x, light.position.y, light.position.z, light.exponent);
+				var normalizeDirection = BABYLON.Vector3.Normalize(light.direction);
+				this._effect.setFloat4("vLightDirection" + lightIndex, normalizeDirection.x, normalizeDirection.y, normalizeDirection.z, Math.cos(light.angle * 0.5));
+			} else if (light instanceof BABYLON.HemisphericLight) {
+				// Hemispheric Light
+				var normalizeDirection = BABYLON.Vector3.Normalize(light.direction);
+				this._effect.setFloat4("vLightData" + lightIndex, normalizeDirection.x, normalizeDirection.y, normalizeDirection.z, 0);
+				this._effect.setColor3("vLightGround" + lightIndex, light.groundColor.scale(light.intensity));
+			}
+			this._effect.setColor3("vLightDiffuse" + lightIndex, light.diffuse.scale(light.intensity));
+			this._effect.setColor3("vLightSpecular" + lightIndex, light.specular.scale(light.intensity));
+
+			lightIndex++;
+
+			if (lightIndex == 4)
+				break;
+		}
+
 	}
 
 

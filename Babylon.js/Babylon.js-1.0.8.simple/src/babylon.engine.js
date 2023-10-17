@@ -312,6 +312,14 @@ var BABYLON = BABYLON || {};
 	  this._gl.uniform3f(uniform, vector3.x, vector3.y, vector3.z);
 	};
 
+  BABYLON.Engine.prototype.setFloat4 = function (uniform, x, y, z, w) {
+    if (!uniform){
+      return;
+    }
+
+    this._gl.uniform4f(uniform, x, y, z, w);
+  };
+
   BABYLON.Engine.prototype.setColor3 = function (uniform, color3) {
     if (!uniform){
       return;
@@ -348,6 +356,8 @@ var BABYLON = BABYLON || {};
 	// Statics
 	BABYLON.Engine.ShadersRepository = "Babylon/Shaders/";
 
+  BABYLON.Engine.epsilon = 0.001;
+  BABYLON.Engine.collisionsEpsilon = 0.001;
 
 
 })();

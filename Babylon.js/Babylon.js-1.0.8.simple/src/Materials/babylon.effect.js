@@ -15,23 +15,31 @@ var BABYLON = BABYLON || {};
 
 		var that = this;
 
-		if( BABYLON.Effect.ShadersStore[baseName + "VectexShader"] ){
 
+		if( BABYLON.Effect.ShadersStore[baseName + "VectexShader"] ){
+			this._prepareEffect(
+				BABYLON.Effect.ShadersStore[baseName + "VertexShader"],
+				BABYLON.Effect.ShadersStore[baseName + "PixelShader"],
+				attributesNames, defines
+			);
 		}else{
 			var shaderUrl = BABYLON.Engine.ShadersRepository + baseName;
 			// Vertex shader
 			BABYLON.Tools.LoadFile(shaderUrl + '.vertex.fx',
 				function(vertexSourceCode){
 					//Fragment shader
-					BABYLON.Tools.LoadFile(shaderUrl + '.fragment.fx', function(fragmentSourceCode){
-						that._prepareEffect(
-							vertexSourceCode, fragmentSourceCode,
-							attributesNames, defines
-						);
-					});
+					BABYLON.Tools.LoadFile(shaderUrl + '.fragment.fx',
+						function(fragmentSourceCode){
+							that._prepareEffect(
+								vertexSourceCode, fragmentSourceCode,
+								attributesNames, defines
+							);
+						});
 				});
 		}
 
+		// Cache
+		this._valueCache = [];
 	};
 
 	//Properties
@@ -51,6 +59,10 @@ var BABYLON = BABYLON || {};
 		return this._attributes.length;
 	};
 
+	BABYLON.Effect.prototype.getUniformIndex = function (uniformName) {
+    return this._uniformsNames.indexOf(uniformName);
+	};
+
 	BABYLON.Effect.prototype.getUniform = function (uniformName){
 		return this._uniforms[this._uniformsNames.indexOf(uniformName)];
 	}
@@ -58,11 +70,11 @@ var BABYLON = BABYLON || {};
 	// Methods
 	BABYLON.Effect.prototype._prepareEffect = function (
 		vertexSourceCode, fragmentSourceCode,
-		attributesNames, defines
-	){
+		attributesNames, defines){
 		var engine = this._engine;
 		this._program = engine.createShaderProgram(
-											vertexSourceCode, fragmentSourceCode,
+											vertexSourceCode,
+											fragmentSourceCode,
 											defines
 										);
 
@@ -92,28 +104,38 @@ var BABYLON = BABYLON || {};
 		uniformName, matrix
 	){
 
-		this._engine.setMatrix(this.getUniform(uniformName), matrix);
+		this._engine.setMatrix(
+			this.getUniform(uniformName), matrix);
 	}
 
 	BABYLON.Effect.prototype.setVector3 = function (
 		uniformName, vector3
 	){
 
-    this._engine.setVector3(this.getUniform(uniformName), vector3);
+    this._engine.setVector3(
+    	this.getUniform(uniformName), vector3);
 	}
+
+  BABYLON.Effect.prototype.setFloat4 = function (uniformName, x, y, z, w) {
+
+    this._engine.setFloat4(
+    	this.getUniform(uniformName), x, y, z, w);
+  };
 
 	BABYLON.Effect.prototype.setColor3 = function (
 		uniformName, color3
 	){
 
-		this._engine.setColor3(this.getUniform(uniformName), color3);
+		this._engine.setColor3(
+			this.getUniform(uniformName), color3);
 	}
 
 	BABYLON.Effect.prototype.setColor4 = function (
 		uniformName, color3, alpha
 	){
 
-		this._engine.setColor4(this.getUniform(uniformName), color3, alpha);
+		this._engine.setColor4(
+			this.getUniform(uniformName), color3, alpha);
 	}
 
 	// Statics

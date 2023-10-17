@@ -36,7 +36,10 @@
 	};
 
 	BABYLON.Camera.prototype.getProjectionMatrix = function () {
-		return new BABYLON.Matrix.PerspectiveFovLH(this.fov, this._scene.getEngine().getAspectRatio(), this.minZ, this.maxZ);
+		return new BABYLON.Matrix.PerspectiveFovLH(
+			this.fov, this._scene.getEngine().getAspectRatio(),
+			this.minZ, this.maxZ
+		);
 	};
 
 })();
