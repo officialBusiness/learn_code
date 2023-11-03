@@ -126,7 +126,7 @@
         canvas.addEventListener("pointermove", this._onPointerMove);
         window.addEventListener("keydown", this._onKeyDown, true);
         window.addEventListener("keyup", this._onKeyUp, true);
-        window.addEventListener('mousewheel', this._wheel);
+        window.addEventListener('mousewheel', this._wheel, { passive: false });
         window.addEventListener("blur", this._onLostFocus, true);
     };
     
@@ -137,7 +137,7 @@
         canvas.removeEventListener("pointermove", this._onPointerMove);
         window.removeEventListener("keydown", this._onKeyDown);
         window.removeEventListener("keyup", this._onKeyUp);
-        window.removeEventListener('mousewheel', this._wheel);
+        window.removeEventListener('mousewheel', this._wheel, { passive: false });
         window.removeEventListener("blur", this._onLostFocus);
     };
 

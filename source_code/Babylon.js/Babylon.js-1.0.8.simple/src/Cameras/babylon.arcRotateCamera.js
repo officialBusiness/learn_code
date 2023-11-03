@@ -62,14 +62,14 @@ var BABYLON = BABYLON || {};
       var offsetX = evt.clientX - previousPosition.x;
       var offsetY = evt.clientY - previousPosition.y;
 
-      console.log('offsetX:', offsetX);
-      console.log('offsetY:', offsetY);
+      // console.log('offsetX:', offsetX);
+      // console.log('offsetY:', offsetY);
 
       that.inertialAlphaOffset -= offsetX / 1000;
       that.inertialBetaOffset -= offsetY / 1000;
 
-      console.log('inertialAlphaOffset:', that.inertialAlphaOffset);
-      console.log('inertialBetaOffset:', that.inertialBetaOffset);
+      // console.log('inertialAlphaOffset:', that.inertialAlphaOffset);
+      // console.log('inertialBetaOffset:', that.inertialBetaOffset);
 
       previousPosition = {
         x: evt.clientX,
