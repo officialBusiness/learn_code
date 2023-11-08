@@ -26,45 +26,8 @@
 		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingSphere.js"></script>
-		<style type="text/css">
-			.canvasContainer{
-				width: 300px;
-				height: 300px;
-			}
-		</style>
 	</head>
-	<!-- 基本的创建引擎、场景、相机、几何体，展示黑色模型。
-	可供调试参数
-		Engine.prototype.forceWireframe
-			被引用
-				Engine.prototype.clear
-				Mesh.prototype.render
-
-	主要涉及对象及参数
-		Engine
-
-			Engine.ShadersRepository
-
-			runRenderLoop
-
-		Scene
-
-			render
-
-		ArcRotateCamera
-
-		Mesh
-			CreateBox
-			CreateSphere
-			CreatePlane
-			CreateGround
-			CreateGroundFromHeightMap
-
-				setVertices
-
-				setIndices
-
-	-->
+	<!-- 简单的使用 box 实现坐标轴的效果-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
@@ -89,42 +52,40 @@
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
 
-
 				createAxesBox(scene);
-
 
 				return scene;
 			}
 
 
-			function createAxesBox(scene, size = 10){
+			function createAxesBox(scene, length = 10, size = 1){
 
-				var boxO = BABYLON.Mesh.CreateBox("boxO", 1, scene);
+				var boxO = BABYLON.Mesh.CreateBox("boxO", size, scene);
 
 				var boxOMat = new BABYLON.StandardMaterial('boxO', scene);
 				boxOMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
 				boxO.material = boxOMat;
 
 
-				var boxR = BABYLON.Mesh.CreateBox("boxR", 1, scene);
+				var boxR = BABYLON.Mesh.CreateBox("boxR", size, scene);
 
-				boxR.position.x = size;
+				boxR.position.x = length;
 				var boxRMat = new BABYLON.StandardMaterial('boxR', scene);
 				boxRMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
 				boxR.material = boxRMat;
 
 
-				var boxG = BABYLON.Mesh.CreateBox("boxG", 1, scene);
+				var boxG = BABYLON.Mesh.CreateBox("boxG", size, scene);
 
-				boxG.position.y = size;
+				boxG.position.y = length;
 				var boxGMat = new BABYLON.StandardMaterial('boxG', scene);
 				boxGMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
 				boxG.material = boxGMat;
 
 
-				var boxB = BABYLON.Mesh.CreateBox("boxB", 1, scene);
+				var boxB = BABYLON.Mesh.CreateBox("boxB", size, scene);
 
-				boxB.position.z = size;
+				boxB.position.z = length;
 				var boxBMat = new BABYLON.StandardMaterial('boxB', scene);
 				boxBMat.emissiveColor = new BABYLON.Color3(0, 0, 1);
 				boxB.material = boxBMat;

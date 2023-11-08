@@ -26,12 +26,6 @@
 		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingSphere.js"></script>
-		<style type="text/css">
-			.canvasContainer{
-				width: 300px;
-				height: 300px;
-			}
-		</style>
 	</head>
 	<!-- 基本的创建引擎、场景、相机、几何体，展示黑色模型。
 	可供调试参数
@@ -89,10 +83,10 @@
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
 
-				var plane = BABYLON.Mesh.CreateBox("Box", 5, scene);
+				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);
 
-				plane.position.x = 5;
-				plane.position.y = 5;
+				box.position.x = 5;
+				box.position.y = 5;
 
 				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 5, scene);
 
@@ -110,7 +104,7 @@
 				ground.position.y = -5;
 
 
-				var ground = BABYLON.Mesh.CreateGroundFromHeightMap("Ground",
+				var groundHeightMat = BABYLON.Mesh.CreateGroundFromHeightMap("Ground",
 						"../../../assets/heightMap.png",
 						// "../../../assets/logo1.jpg",
 						// "../../../assets/logo.jpeg",
