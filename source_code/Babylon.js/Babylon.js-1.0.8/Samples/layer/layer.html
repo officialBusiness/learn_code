@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" type="image/png" href="../../../favicon.ico">
+		<title>layer</title>
+		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../Babylon/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../Babylon/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../Babylon/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../Babylon/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../Babylon/Tools/babylon.math.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../Babylon/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../Babylon/Materials/babylon.standardMaterial.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../Babylon/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../Babylon/Materials/textures/babylon.videoTexture.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Layer/babylon.layer.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Tools/babylon.tools.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../Babylon/Mesh/babylon.subMesh.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../Babylon/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../Babylon/Sprites/babylon.sprite.js"></script>
+		<script type="text/javascript" src="../../Babylon/Sprites/babylon.spriteManager.js"></script>
+	</head>
+	<!-- 简单展示 layer 案例效果 -->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
+
+			// 强制绘制线
+			// engine.forceWireframe = true;
+
+			BABYLON.Engine.ShadersRepository = '../../Babylon/Shaders/';
+
+			var CreateScene = function (engine) {
+
+				var scene = new BABYLON.Scene(engine);
+
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 50, BABYLON.Vector3.Zero(), scene);
+
+				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
+				camera.attachControl(canvas);
+
+		    // Backgrounds
+		    var background0 = new BABYLON.Layer("back0", "../../../assets/Layer0_0.png", scene);
+		    var background1 = new BABYLON.Layer("back1", "../../../assets/Layer1_0.png", scene);
+		    var foreground = new BABYLON.Layer("back0", "../../../assets/Layer2_0.png", scene, true, new BABYLON.Color4(1, 0, 0, 1));
+
+
+
+				return { scene, background0 };
+			}
+
+
+			const { scene, background0 } = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+				scene.render();
+
+        // Background
+        background0.texture.uOffset += 0.001;
+			});
+
+		</script>
+	</body>
+</html>
