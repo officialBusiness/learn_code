@@ -5,8 +5,10 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../../favicon.ico">
-		<title>video_texture</title>
+		<title>dynamic_texture</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../../Babylon/Tools/babylon.tools.js"></script>
 
 		<script type="text/javascript" src="../../../Babylon/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../../Babylon/babylon.scene.js"></script>
@@ -21,9 +23,8 @@
 		<script type="text/javascript" src="../../../Babylon/Materials/textures/babylon.baseTexture.js"></script>
 		<script type="text/javascript" src="../../../Babylon/Materials/textures/babylon.texture.js"></script>
 		<script type="text/javascript" src="../../../Babylon/Materials/textures/babylon.videoTexture.js"></script>
-
-
-		<script type="text/javascript" src="../../../Babylon/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../../Babylon/Materials/textures/babylon.cubeTexture.js"></script>
+		<script type="text/javascript" src="../../../Babylon/Materials/textures/babylon.dynamicTexture.js"></script>
 
 		<script type="text/javascript" src="../../../Babylon/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../../../Babylon/Mesh/babylon.subMesh.js"></script>
@@ -32,7 +33,7 @@
 		<script type="text/javascript" src="../../../Babylon/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../../Babylon/Culling/babylon.boundingSphere.js"></script>
 	</head>
-	<!-- 简单实现视频纹理的播放 -->
+	<!-- 简单展示 standard 上的纹理贴图 -->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
@@ -40,6 +41,8 @@
 			const canvas = document.getElementById('renderCanvas');
 
 			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
 
 			// 强制绘制线
 			// engine.forceWireframe = true;
@@ -59,37 +62,47 @@
 
 				var boxMat = new BABYLON.StandardMaterial('Box', scene);
 
-				// boxMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-				// boxMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
-				const videoTexture = new BABYLON.VideoTexture(
-					"VideoTexture",
-					["../../../../assets/sintel.mp4"],
-					256,
-					scene,
-					true
-				);
-
-
-				boxMat.emissiveTexture = videoTexture;
+				boxMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+				boxMat.emissiveColor = new BABYLON.Color3(0.2, 0, 0);
 
 				box.material = boxMat;
 
-				return scene;
+				var texture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+
+				boxMat.emissiveTexture = texture;
+
+				return { scene, texture };
 			}
 
-			function init(){
+			const { scene, texture } = CreateScene(engine);
 
-				const scene = CreateScene(engine);
+	    var startDate = new Date(),
+	    		count = 0;
 
-				engine.runRenderLoop(()=>{
-					scene.render();
-				});
+			engine.runRenderLoop(()=>{
+				scene.render();
 
+        var diff = (new Date() - startDate);
 
-				window.removeEventListener('mousedown', init)
-			}
+        if (diff > 200) {
+            startDate = new Date();
 
-			window.addEventListener('mousedown', init)
+            var textureContext = texture.getContext();
+            var size = texture.getSize();
+            var text = count.toString();
+
+            textureContext.clearRect(0, 0, size.width, size.height);
+
+            textureContext.font = "bold 120px Calibri";
+            var textSize = textureContext.measureText(text);
+            textureContext.fillStyle = "white";
+            textureContext.fillText(text, (size.width - textSize.width) / 2, (size.height - 120) / 2);
+
+            texture.update();
+
+            count++;
+        }
+			});
 
 		</script>
 	</body>
