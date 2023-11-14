@@ -36,7 +36,10 @@
 		<script type="text/javascript" src="../../Babylon/Sprites/babylon.sprite.js"></script>
 		<script type="text/javascript" src="../../Babylon/Sprites/babylon.spriteManager.js"></script>
 	</head>
-	<!-- 简单展示 layer 案例效果 -->
+	<!-- 简单展示 layer 案例效果
+		遗留问题: 在 layer.vertex.fx 中把 gl_Position 的 z 值改为 1 或者 -1，都没覆盖效果，不太清楚，根据需要加强对相机举证变换的理解
+
+	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
@@ -62,15 +65,50 @@
 				camera.attachControl(canvas);
 
 		    // Backgrounds
-		    var background0 = new BABYLON.Layer("back0", "../../../assets/Layer0_0.png", scene);
-		    var background1 = new BABYLON.Layer("back1", "../../../assets/Layer1_0.png", scene);
-		    var foreground = new BABYLON.Layer("back0", "../../../assets/Layer2_0.png", scene, true, new BABYLON.Color4(1, 0, 0, 1));
+		    var background0 = new BABYLON.Layer(
+		    	"back0", "../../../assets/Layer0_0.png",
+		    	scene, true, new BABYLON.Color4(1, 1, 1, 1));
+		    // var background1 = new BABYLON.Layer("back1", "../../../assets/Layer1_0.png", scene);
+		    // var foreground = new BABYLON.Layer("back0", "../../../assets/Layer2_0.png", scene, true, new BABYLON.Color4(1, 0, 0, 1));
 
+				createAxesBox(scene);
 
 
 				return { scene, background0 };
 			}
 
+			function createAxesBox(scene, length = 10, size = 1){
+
+				var boxO = BABYLON.Mesh.CreateBox("boxO", size, scene);
+
+				var boxOMat = new BABYLON.StandardMaterial('boxO', scene);
+				boxOMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+				boxO.material = boxOMat;
+
+
+				var boxR = BABYLON.Mesh.CreateBox("boxR", size, scene);
+
+				boxR.position.x = length;
+				var boxRMat = new BABYLON.StandardMaterial('boxR', scene);
+				boxRMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
+				boxR.material = boxRMat;
+
+
+				var boxG = BABYLON.Mesh.CreateBox("boxG", size, scene);
+
+				boxG.position.y = length;
+				var boxGMat = new BABYLON.StandardMaterial('boxG', scene);
+				boxGMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
+				boxG.material = boxGMat;
+
+
+				var boxB = BABYLON.Mesh.CreateBox("boxB", size, scene);
+
+				boxB.position.z = length;
+				var boxBMat = new BABYLON.StandardMaterial('boxB', scene);
+				boxBMat.emissiveColor = new BABYLON.Color3(0, 0, 1);
+				boxB.material = boxBMat;
+			}
 
 			const { scene, background0 } = CreateScene(engine);
 
@@ -78,7 +116,7 @@
 				scene.render();
 
         // Background
-        background0.texture.uOffset += 0.001;
+        // background0.texture.uOffset += 0.001;
 			});
 
 		</script>
