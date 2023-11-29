@@ -59,16 +59,30 @@
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
 
+				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);
 
 		    // Sprites
-		    var spriteManager = new BABYLON.SpriteManager("MonsterA", "../../../assets/logo.jpeg", 500, 64, scene);
-		    for (var index = 0; index < 500; index++) {
+		    const
+		    	count = 10,
+		    	// url = "../../../assets/Player.png",
+		    	// cellSize = 64
+		    	url = "../../../assets/logo.jpeg",
+		    	cellSize = 1200
+		    	;
+		    var spriteManager = new BABYLON.SpriteManager(
+		    	"MonsterA",
+		    	url,
+		    	count,
+		    	cellSize,
+		    	scene);
+		    for (var index = 0; index < count; index++) {
 		        var sprite = new BABYLON.Sprite("toto", spriteManager);
 		        sprite.position.y = -4.5;
 		        sprite.position.z = Math.random() * 20 - 10;
 		        sprite.position.x = Math.random() * 20 - 10;
 		        // sprite.dir = Math.round(Math.random()) * 2 - 1;
-		        sprite.invertU = (sprite.dir < 0);
+		        sprite.invertU = (Math.round(Math.random()) * 2 - 1 < 0);
+		        // sprite.angle = Math.PI / 3;
 
 		        // sprite.playAnimation(0, 9, true, 100);
 
@@ -80,6 +94,13 @@
 
 
 			const scene = CreateScene(engine);
+
+			// window.scene = scene;
+			// window.engine = engine;
+
+			// engine.beginFrame();
+			// scene.render();
+			// engine.endFrame();
 
 			engine.runRenderLoop(()=>{
 				scene.render();
