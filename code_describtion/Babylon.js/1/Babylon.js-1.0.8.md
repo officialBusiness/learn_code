@@ -7,6 +7,14 @@
 3. setTransformMatrix
 4. \_animate
 5. \_evaluateActiveMeshes
+	>1. \_activeMeshes.push
+	>2. \_processedMaterials.push
+	>3. \_renderTargets.concat
+	>4. \_transparentSubMeshes.push
+	>5. \_alphaTestSubMeshes.push
+	>6. \_opaqueSubMeshes.push
+	>7. \_activeParticleSystems.push
+	>8. particleSystem.animate
 6. renderTarget.render
 7. engine.restoreDefaultFramebuffer, engine.clear
 8. layer.render (Backgrounds)
