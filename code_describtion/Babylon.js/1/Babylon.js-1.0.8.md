@@ -1,6 +1,77 @@
 # Babylon.js-1.0.8.md
 
-## scene render
+&emsp;一份比较简单的代码说明，不是很规范，更多是模糊的感觉。
+
+## engine
+
+* createVertexBuffer
+	>* gl.createBuffer
+	>* gl.bindBuffer
+	>* gl.bufferData
+
+* createDynamicVertexBuffer
+	>* gl.createBuffer
+	>* gl.bindBuffer
+	>* gl.bufferData
+
+* updateDynamicVertexBuffer
+	>* gl.bindBuffer
+	>* gl.bufferSubData
+
+* createIndexBuffer
+	>* gl.createBuffer
+	>* gl.bindBuffer
+	>* gl.bufferData
+
+* bindBuffers
+	>* gl.bindBuffer
+	>* effect.getAttribute
+	>* gl.vertexAttribPointer
+
+* createEffect
+	>* \_compiledEffects
+	>* new BABYLON.Effect
+
+* compileShader
+	>* gl.createShader
+	>* gl.shaderSource
+	>* gl.compileShader
+	>* gl.getShaderParameter
+	>* gl.getShaderInfoLog
+
+* createShaderProgram
+	>* gl.createProgram
+	>* gl.attachShader
+	>* gl.linkProgram
+	>* gl.deleteShader
+
+* getUniforms
+	>* gl.getUniformLocation
+
+* getAttributes
+	>* gl.getAttribLocation
+
+* enableEffect
+	>* gl.useProgram
+	>* gl.enableVertexAttribArray
+
+* createTexture
+	>* gl.createTexture
+	>* gl.bindTexture
+	>* gl.pixelStorei
+	>* gl.texImage2D
+	>* gl.texParameteri
+	>* gl.generateMipmap
+
+* bindSamplers
+	>* gl.useProgram
+	>* effect.getSamplers
+	>* effect.getUniform
+	>* gl.uniform1i
+
+## Scene
+
+### render
 
 1. beforeRender
 2. \_onBeforeRenderCallbacks
@@ -29,15 +100,20 @@
 12. afterRender
 13. dispose
 
-### renderTarget render
+## Effect
 
-### mesh render
+* defines 、 \_uniformsNames 、 \_samplers
+* Tools.LoadFile
+* \_prepareEffect
 
-### layer render
+### \_prepareEffect
 
-### sprite render
+* \_program = engine.createShaderProgram
+* \_uniforms = engine.getUniforms
+* \_attributes = engine.getAttributes
+* getUniform
+* engine.bindSamplers
 
-### particle render
 
 ## Texture
 ```
@@ -49,3 +125,7 @@ BABYLON.BaseTexture
 			├──BABYLON.RenderTargetTexture: createRenderTargetTexture
 					├──BABYLON.MirrorTexture: createRenderTargetTexture
 ```
+
+## Layer
+
+### render
