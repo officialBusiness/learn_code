@@ -102,7 +102,7 @@
 
 ## Effect
 
-* defines 、 \_uniformsNames 、 \_samplers
+* defines , \_uniformsNames , \_samplers
 * Tools.LoadFile
 * \_prepareEffect
 
@@ -111,9 +111,8 @@
 * \_program = engine.createShaderProgram
 * \_uniforms = engine.getUniforms
 * \_attributes = engine.getAttributes
-* getUniform
+* getUniform(清除不需要的 sampler)
 * engine.bindSamplers
-
 
 ## Texture
 ```
@@ -128,4 +127,44 @@ BABYLON.BaseTexture
 
 ## Layer
 
-### render
+### 渲染流程
+
+1. new BABYLON.Layer
+	>* new BABYLON.Texture
+	>* scene.getEngine().createVertexBuffe
+	>* scene.getEngine().createIndexBuffer
+	>* scene.getEngine().createEffect
+2. scene.render => layer.render
+	>* engine.enableEffect
+	>* effect.setTexture ; effect.setMatrix ; effect.setFloat4
+	>* engine.bindBuffers
+	>* engine.draw
+
+## SpriteManager
+
+### 渲染流程
+
+## ParticleSystem
+
+1. new BABYLON.ParticleSystem
+	>* scene.getEngine().createDynamicVertexBuffer
+	>* scene.getEngine().createIndexBuffer
+	>* new BABYLON.Texture
+	>* particleSystem.start
+2. scene.render => \_evaluateActiveMeshes => \_activeParticleSystems.push ; particleSystem.animate
+	>* \_getEffect: scene.getEngine().createEffect
+	>* \_update
+	>* appendParticleVertex ; engine.updateDynamicVertexBuffer
+3. scene.render => \_localRender => particleSystem.render
+	>* engine.enableEffect
+	>* effect.setTexture ; effect.setMatrix ; effect.setFloat4 ; effect.setFloat4
+	>*  engine.bindBuffers
+	>* engine.setAlphaMode ; engine.draw
+
+### 渲染流程
+
+## Mesh
+
+### 渲染流程
+
+
