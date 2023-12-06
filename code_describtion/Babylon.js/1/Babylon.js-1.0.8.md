@@ -87,7 +87,7 @@
 	>7. \_activeParticleSystems.push
 	>8. particleSystem.animate
 6. renderTarget.render
-7. engine.restoreDefaultFramebuffer, engine.clear
+7. engine.restoreDefaultFramebuffer ; engine.clear
 8. layer.render (Backgrounds)
 9. \_localRender
 	>1. submesh.render (opaqueSubMeshes)
@@ -144,7 +144,25 @@ BABYLON.BaseTexture
 
 ### 渲染流程
 
+1. new BABYLON.SpriteManager
+	>* new BABYLON.Texture
+	>* scene.getEngine().createDynamicVertexBuffer
+	>* scene.getEngine().createIndexBuffer
+	>* scene.getEngine().createEffect
+	>* new BABYLON.Sprite ; sprite.playAnimation
+2. scene.render => \_localRender => spriteManager.render
+	>* sprite.\_animate
+	>* appendSpriteVertex
+	>* engine.updateDynamicVertexBuffer
+	>* engine.enableEffect
+	>* setTexture ; setMatrix ; setVector2 ; setFloat4 ; setColor3
+	>* engine.bindBuffers
+	>* effect.setBool ; engine.setColorWrite ; engine.draw
+	>* engine.setAlphaMode ; engine.draw
+
 ## ParticleSystem
+
+### 渲染流程
 
 1. new BABYLON.ParticleSystem
 	>* scene.getEngine().createDynamicVertexBuffer
@@ -158,10 +176,8 @@ BABYLON.BaseTexture
 3. scene.render => \_localRender => particleSystem.render
 	>* engine.enableEffect
 	>* effect.setTexture ; effect.setMatrix ; effect.setFloat4 ; effect.setFloat4
-	>*  engine.bindBuffers
+	>* engine.bindBuffers
 	>* engine.setAlphaMode ; engine.draw
-
-### 渲染流程
 
 ## Mesh
 
