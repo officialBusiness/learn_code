@@ -604,27 +604,10 @@
     BABYLON.Engine.prototype.updateVideoTexture = function (texture, video) {
         this._gl.bindTexture(this._gl.TEXTURE_2D, texture);
         this._gl.pixelStorei(this._gl.UNPACK_FLIP_Y_WEBGL, false);
-
-        // Scale the video if it is a NPOT
-        if (video.videoWidth !== texture._width || video.videoHeight !== texture._height) {
-            if (!texture._workingCanvas) {
-                texture._workingCanvas = document.createElement("canvas");
-                texture._workingContext = texture._workingCanvas.getContext("2d");
-                texture._workingCanvas.width = texture._width;
-                texture._workingCanvas.height = texture._height;
-            }
-
-            texture._workingContext.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, texture._width, texture._height);
-
-            this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, texture._workingCanvas);
-        } else {
-            this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, video);
-        }
-
-        if (texture.generateMipMaps) {
+        this._gl.texImage2D(this._gl.TEXTURE_2D, 0, this._gl.RGBA, this._gl.RGBA, this._gl.UNSIGNED_BYTE, video);
+        if (!texture.noMipmap) {
             this._gl.generateMipmap(this._gl.TEXTURE_2D);
         }
-
         this._gl.bindTexture(this._gl.TEXTURE_2D, null);
         this._activeTexturesCache = [];
         texture.isReady = true;

@@ -1,8 +1,4 @@
-﻿#ifdef GL_ES
-precision mediump float;
-#endif
-
-#define MAP_EXPLICIT	0.
+﻿#define MAP_EXPLICIT	0.
 #define MAP_SPHERICAL	1.
 #define MAP_PLANAR		2.
 #define MAP_CUBIC		3.
