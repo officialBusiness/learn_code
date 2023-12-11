@@ -1,6 +1,11 @@
 ﻿var BABYLON = BABYLON || {};
 
 (function () {
+
+    var isIE = function() {
+        return window.ActiveXObject !== undefined;
+    };
+    
     BABYLON.StandardMaterial = function (name, scene) {
         this.name = name;
         this.id = name;
@@ -157,7 +162,7 @@
             
             // IE patch
             var shaderName = "default";
-            if (window.ActiveXObject !== undefined) {
+            if (isIE()) {
                 shaderName = "iedefault";
             }
 
