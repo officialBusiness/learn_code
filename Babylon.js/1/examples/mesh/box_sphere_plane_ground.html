@@ -8,6 +8,8 @@
 		<title>box_sphere_plane_ground</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
+		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+
 		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
 		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
@@ -17,8 +19,6 @@
 		<script type="text/javascript" src="../../source/Materials/babylon.effect.js"></script>
 		<script type="text/javascript" src="../../source/Materials/babylon.material.js"></script>
 		<script type="text/javascript" src="../../source/Materials/babylon.standardMaterial.js"></script>
-
-		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
 
 		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
@@ -53,11 +53,11 @@
 			CreatePlane
 			CreateGround
 			CreateGroundFromHeightMap
+			CreateCylinder
 
 				setVertices
 
 				setIndices
-
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -90,13 +90,13 @@
 
 				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 5, scene);
 
-				sphere.position.x = -5;
+				sphere.position.x = 0;
 				sphere.position.y = 5;
 
 				var plane = BABYLON.Mesh.CreatePlane("Plane", 5, scene);
 
 				plane.position.x = -5;
-				plane.position.y = -5;
+				plane.position.y = 5;
 
 				var ground = BABYLON.Mesh.CreateGround("Ground", 5, 5, 3, scene);
 
@@ -104,11 +104,19 @@
 				ground.position.y = -5;
 
 
-				var groundHeightMat = BABYLON.Mesh.CreateGroundFromHeightMap("Ground",
+				var groundHeightMap = BABYLON.Mesh.CreateGroundFromHeightMap("Ground",
 						"../assets/heightMap.png",
 						// "../assets/logo1.jpg",
 						// "../assets/logo.jpeg",
 						5, 5, 100, -2, 2, scene);
+
+				groundHeightMap.position.x = 0;
+				groundHeightMap.position.y = -5;
+
+				var clinder = BABYLON.Mesh.CreateCylinder("Cylinder", 5, 2, 32, scene);
+
+				clinder.position.x = -5;
+				clinder.position.y = -5;
 
 				return scene;
 			}
