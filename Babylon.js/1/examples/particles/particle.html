@@ -34,7 +34,9 @@
 		<script type="text/javascript" src="../../source/Particles/babylon.particle.js"></script>
 		<script type="text/javascript" src="../../source/Particles/babylon.particleSystem.js"></script>
 	</head>
-	<!-- 简单展示粒子案例(没理解) -->
+	<!-- 简单展示粒子案例有些理解了
+		精灵的原理就是 mvp 矩阵中，只传入 mp 矩阵，在 ParticleSystem 中就是将传入的 projection 的值是 getProjectionMatrix 和 getTransformMatrix 的区别
+	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
