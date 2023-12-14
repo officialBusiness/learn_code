@@ -55,22 +55,22 @@ function getMathPlaneVertices(mathPlane){
 
 	// Vertices
 	vertices.push(
-		lbX, lbY, (d - a * lbX - b * lbY) / c,
+		lbX, lbY, (-d - a * lbX - b * lbY) / c,
 		a, b, c,
 		0, 0
 	);
 	vertices.push(
-		rbX, rbY, (d - a * rbX - b * rbY) / c,
+		rbX, rbY, (-d - a * rbX - b * rbY) / c,
 		a, b, c,
 		0, 0
 	);
 	vertices.push(
-		rtX, rtY, (d - a * rtX - b * rtY) / c,
+		rtX, rtY, (-d - a * rtX - b * rtY) / c,
 		a, b, c,
 		0, 0
 	);
 	vertices.push(
-		ltX, ltY, (d - a * ltX - b * ltY) / c,
+		ltX, ltY, (-d - a * ltX - b * ltY) / c,
 		a, b, c,
 		0, 0
 	);
