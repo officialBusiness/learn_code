@@ -1,6 +1,6 @@
 
 
-export default class CustomParticles{
+export default class SimpleParticles{
 
 	constructor(scene){
 
@@ -51,7 +51,7 @@ export default class CustomParticles{
 		// Effect
 		var join = defines.join("\n");
 
-		this._effect = this._scene.getEngine().createEffect("custom_particles",
+		this._effect = this._scene.getEngine().createEffect("simple_particles",
 				["position", "color", "options"],
 				["invView", "view", "projection", "vClipPlane", "textureMask"],
 				["diffuseSampler"], join);
