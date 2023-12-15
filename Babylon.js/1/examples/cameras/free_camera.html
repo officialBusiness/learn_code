@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" type="image/png" href="../../../favicon.ico">
+		<title>free_camera</title>
+		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.math.js"></script>
+
+		<script type="text/javascript" src="../../source/Collisions/babylon.collider.js"></script>
+
+		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.freeCamera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.touchCamera.js"></script>
+
+		<script type="text/javascript" src="../../source/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../source/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../source/Materials/babylon.standardMaterial.js"></script>
+
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
+
+		<script type="text/javascript" src="../../source/Layer/babylon.layer.js"></script>
+
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../source/Sprites/babylon.sprite.js"></script>
+		<script type="text/javascript" src="../../source/Sprites/babylon.spriteManager.js"></script>
+	</head>
+	<!-- 简单展示 FreeCamera 案例效果
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+			import createAxesBox from '../mesh/axes_box.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
+
+			// 强制绘制线
+			// engine.forceWireframe = true;
+
+			BABYLON.Engine.ShadersRepository = '../../source/Shaders/';
+
+			var CreateScene = function (engine) {
+
+				var scene = new BABYLON.Scene(engine);
+
+				var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 0, 0), scene);
+
+				camera.setTarget(new BABYLON.Vector3(0, 10, 0));
+				camera.attachControl(canvas);
+
+				createAxesBox(scene);
+
+				return scene;
+			}
+
+			const scene = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+
+				scene.render();
+			});
+		</script>
+	</body>
+</html>
