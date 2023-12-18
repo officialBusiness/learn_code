@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../favicon.ico">
-		<title>plane</title>
+		<title>math_plane_helper</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
@@ -83,6 +83,13 @@
 					scene,
 				);
 
+				// BABYLON.clipPlane = new BABYLON.Plane(
+				// 	mathPlane.a,
+				// 	mathPlane.b,
+				// 	mathPlane.c,
+				// 	mathPlane.d,
+				// );
+
 				initGui(mathPlane);
 
 				createAxesBox(scene);
@@ -99,18 +106,22 @@
 
         mathPlaneFolder.add( mathPlane, 'a', -10, 10 ).onChange((data)=>{
         	updateMathPlane(mathPlane);
+        	// BABYLON.clipPlane.normal.x =  mathPlane.a;
 	      });
 
         mathPlaneFolder.add( mathPlane, 'b', -10, 10 ).onChange((data)=>{
         	updateMathPlane(mathPlane);
+        	// BABYLON.clipPlane.normal.y =  mathPlane.b;
 	      });
 
         mathPlaneFolder.add( mathPlane, 'c', -10, 10 ).onChange((data)=>{
         	updateMathPlane(mathPlane);
+        	// BABYLON.clipPlane.normal.z =  mathPlane.c;
 	      });
 
         mathPlaneFolder.add( mathPlane, 'd', -10, 10 ).onChange((data)=>{
         	updateMathPlane(mathPlane);
+        	// BABYLON.clipPlane.d =  mathPlane.d;
 	      });
 
         mathPlaneFolder.add( mathPlane, 'ltX', -10, 10 ).onChange((data)=>{
