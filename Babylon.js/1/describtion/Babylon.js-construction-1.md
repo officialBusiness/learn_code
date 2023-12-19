@@ -2,7 +2,7 @@
 
 
 &emsp;一份比较简单的代码说明，不是很规范，更多是模糊的感觉。
-&emsp;适用版本 Babylon.js-1.0.8 到 Babylon.js-1.0.11
+&emsp;适用版本 Babylon.js-1.0.8 到 Babylon.js-1.1.0
 
 
 ## engine
@@ -89,19 +89,20 @@
 	>6. \_opaqueSubMeshes.push
 	>7. \_activeParticleSystems.push
 	>8. particleSystem.animate
-6. renderTarget.render
-7. engine.restoreDefaultFramebuffer ; engine.clear
-8. layer.render (Backgrounds)
-9. \_localRender
+6. \_renderTargets.push(shadowGenerator.getShadowMap());
+7. renderTarget.render
+8. engine.restoreDefaultFramebuffer ; engine.clear
+9. layer.render (Backgrounds)
+10. \_localRender
 	>1. submesh.render (opaqueSubMeshes)
 	>2. submesh.render (alphaTestSubMeshes)
 	>3. spriteManager.render
 	>4. submesh.render (transparentSubMeshes)
 	>5. particleSystem.render
-10. layer.render Foregrounds
-11. activeCamera.\_update
-12. afterRender
-13. dispose
+11. layer.render Foregrounds
+12. activeCamera.\_update
+13. afterRender
+14. dispose
 
 ## Effect
 

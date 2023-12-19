@@ -85,9 +85,9 @@
 
 * babylon.subMesh.js 添加 getMesh 函数
 
-* default.fragment.fx 移除了 SPOTLIGHT2 相关的 vLightDirection2
-
 * default.vertex.fx: 添加 SHADOWS 相关的代码， lightMatrix 和 vPositionFromLight
+
+* default.fragment.fx 移除了 SPOTLIGHT2 相关的 vLightDirection2
 
 * 添加 /Shaders/shadowMap.fragment.fx
 
