@@ -75,6 +75,13 @@ varying float fClipDistance;
 varying float fFogDistance;
 #endif
 
+#ifdef SHADOWS
+#ifdef LIGHT0
+uniform mat4 lightMatrix0;
+varying vec4 vPositionFromLight0;
+#endif
+#endif
+
 #ifdef REFLECTION
 vec3 computeReflectionCoords(float mode, vec4 worldPos, vec3 worldNormal)
 {
@@ -193,5 +200,12 @@ void main(void) {
 	// Fog
 #ifdef FOG
 	fFogDistance = (view * worldPos).z;
+#endif
+
+	// Shadows
+#ifdef SHADOWS
+#ifdef LIGHT0
+	vPositionFromLight0 = lightMatrix0 * vec4(position, 1.0);
+#endif
 #endif
 }

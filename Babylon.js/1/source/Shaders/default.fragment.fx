@@ -11,7 +11,6 @@ uniform vec4 vDiffuseColor;
 uniform vec4 vSpecularColor;
 uniform vec3 vEmissiveColor;
 
-
 // Input
 varying vec3 vPositionW;
 varying vec3 vNormalW;
@@ -45,9 +44,6 @@ uniform vec3 vLightGround1;
 uniform vec4 vLightData2;
 uniform vec3 vLightDiffuse2;
 uniform vec3 vLightSpecular2;
-#ifdef SPOTLIGHT2
-uniform vec4 vLightDirection2;
-#endif
 #ifdef HEMILIGHT2
 uniform vec3 vLightGround2;
 #endif

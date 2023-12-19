@@ -776,6 +776,9 @@
     };
 
     BABYLON.Engine.prototype.setTexture = function (channel, texture) {
+        if (channel < 0) {
+            return;
+        }
         if (!texture || !texture.isReady()) {
             if (this._activeTexturesCache[channel] != null) {
                 this._gl.activeTexture(this._gl["TEXTURE" + channel]);
