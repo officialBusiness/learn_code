@@ -237,9 +237,30 @@
 	>* 构造函数添加 \_vertices 属性
 	>* render 函数中代码根据 \_vertices 属性 , \_appendSpriteVertex 方法 , 对应 babylon.effect.js 中的 setFloat2 函数作一定修改
 
-<!--
+## Babylon.js-1.2.1:
 
-## Babylon.js-1.2.1
+* babylon.engine.js
+	>* 构造函数中修改全屏显示事件
+	>* switchFullscreen 函数更改传入参数, 添加 \_pointerLockRequested 属性
+
+* babylon.freeCamera.js attachControl 函数中代码根据 babylon.engine.js 中添加的 \_pointerLockRequested 属性作一定修改
+
+* babylon.standardMaterial.js: isReady 函数中纹理是否加载完成和添加相关 define 结合 ; 调整 attribs 内的属性名添加
+
+* babylon.mesh.js: setVertices 函数中添加 hasVertexColor 参数赋值到实例对象中
+
+* default.fragment.fx 中添加 VERTEXCOLOR 相关代码
+
+* default.vertex.fx 中添加 VERTEXCOLOR 相关代码
+
+* babylon.sceneLoader.js parseMesh 函数中调整 declaration 的赋值方式 ; mesh.setVertices 时添加 updatable 和 hasVertexColor 参数
+
+* 删除 babylon.tools.dds.js 文件
+
+* babylon.tools.js: 修改 RequestFullscreen 函数中的全屏方法名(好像是单纯大小写写错了)
+
+
+<!--
 
 ## Babylon.js-1.3.0
 
