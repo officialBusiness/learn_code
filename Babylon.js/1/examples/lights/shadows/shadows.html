@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" type="image/png" href="../../../../favicon.ico">
+		<title>shadows</title>
+		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
+
+		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
+
+		<script type="text/javascript" src="../../../source/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.standardMaterial.js"></script>
+
+		<script type="text/javascript" src="../../../source/Lights/Shadows/babylon.shadowGenerator.js"></script>
+
+		<script type="text/javascript" src="../../../source/Lights/babylon.light.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.directionalLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.hemisphericLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.pointLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.spotLight.js"></script>
+
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.cubeTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.dynamicTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.renderTargetTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.mirrorTexture.js"></script>
+
+		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
+
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
+	</head>
+	<!--
+		在光照的基础上添加了阴影相关的操作
+			目前只有 DirectionalLight 、 SpotLight 有阴影效果
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+			import createAxesBox from '../../mesh/helper/axes_box_helper.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
+
+			// 强制绘制线
+			// engine.forceWireframe = true;
+
+			BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
+
+			var CreateScene = function (engine) {
+
+				var scene = new BABYLON.Scene(engine);
+
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 600, BABYLON.Vector3.Zero(), scene);
+
+				camera.maxZ = 10000;
+
+				camera.setPosition(new BABYLON.Vector3(0, 0, 600));
+				camera.attachControl(canvas);
+
+				var light0 = new BABYLON.PointLight("light0",
+					new BABYLON.Vector3(0, 100, 0),
+				scene);
+				light0.isEnabled = false;
+				// light0.position.y = 100;
+
+		    var light1 = new BABYLON.DirectionalLight("light1",
+		    	new BABYLON.Vector3(1, -1, 1),
+		    scene);
+				// light1.isEnabled = false;
+
+		    light1.direction.x = 0;
+		    light1.direction.y = -0.5;
+		    light1.direction.z = 1.0;
+
+		    light1.position.x = 0;
+		    light1.position.y = 95;
+		    light1.position.z = -50;
+
+		    var light2 = new BABYLON.HemisphericLight("light2",
+		    	new BABYLON.Vector3(0, 1, 0),
+		    scene );
+				light2.isEnabled = false;
+
+		    var light3 = new BABYLON.SpotLight("light3",
+		    	new BABYLON.Vector3(0, 200, 100),
+		    	new BABYLON.Vector3(0.014, -1, 0),
+		    	Math.PI / 9 * 5,
+		    	1,
+		    	scene
+	    	);
+
+				light3.isEnabled = false;
+
+		    var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
+
+
+				initLightGui(light0, light1, light2, light3, shadowGenerator);
+
+
+				var ground = BABYLON.Mesh.CreateGround("Ground", 500, 500, 3, scene);
+
+		    ground.receiveShadows = true;
+
+				var groundMat = new BABYLON.StandardMaterial('ground', scene);
+
+				groundMat.diffuseTexture = new BABYLON.Texture(
+					'../../assets/Ground.jpg',
+					scene,
+				)
+
+				ground.material = groundMat;
+
+
+				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 20, scene);
+
+				sphere.position.y = 40;
+
+				var sphereMat = new BABYLON.StandardMaterial('Sphere', scene);
+
+				sphereMat.emissiveTexture = new BABYLON.Texture(
+					"../../assets/normalMap.jpg",
+					scene
+				);
+
+				sphere.material = sphereMat;
+
+        shadowGenerator.getShadowMap().renderList.push(sphere);
+
+				// createAxesBox(scene, 200, 10);
+
+				return scene;
+			}
+
+			function setLightShadow(light, shadow){
+				if( shadow._light ){
+					shadow._light._shadowGenerator = null;
+				}
+
+				if( light ){
+
+					light._shadowGenerator = shadow;
+					shadow._light = light;
+				}else{
+
+					shadow._light = null;
+				}
+			}
+
+			function initLightGui(
+				pointLight,
+				directionalLight,
+				hemisphericLight,
+				spotLight,
+				shadow,
+			){
+        const gui = new lil.GUI();
+
+        const pointFolder = gui.addFolder('PointLight');
+
+        pointFolder.add( pointLight, 'isEnabled' ).onChange((boolean)=>{
+
+        	if( boolean ){
+        		setLightShadow(pointLight, shadow)
+        	}else{
+        		setLightShadow(null, shadow)
+        	}
+        });;
+        pointFolder.add( pointLight.position, 'x', -500, 500 ).name('position.x');
+        pointFolder.add( pointLight.position, 'y', -500, 500 ).name('position.y');
+        pointFolder.add( pointLight.position, 'z', -500, 500 ).name('position.z');
+
+        pointFolder.addColor( pointLight, 'diffuse' );
+        pointFolder.addColor( pointLight, 'specular' );
+
+        const directionalFolder = gui.addFolder('DirectionalLight');
+
+        directionalFolder.add( directionalLight, 'isEnabled' ).onChange((boolean)=>{
+
+        	if( boolean ){
+        		setLightShadow(directionalLight, shadow)
+        	}else{
+        		setLightShadow(null, shadow)
+        	}
+        });
+        directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
+        directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
+        directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
+
+        directionalFolder.add( directionalLight.position, 'x', -500, 500 ).name('position.x');
+        directionalFolder.add( directionalLight.position, 'y', -500, 500 ).name('position.y');
+        directionalFolder.add( directionalLight.position, 'z', -500, 500 ).name('position.z');
+
+        directionalFolder.addColor( directionalLight, 'diffuse' );
+        directionalFolder.addColor( directionalLight, 'specular' );
+
+        const hemisphericFolder = gui.addFolder('HemisphericLight');
+
+        hemisphericFolder.add( hemisphericLight, 'isEnabled' ).onChange((boolean)=>{
+
+        	if( boolean ){
+        		setLightShadow(hemisphericLight, shadow)
+        	}else{
+        		setLightShadow(null, shadow)
+        	}
+        });;
+        hemisphericFolder.add( hemisphericLight.direction, 'x', -1, 1 ).name('direction.x');
+        hemisphericFolder.add( hemisphericLight.direction, 'y', -1, 1 ).name('direction.y');
+        hemisphericFolder.add( hemisphericLight.direction, 'z', -1, 1 ).name('direction.z');
+
+        hemisphericFolder.addColor( hemisphericLight, 'diffuse' );
+        hemisphericFolder.addColor( hemisphericLight, 'specular' );
+        hemisphericFolder.addColor( hemisphericLight, 'groundColor' );
+
+        const spotFolder = gui.addFolder('SpotLight');
+
+        spotFolder.add( spotLight, 'isEnabled' ).onChange((boolean)=>{
+
+        	if( boolean ){
+        		setLightShadow(spotLight, shadow)
+        	}else{
+        		setLightShadow(null, shadow)
+        	}
+        });;
+        spotFolder.add( spotLight.position, 'x', -500, 500 ).name('position.x');
+        spotFolder.add( spotLight.position, 'y', -500, 500 ).name('position.y');
+        spotFolder.add( spotLight.position, 'z', -500, 500 ).name('position.z');
+        spotFolder.add( spotLight.direction, 'x', -1, 1 ).name('direction.x');
+        spotFolder.add( spotLight.direction, 'y', -1, 1 ).name('direction.y');
+        spotFolder.add( spotLight.direction, 'z', -1, 1 ).name('direction.z');
+        spotFolder.add( spotLight, 'angle', -2 * Math.PI, 2 * Math.PI );
+        spotFolder.add( spotLight, 'exponent', -0.1, 500 );
+
+        spotFolder.addColor( spotLight, 'diffuse' );
+        spotFolder.addColor( spotLight, 'specular' );
+			}
+
+			const scene = CreateScene(engine);
+
+
+
+			engine.runRenderLoop(()=>{
+				scene.render();
+			});
+
+		</script>
+	</body>
+</html>

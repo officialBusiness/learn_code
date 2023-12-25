@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../../favicon.ico">
-		<title>simple_particles</title>
+		<title>box_sphere_plane_ground</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
@@ -20,10 +20,6 @@
 		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/babylon.standardMaterial.js"></script>
 
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
-
 		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
@@ -31,20 +27,12 @@
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
-
-		<script type="text/javascript" src="../../../source/Particles/babylon.particle.js"></script>
-		<script type="text/javascript" src="../../../source/Particles/babylon.particleSystem.js"></script>
 	</head>
-	<!-- 为了学习 ParticleSystem 仿写的一个简单案例
-
-		遗留问题:
-			将 particle.render() 放到 scene.render() 前就会渲染不出来被覆盖。根据需要加强对 webgl 渲染机制的了解
-	-->
+	<!-- 简单的使用 box 实现坐标轴的效果-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-
-			import SimpleParticles from './simple_particles.js';
+			import createAxesBox from './axes_box_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -55,6 +43,8 @@
 			// 强制绘制线
 			// engine.forceWireframe = true;
 
+			BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
+
 			var CreateScene = function (engine) {
 
 				var scene = new BABYLON.Scene(engine);
@@ -64,25 +54,15 @@
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
 
-				BABYLON.Engine.ShadersRepository = './';
-				var particle = new SimpleParticles(scene);
+				createAxesBox(scene);
 
-				particle.particleTexture = new BABYLON.Texture("../../assets/logo.jpeg", scene);
-
-				BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
-				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);
-
-				// var material = new BABYLON.StandardMaterial("boxMat", scene);
-
-				return { scene, particle };
+				return scene;
 			}
 
-			const { scene, particle } = CreateScene(engine);
+			const scene = CreateScene(engine);
 
 			engine.runRenderLoop(()=>{
-
 				scene.render();
-				particle.render();
 			});
 
 		</script>

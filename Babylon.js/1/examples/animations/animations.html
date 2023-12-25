@@ -5,10 +5,13 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../favicon.ico">
-		<title>particle</title>
+		<title>animations</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+
+		<script type="text/javascript" src="../../source/Animations/babylon.animatable.js"></script>
+		<script type="text/javascript" src="../../source/Animations/babylon.animation.js"></script>
 
 		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
@@ -24,19 +27,33 @@
 		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
 		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
 
+		<script type="text/javascript" src="../../source/Layer/babylon.layer.js"></script>
+
 		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
 
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
 
-		<script type="text/javascript" src="../../source/Particles/babylon.particle.js"></script>
-		<script type="text/javascript" src="../../source/Particles/babylon.particleSystem.js"></script>
+		<script type="text/javascript" src="../../source/Sprites/babylon.sprite.js"></script>
+		<script type="text/javascript" src="../../source/Sprites/babylon.spriteManager.js"></script>
+
+		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
-	<!-- 简单展示粒子案例有些理解了
-		精灵的原理就是 mvp 矩阵中，先将 view 矩阵乘初始位置矢量， 然后再加上每个顶点位置进行偏移，最后再乘以 p
+	<!--
+		简单实现了模型位置移动的动画效果
+			执行流程:
+				new 一个 Animation 对象， 然后设置 setKeys 设置关键帧，之后将实例对象放入目标动画数组中，最后调用 scene.beginAnimation 执行动画
+
+			根据相关源码 target 中需要有 animations 属性才会生成 , 如果有 getAnimatables 方法的话，就获取 animations 获取子属性的动画回调执行 beginAnimation。
+
+			Mesh 有 animations 和 getAnimatables 调用 material 动画 ;
+			StandardMaterial 有 getAnimatables 调用 diffuseTexture , ambientTexture , opacityTexture , reflectionTexture , emissiveTexture , specularTexture , bumpTexture 动画
+			Texture 有 animations
+			PointLight , DirectionalLight , HemisphericLight , SpotLight 有 animations
+			ArcRotateCamera , FreeCamera , TouchCamera 有 animations
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -57,36 +74,40 @@
 
 				var scene = new BABYLON.Scene(engine);
 
-				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 50, BABYLON.Vector3.Zero(), scene);
 
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
 
+
 				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);
 
-		    var material = new BABYLON.StandardMaterial("boxMat", scene);
+				var boxMat = new BABYLON.StandardMaterial('box', scene);
 
-		    // material.diffuseTexture = new BABYLON.Texture("../../../assets/logo.jpeg", scene);
-		    material.alpha = 0.5;
-		    material.backFaceCulling = false;
+				boxMat.emissiveTexture = new BABYLON.Texture(
+					'../assets/logo1.JPG',
+					scene,
+				)
 
-		    box.material = material;
+				box.material = boxMat;
 
-		    var particleSystem = new BABYLON.ParticleSystem("particles", 1, scene);
-		    particleSystem.particleTexture = new BABYLON.Texture("../assets/logo.jpeg", scene);
-		    particleSystem.minAngularSpeed = -0.5;
-		    particleSystem.maxAngularSpeed = 0.5;
-		    particleSystem.minSize = 0.5;
-		    particleSystem.maxSize = 2.0;
-		    particleSystem.minLifeTime = 0.5;
-		    particleSystem.maxLifeTime = 1.0;
-		    particleSystem.emitter = box;
-		    particleSystem.emitRate = 300;
-		    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-		    particleSystem.minEmitBox = new BABYLON.Vector3(0, 0.1, 0);
-		    particleSystem.maxEmitBox = new BABYLON.Vector3(0, -0.1, 0);
-		    particleSystem.gravity = new BABYLON.Vector3(0, -0.5, 0);
-		    particleSystem.start();
+				var animation = new BABYLON.Animation("box", "position", 60,
+					BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+					// BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+					// BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE
+				);
+
+				animation.setKeys([
+					{ frame: 1, value: new BABYLON.Vector3(0, 0, 0) },
+					{ frame: 100, value: new BABYLON.Vector3(0, 0, 50) }
+				]);
+
+				box.animations.push(animation);
+
+				scene.beginAnimation(
+					box,
+					0, 60, true, 1,
+				)
 
 				return scene;
 			}
@@ -94,9 +115,9 @@
 			const scene = CreateScene(engine);
 
 			engine.runRenderLoop(()=>{
+
 				scene.render();
 			});
-
 		</script>
 	</body>
 </html>

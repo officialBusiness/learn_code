@@ -30,8 +30,9 @@
 
 		<script type="text/javascript" src="../../source/Layer/babylon.layer.js"></script>
 
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
 
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
@@ -40,12 +41,13 @@
 		<script type="text/javascript" src="../../source/Sprites/babylon.sprite.js"></script>
 		<script type="text/javascript" src="../../source/Sprites/babylon.spriteManager.js"></script>
 	</head>
-	<!-- 简单展示 TouchCamera 案例效果
+	<!--
+		简单展示 TouchCamera 案例效果, 相关源码还未深入了解
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-			import createAxesBox from '../mesh/axes_box.js';
+			import createAxesBox from '../mesh/helper/axes_box_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
 

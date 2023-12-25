@@ -24,6 +24,7 @@
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
 
+		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
 
@@ -34,7 +35,7 @@
 		<script type="text/javascript" src="../../../source/Particles/babylon.particle.js"></script>
 		<script type="text/javascript" src="../../../source/Particles/babylon.particleSystem.js"></script>
 
-		<script src="https://cdn.jsdelivr.net/npm/lil-gui"></script>
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!-- 为了学习 ParticleSystem 仿写的一个简单案例
 
@@ -46,7 +47,7 @@
 		<script type="module">
 
 			import SimpleParticles from './simple_particles.js';
-			import { createMathPlane, updateMathPlane } from '../../mesh/plane_helper.js';
+			import { createMathPlane, updateMathPlane } from '../../mesh/helper/plane_helper.js';
 
 
 			const canvas = document.getElementById('renderCanvas');

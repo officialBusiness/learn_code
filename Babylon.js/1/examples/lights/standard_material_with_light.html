@@ -30,18 +30,25 @@
 		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
 		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
 
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
 
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lil-gui"></script>
+
+		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
-	<!-- 简单的展示了 standard 材质与 PointLight 、 DirectionalLight 、 HemisphericLight 、 SpotLight  光照的交互效果 -->
+	<!--
+		简单的展示了 standard 材质与 PointLight 、 DirectionalLight 、 HemisphericLight 、 SpotLight  光照的交互效果
+
+		添加了各个光照参数的 gui 操作
+	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
+			import createAxesBox from '../mesh/helper/axes_box_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -112,39 +119,6 @@
 				return scene;
 			}
 
-			function createAxesBox(scene, length = 10, size = 1){
-
-				var boxO = BABYLON.Mesh.CreateBox("boxO", size, scene);
-
-				var boxOMat = new BABYLON.StandardMaterial('boxO', scene);
-				boxOMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
-				boxO.material = boxOMat;
-
-
-				var boxR = BABYLON.Mesh.CreateBox("boxR", size, scene);
-
-				boxR.position.x = length;
-				var boxRMat = new BABYLON.StandardMaterial('boxR', scene);
-				boxRMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
-				boxR.material = boxRMat;
-
-
-				var boxG = BABYLON.Mesh.CreateBox("boxG", size, scene);
-
-				boxG.position.y = length;
-				var boxGMat = new BABYLON.StandardMaterial('boxG', scene);
-				boxGMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
-				boxG.material = boxGMat;
-
-
-				var boxB = BABYLON.Mesh.CreateBox("boxB", size, scene);
-
-				boxB.position.z = length;
-				var boxBMat = new BABYLON.StandardMaterial('boxB', scene);
-				boxBMat.emissiveColor = new BABYLON.Color3(0, 0, 1);
-				boxB.material = boxBMat;
-			}
-
 			function initLightGui(
 				pointLight,
 				directionalLight,
@@ -160,20 +134,33 @@
         pointFolder.add( pointLight.position, 'y', -500, 500 ).name('position.y');
         pointFolder.add( pointLight.position, 'z', -500, 500 ).name('position.z');
 
+        pointFolder.addColor( pointLight, 'diffuse' );
+        pointFolder.addColor( pointLight, 'specular' );
+
         const directionalFolder = gui.addFolder('DirectionalLight');
 
         directionalFolder.add( directionalLight, 'isEnabled' );
-        directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('position.x');
-        directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('position.y');
-        directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('position.z');
+        directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
+        directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
+        directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
 
+        directionalFolder.add( directionalLight.position, 'x', -500, 500 ).name('position.x');
+        directionalFolder.add( directionalLight.position, 'y', -500, 500 ).name('position.y');
+        directionalFolder.add( directionalLight.position, 'z', -500, 500 ).name('position.z');
+
+        directionalFolder.addColor( directionalLight, 'diffuse' );
+        directionalFolder.addColor( directionalLight, 'specular' );
 
         const hemisphericFolder = gui.addFolder('HemisphericLight');
 
         hemisphericFolder.add( hemisphericLight, 'isEnabled' );
-        hemisphericFolder.add( hemisphericLight.direction, 'x', -1, 1 ).name('position.x');
-        hemisphericFolder.add( hemisphericLight.direction, 'y', -1, 1 ).name('position.y');
-        hemisphericFolder.add( hemisphericLight.direction, 'z', -1, 1 ).name('position.z');
+        hemisphericFolder.add( hemisphericLight.direction, 'x', -1, 1 ).name('direction.x');
+        hemisphericFolder.add( hemisphericLight.direction, 'y', -1, 1 ).name('direction.y');
+        hemisphericFolder.add( hemisphericLight.direction, 'z', -1, 1 ).name('direction.z');
+
+        hemisphericFolder.addColor( hemisphericLight, 'diffuse' );
+        hemisphericFolder.addColor( hemisphericLight, 'specular' );
+        hemisphericFolder.addColor( hemisphericLight, 'groundColor' );
 
         const spotFolder = gui.addFolder('SpotLight');
 
@@ -186,6 +173,9 @@
         spotFolder.add( spotLight.direction, 'z', -1, 1 ).name('direction.z');
         spotFolder.add( spotLight, 'angle', -2 * Math.PI, 2 * Math.PI );
         spotFolder.add( spotLight, 'exponent', -0.1, 500 );
+
+        spotFolder.addColor( spotLight, 'diffuse' );
+        spotFolder.addColor( spotLight, 'specular' );
 			}
 
 			const scene = CreateScene(engine);

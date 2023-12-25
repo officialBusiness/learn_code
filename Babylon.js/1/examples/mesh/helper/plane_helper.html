@@ -4,40 +4,41 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" type="image/png" href="../../../favicon.ico">
-		<title>math_plane_helper</title>
-		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
+		<link rel="icon" type="image/png" href="../../../../favicon.ico">
+		<title>plane_helper</title>
+		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
 
-		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
-		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
-		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
-		<script type="text/javascript" src="../../source/Cameras/babylon.arcRotateCamera.js"></script>
-		<script type="text/javascript" src="../../source/Tools/babylon.math.js"></script>
+		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
 
-		<script type="text/javascript" src="../../source/Materials/babylon.effect.js"></script>
-		<script type="text/javascript" src="../../source/Materials/babylon.material.js"></script>
-		<script type="text/javascript" src="../../source/Materials/babylon.standardMaterial.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.standardMaterial.js"></script>
 
-		<script type="text/javascript" src="../../source/Materials/textures/babylon.baseTexture.js"></script>
-		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
-		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
 
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
-		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
 
-		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
-		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
-		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/lil-gui"></script>
+		<script type="text/javascript" src="../../../	libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!-- 简单的展示 math plane 效果 (在 custom_particles_clip_plane 的案例中感觉有点不准确)-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-			import createAxesBox from './axes_box.js';
+			import createAxesBox from './axes_box_helper.js';
 			import { createMathPlane, updateMathPlane } from './plane_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
@@ -49,7 +50,7 @@
 			// 强制绘制线
 			// engine.forceWireframe = true;
 
-			BABYLON.Engine.ShadersRepository = '../../source/Shaders/';
+			BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
 
 			var CreateScene = function (engine) {
 
@@ -70,7 +71,7 @@
 				planeMat.emissiveTexture = new BABYLON.Texture(
 					// '../assets/heightMap.png',
 					// "../assets/logo1.jpg",
-					"../assets/logo.jpeg",
+					"../../assets/logo.jpeg",
 					scene
 				);
 

@@ -30,8 +30,9 @@
 
 		<script type="text/javascript" src="../../source/Layer/babylon.layer.js"></script>
 
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
 
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
@@ -39,13 +40,16 @@
 
 		<script type="text/javascript" src="../../source/Sprites/babylon.sprite.js"></script>
 		<script type="text/javascript" src="../../source/Sprites/babylon.spriteManager.js"></script>
+
+		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
-	<!-- 简单展示 FreeCamera 案例效果
+	<!--
+		简单展示 FreeCamera 案例效果, 相关源码还未深入了解
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
-			import createAxesBox from '../mesh/axes_box.js';
+			import createAxesBox from '../mesh/helper/axes_box_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -62,14 +66,27 @@
 
 				var scene = new BABYLON.Scene(engine);
 
-				var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 0, 0), scene);
+				var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 0, 10), scene);
 
-				camera.setTarget(new BABYLON.Vector3(0, 10, 0));
+				camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 				camera.attachControl(canvas);
 
 				createAxesBox(scene);
 
+				const gui = new lil.GUI();
+
+				initFreeCameraGui(gui, camera);
+
 				return scene;
+			}
+
+			//以后有空深入了解源码再完善
+			function initFreeCameraGui(gui, camera){
+
+				const cameraFolder = gui.addFolder('FreeCamera');
+
+				cameraFolder.add( camera, 'applyGravity').name('applyGravity');
+				cameraFolder.add( camera, 'speed', 0, 10).name('speed');
 			}
 
 			const scene = CreateScene(engine);
