@@ -1,7 +1,7 @@
 # construction-1.md
 
 &emsp;一份比较简单的代码说明，不是很规范，更多是模糊的感觉。
-&emsp;适用版本 Babylon.js-1.0.8 到 Babylon.js-1.1.0
+&emsp;适用版本 Babylon.js-1.0.8 到 Babylon.js-1.3.0
 
 ## engine
 
@@ -184,7 +184,6 @@ BABYLON.BaseTexture
 ## Mesh
 
 ### 渲染流程
-
 
 ## webgl 角度看通用的渲染大致流程
 
