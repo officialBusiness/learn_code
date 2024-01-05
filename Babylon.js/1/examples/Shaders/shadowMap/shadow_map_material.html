@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" type="image/png" href="../../../../favicon.ico">
+		<title>shadow_map_material</title>
+		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
+
+		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
+
+		<script type="text/javascript" src="../../../source/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/babylon.standardMaterial.js"></script>
+
+		<script type="text/javascript" src="../../../source/Lights/babylon.light.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.directionalLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.hemisphericLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.pointLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.spotLight.js"></script>
+
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
+
+		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
+
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../../source/Particles/babylon.particle.js"></script>
+		<script type="text/javascript" src="../../../source/Particles/babylon.particleSystem.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
+	</head>
+	<!--
+		以 shadowMap shader 为基础的材质效果
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+			import createAxesBox from '../../mesh/helper/axes_box_helper.js';
+			import ShadowMapMaterial from './shadow_map_material.js';
+
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
+
+			// 强制绘制线
+			// engine.forceWireframe = true;
+
+			BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
+
+			var CreateScene = function (engine) {
+
+				var scene = new BABYLON.Scene(engine);
+
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 100, BABYLON.Vector3.Zero(), scene);
+
+				window.camera = camera;
+				// camera.setPosition(new BABYLON.Vector3(0, 0, -30));
+				camera.attachControl(canvas);
+
+				createAxesBox(scene, 20);
+
+		    var directionalLight = new BABYLON.DirectionalLight("light1",
+		    	new BABYLON.Vector3(-0.01, -1, 0),
+		    scene);
+
+		    directionalLight.position.x = 1;
+		    directionalLight.position.y = 100;
+				directionalLight.isEnabled = false;
+
+				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 20, scene);
+
+				var sphereMat = new ShadowMapMaterial('shadowMap', scene, false, directionalLight);
+
+
+				sphere.material = sphereMat;
+
+				initLightGui(directionalLight);
+
+				return {
+					scene,
+					directionalLight,
+					shadowMap: sphereMat
+				};
+			}
+
+
+			function initLightGui(
+				directionalLight,
+			){
+        const gui = new lil.GUI();
+
+
+        const directionalFolder = gui.addFolder('DirectionalLight');
+
+        directionalFolder.add( directionalLight, 'isEnabled' );
+        directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
+        directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
+        directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
+
+        directionalFolder.add( directionalLight.position, 'x', -500, 500 ).name('position.x');
+        directionalFolder.add( directionalLight.position, 'y', -500, 500 ).name('position.y');
+        directionalFolder.add( directionalLight.position, 'z', -500, 500 ).name('position.z');
+
+        directionalFolder.addColor( directionalLight, 'diffuse' );
+        directionalFolder.addColor( directionalLight, 'specular' );
+			}
+
+			const { scene, shadowMap } = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+
+				scene.render();
+			});
+
+		</script>
+	</body>
+</html>
