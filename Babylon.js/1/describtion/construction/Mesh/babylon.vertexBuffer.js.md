@@ -1,5 +1,15 @@
 # VertexBuffer
 
+## 关联调用
+
+1. babylon.standardMaterial.js 文件中 StandardMaterial 的 isReady 类方法调用 BABYLON.VertexBuffer.UVKind , UV2Kind , ColorKind 判断有哪些传入的属性
+
+2. babylon.sceneLoader.js 文件中的 parseMesh 函数中调用 BABYLON.VertexBuffer.PositionKind , NormalKind , UVKind , UV2Kind , ColorKind
+
+3. babylon.mesh.js 文件中 setVerticesData 调用 BABYLON.VertexBuffer 生成一个实例对象 ; 调用判断 BABYLON.VertexBuffer.PositionKind
+
+4. babylon.subMesh.js 文件中 SubMesh 构造函数中调用 BABYLON.VertexBuffer.PositionKind 用于获取对应的顶点信息
+
 ## 构造函数
 
 1. 传入 mesh, data, kind, updatable 参数

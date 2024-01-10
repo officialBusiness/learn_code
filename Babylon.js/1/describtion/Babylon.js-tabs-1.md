@@ -6,7 +6,7 @@
 
 * 视频纹理无法播放: 在 babylon.engine.js 的 updateVideoTexture 函数中不能直接 texImage2D ，需要添加视频缩放操作
 
-## Babylon.js-1.0.8.1
+## Babylon.js-1.0.8.1: 略
 
 ## Babylon.js-1.0.9:
 
@@ -259,12 +259,71 @@
 
 * babylon.tools.js: 修改 RequestFullscreen 函数中的全屏方法名(好像是单纯大小写写错了)
 
+## Babylon.js-1.3.0: 主要添加了 Octrees 八叉树, 调整了 mesh 裁切相关的代码; 添加了 VertexBuffer , 调整了 mesh 定点属性的赋值
+
+* babylon.tools.js: SmartArray 添加了 concatWithNoDuplicate 类函数
+
+* babylon.math.js: Vector3 添加类函数 multiplyByFloats
+
+* babylon.effect.js
+	>* 构造函数中添加了 \_attributesNames 属性
+	>* 添加类函数 getAttributesNames
+
+* babylon.engine.js:
+	>* 构造函数中删除 \_buffersCache 属性 ; createVertexBuffer , createDynamicVertexBuffer , createIndexBuffer , bindBuffers , enableEffect , wipeCaches 删除 \_buffersCache 相关代码
+	>* 添加 bindMultiBuffers 函数
+
+* babylon.scene.js
+	>* 构造函数添加 \_renderId 属性, 主要和八叉树相关的 mesh 筛选有关
+	>* 添加 \_evaluateSubMesh 方法函数, 抽离 \_evaluateActiveMeshes 部分关于 SubMesh 筛选的代码到其中
+	>* \_evaluateActiveMeshes 类方法中添加八叉树相关的筛选, 如果存在 \_selectionOctree 属性, 使用八叉树的方式进行 mesh 筛选
+	>* render 类方法中, \_toBeDisposed  属性内元素执行 dispose 时, 改为 data 属性内元素执行 dispose 方法
+	>* 添加 createOrUpdateSelectionOctree 类方法, 用于创建和更新 \_selectionOctree 属性
+
+* 添加了 Mesh/babylon.vertexBuffer.js
+
+* 添加了 Culling/Octrees/babylon.octree.js
+
+* 添加了 Culling/Octrees/babylon.octreeBlock.js
+
+* babylon.mesh.js
+	>* 构造函数添加 \_renderId 属性
+	>* 删除 getVertices 类方法
+	>* 添加 getVerticesData 类方法
+	>* 添加 isVerticesDataPresent 类方法
+	>* 删除 getFloatVertexStrideSize 类方法
+	>* 添加 isDisposed 类方法
+	>* 更新 setVertices 为 setVerticesData 类方法 ; 更新 updateVertices 为 updateVerticesData 类方法
+	>* 更新 bindAndDraw 类方法, engine.bindBuffers 的调用改为 engine.bindMultiBuffers , 对应的修改传入参数
+	>* render 类方法中的 \_vertexBuffer 属性判断改为 \_vertexBuffers 属性判读
+	添加 \_resetPointsArrayCache 类方法
+	>* 更新 \_generatePointsArray 类方法, 对应 VertexBuffer 做一定修改
+	>* 更新 clone 类方法, 对应 VertexBuffer 做一定修改
+	>* 更新 dispose 类方法, 对应 VertexBuffer 做一定修改 ; 调整相关的例子系统销毁和模型对象销毁代码位置, 添加 \_isDisposed 属性设置为 true
+	>* 静态创建模型几何体的方法 CreateBox , CreateSphere , CreateCylinder , CreateTorus , CreatePlane , CreateGround , CreateGroundFromHeightMap , 对应 VertexBuffer 做一定修改
+	>* 修改 ComputeNormal 静态类方法
+
+* babylon.subMesh.js: 构造函数初始化 \_boundingInfo 属性时, 根据 VertexBuffer 做一定修改
+
+* babylon.standardMaterial.js: isReady 类方法中 attribs 属性添加相关根据 VertexBuffer 做一定修改
+
+* babylon.boundingInfo.js: 构造函数传入参数相关根据 VertexBuffer 做一定修改
+
+* babylon.boundingSphere.js: 构造函数传入参数相关根据 VertexBuffer 做一定修改
+
+* babylon.boundingBox.js:
+	>* 构造函数传入参数相关根据 VertexBuffer 做一定修改
+	>* 添加 IsInFrustrum 静态类方法, 将原本 isInFrustrum 类方法中的代码移到其中
+	>* isInFrustrum 类方法, 改为调用返回 IsInFrustrum 静态类方法
+	>* 添加 intersectsMinMax 类方法
+
+* babylon.sceneLoader.js: parseMesh 方法根据 VertexBuffer 做一定修改
+
+## Babylon.js-1.3.1: 源码无变化
+
+
 
 <!--
-
-## Babylon.js-1.3.0
-
-## Babylon.js-1.3.1
 
 ## Babylon.js-1.3.2
 

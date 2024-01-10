@@ -59,6 +59,7 @@
 
 23. \_newPosition
 
+
 ## setTarget: 主要是更新 \_camMatrix , rotation 属性
 
 1. 根据 position 属性 , 传入的 target 参数 , 默认的 up 值更新 \_camMatrix 属性
@@ -66,12 +67,14 @@
 3. 根据传入的 target 参数和 position 属性更新 rotation 属性的 y 属性
 4. 根据默认的 up 值更新 rotation 属性的 z 属性
 
+
 ## attachControl: 主要是添加事件更新 cameraRotation , \_keys 属性
 
 1. \_onMouseMove 事件中更新 cameraRotation 属性
 2. \_onKeyDown 事件中 \_keys 属性添加
 3. \_onKeyUp 事件中  \_keys 属性移除
 4. \_onLostFocus 事件中 \_keys 属性清空为空数组
+
 
 ## \_collideWithWorld: 不是很清楚
 
@@ -85,6 +88,7 @@
 
 5. 如果 \_diffPosition 的长度大于 collisionsEpsilon (0.001)
 	>* 根据 \_diffPosition 更新 position 属性
+
 
 ## \_checkInputs
 
@@ -100,6 +104,7 @@
 	>* 根据 rotation 属性的 y , x 属性更新 \_cameraTransformMatrix 属性
 	>* 根据 \_localDirection 属性和 \_cameraTransformMatrix 属性更新 \_transformedDirection 属性
 	>* 根据 \_transformedDirection 属性更新 cameraDirection 属性
+
 
 ## \_update
 
@@ -125,6 +130,7 @@
 
 6. 如果需要旋转的话
 	>* 根据 inertia 属性, 更新 cameraRotation 属性
+
 
 ## getViewMatrix 主要用于计算返回 \_viewMatrix
 
