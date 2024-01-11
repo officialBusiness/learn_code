@@ -15,7 +15,6 @@
         this.rotation = new BABYLON.Vector3(0, 0, 0);
         this.scaling = new BABYLON.Vector3(1, 1, 1);
 
-        this._vertices = [];
         this._indices = [];
         this.subMeshes = [];
 
@@ -548,12 +547,14 @@
     };
 
     // Clone
-    BABYLON.Mesh.prototype.clone = function (name, newParent) {
+    BABYLON.Mesh.prototype.clone = function (name, newParent, doNotCloneChildren) {
         var result = new BABYLON.Mesh(name, this._scene);
 
         // Buffers
         result._vertexBuffers = this._vertexBuffers;
-        this._vertexBuffers.references++;
+        for (var kind in result._vertexBuffers) {
+            result._vertexBuffers[kind].references++;
+        }
 
         result._indexBuffer = this._indexBuffer;
         this._indexBuffer.references++;
@@ -562,7 +563,7 @@
         BABYLON.Tools.DeepCopy(this, result, ["name", "material"], ["_indices", "_totalVertices"]);
 
         // Bounding info
-        result._boundingInfo = new BABYLON.BoundingInfo(this._vertexBuffers[BABYLON.VertexBuffer.PositionKind].getData(), 0, this._totalVertices);
+        result._boundingInfo = new BABYLON.BoundingInfo(this.getVerticesData(BABYLON.VertexBuffer.PositionKind), 0, this._totalVertices);
 
         // Material
         result.material = this.material;
@@ -572,6 +573,7 @@
             result.parent = newParent;
         }
 
+        if (!doNotCloneChildren) {
         // Children
         for (var index = 0; index < this._scene.meshes.length; index++) {
             var mesh = this._scene.meshes[index];
@@ -579,6 +581,7 @@
             if (mesh.parent == this) {
                 mesh.clone(mesh.name, result);
             }
+        }
         }
 
         // Particles
