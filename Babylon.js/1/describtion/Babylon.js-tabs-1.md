@@ -321,13 +321,63 @@
 
 ## Babylon.js-1.3.1: 源码无变化
 
+## Babylon.js-1.3.2: 代码微调整理优化
+
+* babylon.engine.js:
+	>* createIndexBuffer: 移除 is32Bits 参数, 移除 is32Bits 属性的赋值
+	>* bindBuffers: 添加 \_cachedVertexBuffers 属性相关代码, 如果 \_cachedIndexBuffer 与 indexBuffer 相同, 就不重复绑定了
+	>* bindMultiBuffers:
+		>>* 添加 \_cachedVertexBuffers 属性相关代码, 如果传入的 vertexBuffers 参数与 \_cachedVertexBuffers 属性相同, 就不再绑定赋值
+		>>* 添加 \_cachedIndexBuffer 属性相关代码, 如果传入的 indexBuffer 参数与 \_cachedIndexBuffer 属性相同, 就不再绑定
+	>* createShaderProgram: 添加 getProgramInfoLog 获取创建 ShaderProgram 时的错误, 存在错误就抛出
+	>* wipeCaches: 添加将 \_cachedVertexBuffers 和 \_cachedVertexBuffers 属性初始化为 null
+
+* babylon.scene.js:
+	>* 添加 getRenderId 类方法
+	>* `this._renderId++;` 操作从 \_evaluateActiveMeshes 类方法中移到 render 类方法中
+
+* babylon.arcRotateCamera.js:
+	>* attachControl 类方法中添加 \_onMouseMove 属性事件, 与 \_onPointerMove 属性事件功能类似 ; 添加 mousemove 事件为 \_onMouseMove 属性事件 ; MSGestureChange , keydown , keyup , blur 事件添加时, 增加第三个参数 true;
+	>* detachControl 类方法添加 mousemove 事件移除  \_onMouseMove 属性事件
+
+* babylon.freeCamera.js:
+	>* 构造函数初始化中 keysUp 数组属性移除 87 键值 , keysLeft 数组属性移除 81 键值 , keysRight 数组属性移除 68 键值
+	>* attachControl 类方法: 添加 \_onMouseDown 属性判断, 将 \_onMouseDown , \_onMouseUp , \_onMouseOut , \_onMouseMove , \_onKeyDown , \_onKeyUp , \_onLostFocus 属性赋值属性放入其中 ;  添加 mousedown , mouseup , mouseout , mousemove , keydown , keyup , blur 事件时增加第三个参数 false;
+
+* babylon.touchCamera.js: attachControl 类方法中添加 pointerdown , pointerup , pointerout , pointermove , blur 事件时移除第三个参数 true;
+
+* babylon.octree.js:
+	>* 构造函数初始化, 添加 maxBlockCapacity 参数, 用于初始化 \_maxBlockCapacity 属性, 默认是 64
+	>* 添加 \_CreateBlocks 静态类方法, 将原本的 update 类方法中的代码移到其中, 添加了第四个参数 maxBlockCapacity, 和第五个参数 target
+	>* 更新 update 方法类, 直接调用 \_CreateBlocks 静态类方法, 多传入第四个参数 \_maxBlockCapacity 属性和第五个参数自身实例对象
+	>* 更新 select 类方法, 调用 block.intersects 改为 block.select
+
+* babylon.octreeBlock.js
+	>* 构造函数初始化时, 删除 x, y, z 参数, 添加 capacity 参数; 删除 x, y, z 属性的初始化, 添加 \_capacity 属性的初始化
+	>* addEntries 类方法中添加判断, 如果 subMeshes 数组的长度大于 \_capacity 的话, 就调用执行 Octree.\_CreateBlocks , 添加 block 属性, 存放子八叉树块
+	>* select 类方法中添加判断是否存在 blocks, 存在的话, 遍历执行子八叉树块的 select 方法, 然后直接返回, 不在存入父级的八叉树块
+
+* babylon.effect.js:
+	>* 删除 \_cacheMatrix 类方法
+	>* setMatrix 类方法中, 删除 \_valueCache 相关的判断, 删除 \_cacheMatrix 类方法的调用
+
+* babylon.material.js: 原型上添加 checkReadyOnEveryCall 属性, 初始化为 true
+
+* babylon.standardMaterial.js
+	>* isReady 函数中添加 checkReadyOnEveryCall 属性的判断, 取反若为 true, 则判断是否 \_renderId 属性是否和 scene 的 \_renderId 属性一样, 一样的话，直接返回 true ; 添加 \_renderId 属性的赋值, 赋值为 scene 的 \_renderId 属性
+	>* bind 类方法中, 将 \_worldViewProjectionMatrix 矩阵的计算和 world 和 worldViewProjection 的赋值移到上面
+
+* babylon.mesh.js: clone 类方法, 添加 doNotCloneChildren 参数; 遍历 \_vertexBuffers 中的各个属性, 每个类型的属性更新 references 属性加一 ; 更新创建 \_boundingInfo 实例对象 ; 根据 doNotCloneChildren 判断是否要对 mehs 的子 mesh 进行 clone
+
+* babylon.vertexBuffer.js: 构造函数中 ColorKind 类型的 \_strideSize 属性初始化从 4 改成 3
+
+* default.fragment.fx: CalcFogFactor 函数中返回变量改成 clamp
+
+## Babylon.js-1.4.0:
 
 
 <!--
 
-## Babylon.js-1.3.2
-
-## Babylon.js-1.4.0
 
 ## Babylon.js-1.4.1
 
