@@ -9,6 +9,10 @@
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
+
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
 
 		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
@@ -114,7 +118,7 @@
 				groundHeightMap.position.x = 0;
 				groundHeightMap.position.y = -5;
 
-				var clinder = BABYLON.Mesh.CreateCylinder("Cylinder", 5, 2, 32, scene);
+				var clinder = BABYLON.Mesh.CreateCylinder("Cylinder", 5, 2, 2, 32, scene);
 
 				clinder.position.x = -5;
 				clinder.position.y = -5;
