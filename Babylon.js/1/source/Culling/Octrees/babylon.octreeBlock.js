@@ -51,7 +51,7 @@
                 }
             }
         }
-
+        
         if (this.subMeshes.length > this._capacity) {
             BABYLON.Octree._CreateBlocks(this._minPoint, this._maxPoint, this.meshes, this._capacity, this);
         }
