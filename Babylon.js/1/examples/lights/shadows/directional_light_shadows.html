@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../../favicon.ico">
-		<title>mirror_texture</title>
+		<title>directional_light_shadows</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
@@ -24,6 +24,14 @@
 		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/babylon.standardMaterial.js"></script>
 
+		<script type="text/javascript" src="../../../source/Lights/Shadows/babylon.shadowGenerator.js"></script>
+
+		<script type="text/javascript" src="../../../source/Lights/babylon.light.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.directionalLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.hemisphericLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.pointLight.js"></script>
+		<script type="text/javascript" src="../../../source/Lights/babylon.spotLight.js"></script>
+
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
@@ -33,17 +41,22 @@
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.mirrorTexture.js"></script>
 
 		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
-		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
 
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
-	<!-- 简单展示镜面纹理效果 -->
+	<!--
+		SpotLight 光照添加阴影效果
+	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
+			import createAxesBox from '../../mesh/helper/axes_box_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -60,34 +73,31 @@
 
 				var scene = new BABYLON.Scene(engine);
 
-				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 600, BABYLON.Vector3.Zero(), scene);
 
-				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
+				camera.maxZ = 10000;
+
+				camera.setPosition(new BABYLON.Vector3(0, 0, 600));
 				camera.attachControl(canvas);
 
-				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);
 
-				box.position.x = 5;
-				box.position.y = 5;
+				var ground = BABYLON.Mesh.CreateGround("Ground", 500, 500, 3, scene);
 
-				var boxMat = new BABYLON.StandardMaterial('Box', scene);
+		    ground.receiveShadows = true;
 
-				boxMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-				boxMat.emissiveColor = new BABYLON.Color3(0.2, 0, 0);
-				boxMat.emissiveTexture = new BABYLON.Texture(
-					// '../assets/images/heightMap.png',
-					"../../assets/images/logo1.jpg",
-					// "../assets/images/logo.jpeg",
-					scene
-				);
+				var groundMat = new BABYLON.StandardMaterial('ground', scene);
 
-				box.material = boxMat;
+				groundMat.diffuseTexture = new BABYLON.Texture(
+					'../../assets/images/Ground.jpg',
+					scene,
+				)
+
+				ground.material = groundMat;
 
 
-				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 5, scene);
+				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 20, scene);
 
-				sphere.position.x = -5;
-				sphere.position.y = 5;
+				sphere.position.y = 40;
 
 				var sphereMat = new BABYLON.StandardMaterial('Sphere', scene);
 
@@ -99,61 +109,59 @@
 				sphere.material = sphereMat;
 
 
-				var plane = BABYLON.Mesh.CreatePlane("Plane", 5, scene);
+		    var light1 = new BABYLON.DirectionalLight("light1",
+		    	new BABYLON.Vector3(1, -1, 1),
+		    scene);
+				// light1.isEnabled = false;
 
-				plane.position.x = -5;
-				plane.position.y = -5;
+		    light1.direction.x = 0;
+		    light1.direction.y = -1;
+		    light1.direction.z = 1.0;
 
-				var planeMat = new BABYLON.StandardMaterial('Plane', scene);
+		    light1.position.x = 0;
+		    light1.position.y = 50;
+		    light1.position.z = -50;
 
-				planeMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
-				planeMat.emissiveColor = new BABYLON.Color3(0.2, 0, 0);
-				planeMat.emissiveTexture = new BABYLON.Texture(
-					// '../../assets/images/heightMap.png',
-					// "../../assets/images/logo1.jpg",
-					"../../assets/images/logo.jpeg",
-					scene
-				);
+		    createDirectionalLightGui
 
-				plane.material = planeMat;
-
-
-				var ground = BABYLON.Mesh.CreateGround("Ground", 5, 5, 3, scene);
-
-				ground.position.x = 5;
-				ground.position.y = -5;
-
-				var groundMat = new BABYLON.StandardMaterial('ground', scene);
-
-				groundMat.emissiveTexture = new BABYLON.Texture(
-					'../../assets/images/Ground.jpg',
-					scene,
-				)
-
-				ground.material = groundMat;
+		    var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
 
 
-				var mirror = BABYLON.Mesh.CreateSphere("Mirror", 16, 5, scene);
+		    createDirectionalLightGui(light1);
 
-		    mirror.material = new BABYLON.StandardMaterial("mirror", scene);
-		    mirror.material.emissiveColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-		    mirror.material.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
-				mirror.material.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
-		    mirror.material.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -1.0, 0, -5.0);
-		    mirror.material.reflectionTexture.renderList = [box, sphere, plane, ground];
-		    mirror.material.reflectionTexture.level = 1;
-
+        shadowGenerator.getShadowMap().renderList.push(sphere);
 
 				return scene;
 			}
 
+
+			function createDirectionalLightGui(directionalLight){
+
+        const gui = new lil.GUI();
+
+        const directionalFolder = gui.addFolder('DirectionalLight');
+
+        directionalFolder.add( directionalLight, 'isEnabled' );
+        directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
+        directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
+        directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
+
+        directionalFolder.add( directionalLight.position, 'x', -500, 500 ).name('position.x');
+        directionalFolder.add( directionalLight.position, 'y', -500, 500 ).name('position.y');
+        directionalFolder.add( directionalLight.position, 'z', -500, 500 ).name('position.z');
+
+        directionalFolder.addColor( directionalLight, 'diffuse' );
+        directionalFolder.addColor( directionalLight, 'specular' );
+			}
+
 			const scene = CreateScene(engine);
 
-
+			createAxesBox(scene, 200, 10)
 
 			engine.runRenderLoop(()=>{
 				scene.render();
 			});
+
 		</script>
 	</body>
 </html>

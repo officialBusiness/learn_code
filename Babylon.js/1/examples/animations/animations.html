@@ -89,16 +89,21 @@
 				var boxMat = new BABYLON.StandardMaterial('box', scene);
 
 				boxMat.emissiveTexture = new BABYLON.Texture(
-					'../assets/logo1.JPG',
+					'../assets/images/logo1.JPG',
 					scene,
 				)
 
 				box.material = boxMat;
 
 				var animation = new BABYLON.Animation("box", "position", 60,
+					// BABYLON.Animation.ANIMATIONTYPE_FLOAT
 					BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-					// BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-					// BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE
+					// BABYLON.Animation.ANIMATIONTYPE_QUATERNION
+					// BABYLON.Animation.ANIMATIONTYPE_MATRIX
+
+					// BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE,
+					BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE,
+					// BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
 				);
 
 				animation.setKeys([
@@ -111,7 +116,34 @@
 				scene.beginAnimation(
 					box,
 					0, 60, true, 1,
-				)
+				);
+
+
+				// var animation1 = new BABYLON.Animation("box", "alpha", 60,
+				// 	// BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+				// 	BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+
+				// 	// BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+				// 	// BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE,
+
+				// 	// BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE,
+				// 	BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE,
+				// 	// BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+				// );
+				// animation1.setKeys([
+				// 	{ frame: 0, value: 1 },
+				// 	{ frame: 60, value: 0 }
+				// ]);
+
+				// boxMat.animations = []
+				// boxMat.animations.push(animation1);
+
+				// scene.beginAnimation(
+				// 	boxMat,
+				// 	0, 60, true, 1,
+				// );
+
+				window.scene = scene;
 
 				return scene;
 			}

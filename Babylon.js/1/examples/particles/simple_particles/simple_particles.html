@@ -63,7 +63,7 @@
 
 				var scene = new BABYLON.Scene(engine);
 
-				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(0, 0, 0), scene);
 
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
@@ -71,7 +71,7 @@
 				BABYLON.Engine.ShadersRepository = './';
 				var particle = new SimpleParticles(scene);
 
-				particle.particleTexture = new BABYLON.Texture("../../assets/logo.jpeg", scene);
+				particle.particleTexture = new BABYLON.Texture("../../assets/images/logo.jpeg", scene);
 
 				BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
 				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);

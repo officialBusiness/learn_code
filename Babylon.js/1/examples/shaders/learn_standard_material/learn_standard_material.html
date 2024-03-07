@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../../favicon.ico">
-		<title>default_material</title>
+		<title>learn_standard_material</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
@@ -53,7 +53,10 @@
 
 			import createAxesBox from '../../mesh/helper/axes_box_helper.js';
 
-			import DefaultMaterial from './default_material.js';
+			import LearnStandardMaterial from './learn_standard_material.js';
+
+			import './learn_standard_material_fx.js';
+			import './learn_standard_material_vx.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -64,7 +67,8 @@
 			// 强制绘制线
 			// engine.forceWireframe = true;
 
-			BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
+			// BABYLON.Engine.ShadersRepository = '../../../source/Shaders/';
+			BABYLON.Engine.ShadersRepository = './';
 
 			var CreateScene = function (engine) {
 
@@ -83,69 +87,71 @@
 
 				// light0.isEnabled = false;
 
-		    var light1 = new BABYLON.DirectionalLight("light1",
-		    	new BABYLON.Vector3(1, -1, 1),
-		    scene);
+				var light1 = new BABYLON.DirectionalLight("light1",
+					new BABYLON.Vector3(1, -1, 1),
+				scene);
 
 				light1.isEnabled = false;
 
-		    var light2 = new BABYLON.HemisphericLight("light2",
-		    	new BABYLON.Vector3(0, 1, 0),
-		    scene );
+				var light2 = new BABYLON.HemisphericLight("light2",
+					new BABYLON.Vector3(0, 1, 0),
+				scene );
 
 				light2.isEnabled = false;
 
-		    var light3 = new BABYLON.SpotLight("light3",
-		    	new BABYLON.Vector3(0, 200, 200),
-		    	new BABYLON.Vector3(0, -1, 0),
-		    	Math.PI / 4,
-		    	1,
-		    	scene
-	    	);
+				var light3 = new BABYLON.SpotLight("light3",
+					new BABYLON.Vector3(0, 200, 200),
+					new BABYLON.Vector3(0, -1, 0),
+					Math.PI / 4,
+					1,
+					scene
+				);
 
 				light3.isEnabled = false;
 
 
 				var ground = BABYLON.Mesh.CreateGround("Ground", 500, 500, 3, scene);
 
-				var groundMat = new DefaultMaterial('ground', scene);
+				var groundMat = new LearnStandardMaterial('ground', scene);
 
 				// var groundMat = new BABYLON.StandardMaterial('ground', scene);
 
 				groundMat.emissiveTexture = new BABYLON.Texture(
-					'../../assets/logo.jpeg',
+					'../../assets/images/logo.jpeg',
 					scene,
 				)
 
 				ground.material = groundMat;
 
-        const gui = new lil.GUI();
+				const gui = new lil.GUI();
 
-        initSceneGui(gui, scene);
-        initMaterialGui(gui, groundMat, scene);
+				initSceneGui(gui, scene);
+				initMaterialGui(gui, groundMat, scene);
 				initLightGui(gui, light0, light1, light2, light3);
 
 
-				createAxesBox(scene, 200, 10);
+				// createAxesBox(scene, 200, 10);
 
 				return scene;
 			}
 
 			function initSceneGui(gui, scene){
 
-        const sceneFolder = gui.addFolder('Scene');
-        sceneFolder.addColor( scene, 'ambientColor' );
+				const sceneFolder = gui.addFolder('Scene');
+				sceneFolder.addColor( scene, 'ambientColor' );
 
 
 			}
 
 			function initMaterialGui(gui, material){
 
-        const materialFolder = gui.addFolder('MaterialFolder');
+				const materialFolder = gui.addFolder('MaterialFolder');
 
-        materialFolder.addColor( material, '_globalAmbientColor' ).name('globalAmbient');
-        materialFolder.addColor( material, 'ambientColor' );
-        materialFolder.addColor( material, 'diffuseColor' );
+
+				materialFolder.addColor( material, '_globalAmbientColor' ).name('globalAmbient');
+				materialFolder.addColor( material, 'ambientColor' );
+				materialFolder.addColor( material, 'diffuseColor' );
+
 
 			}
 
@@ -157,59 +163,59 @@
 				spotLight
 			){
 
-        const pointFolder = gui.addFolder('PointLight');
+				const pointFolder = gui.addFolder('PointLight');
 
-        pointFolder.close();
-        pointFolder.add( pointLight, 'isEnabled' );
-        pointFolder.add( pointLight.position, 'x', -500, 500 ).name('position.x');
-        pointFolder.add( pointLight.position, 'y', -500, 500 ).name('position.y');
-        pointFolder.add( pointLight.position, 'z', -500, 500 ).name('position.z');
+				pointFolder.close();
+				pointFolder.add( pointLight, 'isEnabled' );
+				pointFolder.add( pointLight.position, 'x', -500, 500 ).name('position.x');
+				pointFolder.add( pointLight.position, 'y', -500, 500 ).name('position.y');
+				pointFolder.add( pointLight.position, 'z', -500, 500 ).name('position.z');
 
-        pointFolder.addColor( pointLight, 'diffuse' );
-        pointFolder.addColor( pointLight, 'specular' );
+				pointFolder.addColor( pointLight, 'diffuse' );
+				pointFolder.addColor( pointLight, 'specular' );
 
-        const directionalFolder = gui.addFolder('DirectionalLight');
+				const directionalFolder = gui.addFolder('DirectionalLight');
 
-        directionalFolder.close();
-        directionalFolder.add( directionalLight, 'isEnabled' );
-        directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
-        directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
-        directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
+				directionalFolder.close();
+				directionalFolder.add( directionalLight, 'isEnabled' );
+				directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
+				directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
+				directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
 
-        directionalFolder.add( directionalLight.position, 'x', -500, 500 ).name('position.x');
-        directionalFolder.add( directionalLight.position, 'y', -500, 500 ).name('position.y');
-        directionalFolder.add( directionalLight.position, 'z', -500, 500 ).name('position.z');
+				directionalFolder.add( directionalLight.position, 'x', -500, 500 ).name('position.x');
+				directionalFolder.add( directionalLight.position, 'y', -500, 500 ).name('position.y');
+				directionalFolder.add( directionalLight.position, 'z', -500, 500 ).name('position.z');
 
-        directionalFolder.addColor( directionalLight, 'diffuse' );
-        directionalFolder.addColor( directionalLight, 'specular' );
+				directionalFolder.addColor( directionalLight, 'diffuse' );
+				directionalFolder.addColor( directionalLight, 'specular' );
 
-        const hemisphericFolder = gui.addFolder('HemisphericLight');
+				const hemisphericFolder = gui.addFolder('HemisphericLight');
 
-        hemisphericFolder.close();
-        hemisphericFolder.add( hemisphericLight, 'isEnabled' );
-        hemisphericFolder.add( hemisphericLight.direction, 'x', -1, 1 ).name('direction.x');
-        hemisphericFolder.add( hemisphericLight.direction, 'y', -1, 1 ).name('direction.y');
-        hemisphericFolder.add( hemisphericLight.direction, 'z', -1, 1 ).name('direction.z');
+				hemisphericFolder.close();
+				hemisphericFolder.add( hemisphericLight, 'isEnabled' );
+				hemisphericFolder.add( hemisphericLight.direction, 'x', -1, 1 ).name('direction.x');
+				hemisphericFolder.add( hemisphericLight.direction, 'y', -1, 1 ).name('direction.y');
+				hemisphericFolder.add( hemisphericLight.direction, 'z', -1, 1 ).name('direction.z');
 
-        hemisphericFolder.addColor( hemisphericLight, 'diffuse' );
-        hemisphericFolder.addColor( hemisphericLight, 'specular' );
-        hemisphericFolder.addColor( hemisphericLight, 'groundColor' );
+				hemisphericFolder.addColor( hemisphericLight, 'diffuse' );
+				hemisphericFolder.addColor( hemisphericLight, 'specular' );
+				hemisphericFolder.addColor( hemisphericLight, 'groundColor' );
 
-        const spotFolder = gui.addFolder('SpotLight');
+				const spotFolder = gui.addFolder('SpotLight');
 
-        spotFolder.close();
-        spotFolder.add( spotLight, 'isEnabled' );
-        spotFolder.add( spotLight.position, 'x', -500, 500 ).name('position.x');
-        spotFolder.add( spotLight.position, 'y', -500, 500 ).name('position.y');
-        spotFolder.add( spotLight.position, 'z', -500, 500 ).name('position.z');
-        spotFolder.add( spotLight.direction, 'x', -1, 1 ).name('direction.x');
-        spotFolder.add( spotLight.direction, 'y', -1, 1 ).name('direction.y');
-        spotFolder.add( spotLight.direction, 'z', -1, 1 ).name('direction.z');
-        spotFolder.add( spotLight, 'angle', -2 * Math.PI, 2 * Math.PI );
-        spotFolder.add( spotLight, 'exponent', -0.1, 500 );
+				spotFolder.close();
+				spotFolder.add( spotLight, 'isEnabled' );
+				spotFolder.add( spotLight.position, 'x', -500, 500 ).name('position.x');
+				spotFolder.add( spotLight.position, 'y', -500, 500 ).name('position.y');
+				spotFolder.add( spotLight.position, 'z', -500, 500 ).name('position.z');
+				spotFolder.add( spotLight.direction, 'x', -1, 1 ).name('direction.x');
+				spotFolder.add( spotLight.direction, 'y', -1, 1 ).name('direction.y');
+				spotFolder.add( spotLight.direction, 'z', -1, 1 ).name('direction.z');
+				spotFolder.add( spotLight, 'angle', -2 * Math.PI, 2 * Math.PI );
+				spotFolder.add( spotLight, 'exponent', -0.1, 500 );
 
-        spotFolder.addColor( spotLight, 'diffuse' );
-        spotFolder.addColor( spotLight, 'specular' );
+				spotFolder.addColor( spotLight, 'diffuse' );
+				spotFolder.addColor( spotLight, 'specular' );
 			}
 
 			const scene = CreateScene(engine);

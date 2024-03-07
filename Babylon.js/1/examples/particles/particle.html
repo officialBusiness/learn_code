@@ -9,6 +9,7 @@
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
 
 		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
@@ -31,6 +32,9 @@
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
 
 		<script type="text/javascript" src="../../source/Particles/babylon.particle.js"></script>
 		<script type="text/javascript" src="../../source/Particles/babylon.particleSystem.js"></script>
@@ -66,14 +70,14 @@
 
 		    var material = new BABYLON.StandardMaterial("boxMat", scene);
 
-		    // material.diffuseTexture = new BABYLON.Texture("../../../assets/logo.jpeg", scene);
+		    // material.diffuseTexture = new BABYLON.Texture("../../../assets/images/logo.jpeg", scene);
 		    material.alpha = 0.5;
 		    material.backFaceCulling = false;
 
 		    box.material = material;
 
 		    var particleSystem = new BABYLON.ParticleSystem("particles", 1, scene);
-		    particleSystem.particleTexture = new BABYLON.Texture("../assets/logo.jpeg", scene);
+		    particleSystem.particleTexture = new BABYLON.Texture("../assets/images/logo.jpeg", scene);
 		    particleSystem.minAngularSpeed = -0.5;
 		    particleSystem.maxAngularSpeed = 0.5;
 		    particleSystem.minSize = 0.5;

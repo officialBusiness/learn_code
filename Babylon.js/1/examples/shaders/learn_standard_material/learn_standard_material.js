@@ -1,11 +1,12 @@
-import { shaderName } from './default_shaders.js';
 
+
+export const shaderName = 'learn_default_shader';
 
 var isIE = function () {
 	return window.ActiveXObject !== undefined;
 };
 
-export default class DefaultMaterial{
+export default class LearnStandardMaterial{
 
 	alpha = 1.0;
 	wireframe = false;

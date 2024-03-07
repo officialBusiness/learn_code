@@ -373,7 +373,8 @@
 
 * default.fragment.fx: CalcFogFactor 函数中返回变量改成 clamp
 
-## Babylon.js-1.4.0:
+## Babylon.js-1.4.0: 添加了骨骼 , indexedDB 缓存
+
 
 
 <!--
