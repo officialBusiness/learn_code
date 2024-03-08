@@ -376,11 +376,12 @@
 ## Babylon.js-1.4.0: 添加了骨骼 , indexedDB 缓存
 
 
+## Babylon.js-1.4.1: 主要修改优化 babylon.database.js , 转为构造函数
+
+
 
 <!--
 
-
-## Babylon.js-1.4.1
 
 ## Babylon.js-1.4.2
 
