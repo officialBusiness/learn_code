@@ -378,6 +378,7 @@
 
 ## Babylon.js-1.4.1: 主要修改优化 babylon.database.js , 转为构造函数
 
+## Babylon.js-1.4.2: 主要微调 babylon.scene.js 中`_mustCheckIsReady` 属性相关
 
 
 <!--
