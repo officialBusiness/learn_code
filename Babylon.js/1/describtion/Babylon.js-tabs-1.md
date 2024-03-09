@@ -380,13 +380,10 @@
 
 ## Babylon.js-1.4.2: 主要微调 babylon.scene.js 中`_mustCheckIsReady` 属性相关
 
+## Babylon.js-1.4.3: texture 相关添加加载状态参数 ; 调整包围盒相关
 
 <!--
 
-
-## Babylon.js-1.4.2
-
-## Babylon.js-1.4.3
 
 ## Babylon.js-1.5.0
 
