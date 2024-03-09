@@ -382,6 +382,8 @@
 
 ## Babylon.js-1.4.3: texture 相关添加加载状态参数 ; 调整包围盒相关
 
+## Babylon.js-1.5.0: 调整渲染 mesh 相关函数到 babylon.renderingManager.js 中 ; 动画添加结束回调函数 ; 添加 DeviceOrientationCamera
+
 <!--
 
 
