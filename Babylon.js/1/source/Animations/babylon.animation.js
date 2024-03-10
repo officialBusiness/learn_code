@@ -179,6 +179,7 @@
 
         return returnValue;
     };
+}
 
     // Statics
     BABYLON.Animation.ANIMATIONTYPE_FLOAT = 0;
@@ -189,4 +190,4 @@
     BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE = 0;
     BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE = 1;
     BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT = 2;
-})();
+})()
