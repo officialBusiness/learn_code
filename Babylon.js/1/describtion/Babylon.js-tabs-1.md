@@ -384,12 +384,11 @@
 
 ## Babylon.js-1.5.0: 调整渲染 mesh 相关函数到 babylon.renderingManager.js 中 ; 动画添加结束回调函数 ; 添加 DeviceOrientationCamera
 
+## Babylon.js-1.5.1: 修复 babylon.animation.js 代码 ; 微调
+
+
+
 <!--
-
-
-## Babylon.js-1.5.0
-
-## Babylon.js-1.5.1
 
 ## Babylon.js-1.5.2
 
@@ -426,4 +425,5 @@
 ## Babylon.js-1.13
 
 ## Babylon.js-1.14
+
  -->

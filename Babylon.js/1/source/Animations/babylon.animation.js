@@ -124,15 +124,15 @@
         if (ratio > range && !loop) { // If we are out of range and not looping get back to caller
             returnValue = false;
         } else {
-        // Get max value if required
-        var offsetValue = 0;
-        var highLimitValue = 0;
-        if (this.loopMode != BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE) {
-            var keyOffset = to.toString() + from.toString();
-            if (!this._offsetsCache[keyOffset]) {
-                var fromValue = this._interpolate(from, 0, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-                var toValue = this._interpolate(to, 0, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-                switch (this.dataType) {
+            // Get max value if required
+            var offsetValue = 0;
+            var highLimitValue = 0;
+            if (this.loopMode != BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE) {
+                var keyOffset = to.toString() + from.toString();
+                if (!this._offsetsCache[keyOffset]) {
+                    var fromValue = this._interpolate(from, 0, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+                    var toValue = this._interpolate(to, 0, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+                    switch (this.dataType) {
                     // Float
                     case BABYLON.Animation.ANIMATIONTYPE_FLOAT:
                         this._offsetsCache[keyOffset] = toValue - fromValue;
@@ -146,13 +146,14 @@
                         this._offsetsCache[keyOffset] = toValue.subtract(fromValue);
                     default:
                         break;
+                    }
+
+                    this._highLimitsCache[keyOffset] = toValue;
                 }
 
-                this._highLimitsCache[keyOffset] = toValue;
+                highLimitValue = this._highLimitsCache[keyOffset];
+                offsetValue = this._offsetsCache[keyOffset];
             }
-
-            highLimitValue = this._highLimitsCache[keyOffset];
-            offsetValue = this._offsetsCache[keyOffset];
         }
 
         // Compute value
@@ -179,7 +180,6 @@
 
         return returnValue;
     };
-}
 
     // Statics
     BABYLON.Animation.ANIMATIONTYPE_FLOAT = 0;
@@ -190,4 +190,4 @@
     BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE = 0;
     BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE = 1;
     BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT = 2;
-})()
+})();
