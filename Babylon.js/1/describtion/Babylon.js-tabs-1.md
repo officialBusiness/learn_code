@@ -387,8 +387,9 @@
 
 ## Babylon.js-1.5.2: 微调
 
-## Babylon.js-1.5.1.2: 添加 babylon.node.js , 修改相机相关类
+## Babylon.js-1.5.1.2: 添加 babylon.node.js , 修改相机、灯光相关类 ; 微调
 
+## Babylon.js-1.5.3: 微调
 
 
 
