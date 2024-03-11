@@ -375,7 +375,6 @@
 
 ## Babylon.js-1.4.0: 添加了骨骼 , indexedDB 缓存
 
-
 ## Babylon.js-1.4.1: 主要修改优化 babylon.database.js , 转为构造函数
 
 ## Babylon.js-1.4.2: 主要微调 babylon.scene.js 中`_mustCheckIsReady` 属性相关
@@ -386,13 +385,14 @@
 
 ## Babylon.js-1.5.1: 修复 babylon.animation.js 代码 ; 微调
 
+## Babylon.js-1.5.2: 微调
+
+## Babylon.js-1.5.1.2: 添加 babylon.node.js , 修改相机相关类
+
+
 
 
 <!--
-
-## Babylon.js-1.5.2
-
-## Babylon.js-1.5.1.2
 
 ## Babylon.js-1.5.3
 
