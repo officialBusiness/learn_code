@@ -19,6 +19,8 @@
 
 		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../../source/babylon.node.js"></script>
+
 		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
 		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
 		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
@@ -89,7 +91,7 @@
 
 		    directionalLight.position.x = 1;
 		    directionalLight.position.y = 100;
-				directionalLight.isEnabled = false;
+				directionalLight.setEnabled(false);
 
 				var sphere = BABYLON.Mesh.CreateSphere("Sphere", 16, 20, scene);
 
@@ -116,7 +118,7 @@
 
         const directionalFolder = gui.addFolder('DirectionalLight');
 
-        directionalFolder.add( directionalLight, 'isEnabled' );
+        directionalFolder.add( directionalLight, '_isEnabled' ).name('isEnabled');
         directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
         directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
         directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');

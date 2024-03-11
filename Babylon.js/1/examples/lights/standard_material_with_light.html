@@ -19,6 +19,8 @@
 
 		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../source/babylon.node.js"></script>
+
 		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
 		<script type="text/javascript" src="../../source/Cameras/babylon.arcRotateCamera.js"></script>
 		<script type="text/javascript" src="../../source/Tools/babylon.math.js"></script>
@@ -83,19 +85,19 @@
 					new BABYLON.Vector3(0, 100, 0),
 				scene);
 
-				// light0.isEnabled = false;
+				// light0.setEnabled(false);
 
 		    var light1 = new BABYLON.DirectionalLight("light1",
 		    	new BABYLON.Vector3(1, -1, 1),
 		    scene);
 
-				light1.isEnabled = false;
+				light1.setEnabled(false);
 
 		    var light2 = new BABYLON.HemisphericLight("light2",
 		    	new BABYLON.Vector3(0, 1, 0),
 		    scene );
 
-				light2.isEnabled = false;
+				light2.setEnabled(false);
 
 		    var light3 = new BABYLON.SpotLight("light3",
 		    	new BABYLON.Vector3(0, 200, 200),
@@ -105,7 +107,7 @@
 		    	scene
 	    	);
 
-				light3.isEnabled = false;
+				light3.setEnabled(false);
 
 				initLightGui(light0, light1, light2, light3);
 
@@ -136,7 +138,7 @@
 
         const pointFolder = gui.addFolder('PointLight');
 
-        pointFolder.add( pointLight, 'isEnabled' );
+        pointFolder.add( pointLight, '_isEnabled' ).name('isEnabled');
         pointFolder.add( pointLight.position, 'x', -500, 500 ).name('position.x');
         pointFolder.add( pointLight.position, 'y', -500, 500 ).name('position.y');
         pointFolder.add( pointLight.position, 'z', -500, 500 ).name('position.z');
@@ -146,7 +148,7 @@
 
         const directionalFolder = gui.addFolder('DirectionalLight');
 
-        directionalFolder.add( directionalLight, 'isEnabled' );
+        directionalFolder.add( directionalLight, '_isEnabled' ).name('isEnabled');
         directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
         directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
         directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');
@@ -160,7 +162,7 @@
 
         const hemisphericFolder = gui.addFolder('HemisphericLight');
 
-        hemisphericFolder.add( hemisphericLight, 'isEnabled' );
+        hemisphericFolder.add( hemisphericLight, '_isEnabled' ).name('isEnabled');
         hemisphericFolder.add( hemisphericLight.direction, 'x', -1, 1 ).name('direction.x');
         hemisphericFolder.add( hemisphericLight.direction, 'y', -1, 1 ).name('direction.y');
         hemisphericFolder.add( hemisphericLight.direction, 'z', -1, 1 ).name('direction.z');
@@ -171,7 +173,7 @@
 
         const spotFolder = gui.addFolder('SpotLight');
 
-        spotFolder.add( spotLight, 'isEnabled' );
+        spotFolder.add( spotLight, '_isEnabled' ).name('isEnabled');
         spotFolder.add( spotLight.position, 'x', -500, 500 ).name('position.x');
         spotFolder.add( spotLight.position, 'y', -500, 500 ).name('position.y');
         spotFolder.add( spotLight.position, 'z', -500, 500 ).name('position.z');

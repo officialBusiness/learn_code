@@ -19,6 +19,8 @@
 
 		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../../source/babylon.node.js"></script>
+
 		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
 		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
 		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
@@ -86,7 +88,7 @@
 
 				const mathPlaneMat = new BABYLON.StandardMaterial('mathPlaneMat', scene);
 
-				// mathPlaneMat.backFaceCulling = false;
+				mathPlaneMat.backFaceCulling = true;
 
 				mathPlaneMat.emissiveTexture = new BABYLON.Texture(
 					// '../assets/images/heightMap.png',
@@ -123,7 +125,7 @@
 
 			engine.runRenderLoop(()=>{
 
-        engine._gl.disable(engine._gl.CULL_FACE);
+        // engine._gl.disable(engine._gl.CULL_FACE);
 				scene.render();
 				particle.render();
 			});
