@@ -391,17 +391,13 @@
 
 ## Babylon.js-1.5.3: 微调
 
+## Babylon.js-1.5.3.1: 微调
 
+## Babylon.js-1.5.3.3: 微调
+
+## Babylon.js-1.6.0: 添加完善 PostProcess 后处理相关 js 代码和 shader 代码
 
 <!--
-
-## Babylon.js-1.5.3
-
-## Babylon.js-1.5.3.1
-
-## Babylon.js-1.5.3.3
-
-## Babylon.js-1.6.0
 
 ## Babylon.js-1.7.0
 

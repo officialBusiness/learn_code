@@ -90,7 +90,8 @@
         this._scaledVelocity = BABYLON.Vector3.Zero();
 
         // Postprocesses
-        this.postProcessManager = new BABYLON.PostProcessManager();
+        this.postProcessesEnabled = true;
+        this.postProcessManager = new BABYLON.PostProcessManager(this);
     };
 
     // Properties   
@@ -700,6 +701,11 @@
         while (this.meshes.length) {
             this.meshes[0].dispose(true);
         }
+        
+        // Release cameras
+        while (this.cameras.length) {
+            this.cameras[0].dispose();
+        }
 
         // Release materials
         while (this.materials.length) {
@@ -725,6 +731,9 @@
         while (this.textures.length) {
             this.textures[0].dispose();
         }
+        
+        // Post-processes
+        this.postProcessManager.dispose();
 
         // Remove from engine
         index = this._engine.scenes.indexOf(this);
