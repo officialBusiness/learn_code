@@ -399,16 +399,16 @@
 
 ## Babylon.js-1.7.0: 添加 LensFlareSystem 相关、 PickingInfo 相关 , camera 添加距离等功能
 
+## Babylon.js-1.7.1: 微调
+
+## Babylon.js-1.7.2: 微调
+
+## Babylon.js-1.7.3: 微调
+
+## Babylon.js-1.8.0: 添加物理引擎
+
 
 <!--
-
-## Babylon.js-1.7.1
-
-## Babylon.js-1.7.2
-
-## Babylon.js-1.7.3
-
-## Babylon.js-1.8.0
 
 ## Babylon.js-1.8.5
 
