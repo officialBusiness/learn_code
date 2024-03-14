@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" type="image/png" href="../../../favicon.ico">
+		<title>collisions</title>
+		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.math.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
+
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
+
+		<script type="text/javascript" src="../../source/Collisions/babylon.collider.js"></script>
+
+		<script type="text/javascript" src="../../source/Rendering/babylon.renderingManager.js"></script>
+		<script type="text/javascript" src="../../source/Rendering/babylon.renderingGroup.js"></script>
+
+		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../source/babylon.node.js"></script>
+
+		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.freeCamera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.touchCamera.js"></script>
+
+		<script type="text/javascript" src="../../source/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../source/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../source/Materials/babylon.standardMaterial.js"></script>
+
+		<script type="text/javascript" src="../../source/Lights/babylon.light.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.directionalLight.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.hemisphericLight.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.pointLight.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.spotLight.js"></script>
+
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
+
+		<script type="text/javascript" src="../../source/Layer/babylon.layer.js"></script>
+
+		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../source/Sprites/babylon.sprite.js"></script>
+		<script type="text/javascript" src="../../source/Sprites/babylon.spriteManager.js"></script>
+
+		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
+	</head>
+	<!--
+		展示 collisions 效果, 遇到墙不再运动
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+			import createAxesBox from '../mesh/helper/axes_box_helper.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
+
+			// 强制绘制线
+			// engine.forceWireframe = true;
+
+			BABYLON.Engine.ShadersRepository = '../../source/Shaders/';
+
+			var CreateScene = function (engine) {
+
+				var scene = new BABYLON.Scene(engine);
+				var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(0, 0, -20), scene);
+				camera.checkCollisions = true;
+				camera.applyGravity = true;
+
+				var light = new BABYLON.DirectionalLight("dir02", new BABYLON.Vector3(0.2, -1, 0), scene);
+				light.position = new BABYLON.Vector3(0, 80, 0);
+
+				createAxesBox(scene);
+
+				// Playground
+				var ground = BABYLON.Mesh.CreateBox("Ground", 1, scene);
+				ground.scaling = new BABYLON.Vector3(100, 1, 100);
+				ground.position.y = -5.0;
+				ground.checkCollisions = true;
+
+				var border0 = BABYLON.Mesh.CreateBox("border0", 1, scene);
+				border0.scaling = new BABYLON.Vector3(1, 100, 100);
+				border0.position.y = -5.0;
+				border0.position.x = -50.0;
+				border0.checkCollisions = true;
+
+				var border1 = BABYLON.Mesh.CreateBox("border1", 1, scene);
+				border1.scaling = new BABYLON.Vector3(1, 100, 100);
+				border1.position.y = -5.0;
+				border1.position.x = 50.0;
+				border1.checkCollisions = true;
+
+				var border2 = BABYLON.Mesh.CreateBox("border2", 1, scene);
+				border2.scaling = new BABYLON.Vector3(100, 100, 1);
+				border2.position.y = -5.0;
+				border2.position.z = 50.0;
+				border2.checkCollisions = true;
+
+				var border3 = BABYLON.Mesh.CreateBox("border3", 1, scene);
+				border3.scaling = new BABYLON.Vector3(100, 100, 1);
+				border3.position.y = -5.0;
+				border3.position.z = -50.0;
+				border3.checkCollisions = true;
+
+				camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+
+				camera.attachControl(canvas);
+
+				var groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+				groundMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+				groundMat.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+				ground.material = groundMat;
+				border0.material = groundMat;
+				border1.material = groundMat;
+				border2.material = groundMat;
+				border3.material = groundMat;
+
+				return scene;
+			}
+
+			const scene = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+
+				scene.render();
+			});
+		</script>
+	</body>
+</html>
