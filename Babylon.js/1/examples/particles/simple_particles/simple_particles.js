@@ -51,7 +51,7 @@ export default class SimpleParticles{
 		// Effect
 		var join = defines.join("\n");
 
-		this._effect = this._scene.getEngine().createEffect("simple_particles",
+		this._effect = this._scene.getEngine().createEffect("./simple_particles",
 				["position", "color", "options"],
 				["invView", "view", "projection", "vClipPlane", "textureMask"],
 				["diffuseSampler"], join);

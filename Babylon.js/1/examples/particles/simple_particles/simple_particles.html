@@ -73,7 +73,6 @@
 				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
 				camera.attachControl(canvas);
 
-				BABYLON.Engine.ShadersRepository = './';
 				var particle = new SimpleParticles(scene);
 
 				particle.particleTexture = new BABYLON.Texture("../../assets/images/logo.jpeg", scene);

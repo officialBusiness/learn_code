@@ -5,11 +5,15 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../favicon.ico">
-		<title>particle</title>
+		<title>convolution_post_process</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
 		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
+
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
+		<script type="text/javascript" src="../../source/PostProcess/babylon.convolutionPostProcess.js"></script>
 
 		<script type="text/javascript" src="../../source/Rendering/babylon.renderingManager.js"></script>
 		<script type="text/javascript" src="../../source/Rendering/babylon.renderingGroup.js"></script>
@@ -37,16 +41,8 @@
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
-
-		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
-		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
-
-		<script type="text/javascript" src="../../source/Particles/babylon.particle.js"></script>
-		<script type="text/javascript" src="../../source/Particles/babylon.particleSystem.js"></script>
 	</head>
-	<!-- 简单展示粒子案例有些理解了
-		精灵的原理就是 mvp 矩阵中，先将 view 矩阵乘初始位置矢量， 然后再加上每个顶点位置进行偏移，最后再乘以 p
-	-->
+	<!-- 简单展示 ConvolutionPostProcess 效果 -->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
@@ -73,29 +69,26 @@
 
 				var box = BABYLON.Mesh.CreateBox("Box", 5, scene);
 
-		    var material = new BABYLON.StandardMaterial("boxMat", scene);
+				var boxMat = new BABYLON.StandardMaterial('Box', scene);
 
-		    // material.diffuseTexture = new BABYLON.Texture("../../../assets/images/logo.jpeg", scene);
-		    material.alpha = 0.5;
-		    material.backFaceCulling = false;
+				boxMat.diffuseColor = new BABYLON.Color3(1, 0, 0);
+				boxMat.emissiveColor = new BABYLON.Color3(0.2, 0, 0);
+				boxMat.emissiveTexture = new BABYLON.Texture(
+					// '../assets/images/heightMap.png',
+					"../assets/images/logo1.jpg",
+					// "../assets/images/logo.jpeg",
+					scene, true, true
+				);
 
-		    box.material = material;
+				box.material = boxMat;
 
-		    var particleSystem = new BABYLON.ParticleSystem("particles", 1, scene);
-		    particleSystem.particleTexture = new BABYLON.Texture("../assets/images/logo.jpeg", scene);
-		    particleSystem.minAngularSpeed = -0.5;
-		    particleSystem.maxAngularSpeed = 0.5;
-		    particleSystem.minSize = 0.5;
-		    particleSystem.maxSize = 2.0;
-		    particleSystem.minLifeTime = 0.5;
-		    particleSystem.maxLifeTime = 1.0;
-		    particleSystem.emitter = box;
-		    particleSystem.emitRate = 300;
-		    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-		    particleSystem.minEmitBox = new BABYLON.Vector3(0, 0.1, 0);
-		    particleSystem.maxEmitBox = new BABYLON.Vector3(0, -0.1, 0);
-		    particleSystem.gravity = new BABYLON.Vector3(0, -0.5, 0);
-		    particleSystem.start();
+				var sepiaKernelMatrix = BABYLON.Matrix.FromValues(
+						0.393, 0.349, 0.272, 0,
+						0.769, 0.686, 0.534, 0,
+						0.189, 0.168, 0.131, 0,
+						0, 0, 0, 0
+				);
+				var postProcess = new BABYLON.ConvolutionPostProcess("Sepia", sepiaKernelMatrix,1.0, camera);
 
 				return scene;
 			}

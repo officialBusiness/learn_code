@@ -181,12 +181,17 @@
 
 				mesh.skeleton = skeleton;
 
-				bone1._matrix = BABYLON.Matrix.FromArray([
+				const newBoneMatrix = BABYLON.Matrix.FromArray([
 					1, 0, 0, 0,
 					0, 1, 0, 0,
 					0, 0, 1, 0,
 					25, 25, 0, 1,
 				]);
+
+				bone1._matrix = newBoneMatrix
+
+				// 没效果， 感觉是bug
+				// bone1.updateMatrix(newBoneMatrix)
 			}
 
 			const scene = CreateScene(engine);
