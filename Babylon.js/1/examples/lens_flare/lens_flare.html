@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" type="image/png" href="../../../favicon.ico">
+		<title>lens_flare</title>
+		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
+
+		<script type="text/javascript" src="../../source/Collisions/babylon.pickingInfo.js"></script>
+
+		<script type="text/javascript" src="../../source/LensFlare/babylon.lensFlare.js"></script>
+		<script type="text/javascript" src="../../source/LensFlare/babylon.lensFlareSystem.js"></script>
+
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
+		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
+
+		<script type="text/javascript" src="../../source/Rendering/babylon.renderingManager.js"></script>
+		<script type="text/javascript" src="../../source/Rendering/babylon.renderingGroup.js"></script>
+
+		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
+		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
+		<script type="text/javascript" src="../../source/babylon.node.js"></script>
+
+		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
+		<script type="text/javascript" src="../../source/Cameras/babylon.arcRotateCamera.js"></script>
+		<script type="text/javascript" src="../../source/Tools/babylon.math.js"></script>
+
+		<script type="text/javascript" src="../../source/Materials/babylon.effect.js"></script>
+		<script type="text/javascript" src="../../source/Materials/babylon.material.js"></script>
+		<script type="text/javascript" src="../../source/Materials/babylon.standardMaterial.js"></script>
+
+		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
+
+		<script type="text/javascript" src="../../source/Lights/babylon.light.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.directionalLight.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.hemisphericLight.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.pointLight.js"></script>
+		<script type="text/javascript" src="../../source/Lights/babylon.spotLight.js"></script>
+
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.baseTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.cubeTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.dynamicTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.renderTargetTexture.js"></script>
+		<script type="text/javascript" src="../../source/Materials/textures/babylon.mirrorTexture.js"></script>
+
+
+		<script type="text/javascript" src="../../source/Culling/Octrees/babylon.octree.js"></script>
+		<script type="text/javascript" src="../../source/Culling/Octrees/babylon.octreeBlock.js"></script>
+
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
+		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
+
+		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
+	</head>
+	<!-- 简单展示 LensFlareSystem 效果 -->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+			import createAxesBox from '../mesh/helper/axes_box_helper.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			var engine = new BABYLON.Engine(canvas, true);
+
+			window.engine = engine;
+
+			// 强制绘制线
+			// engine.forceWireframe = true;
+
+			BABYLON.Engine.ShadersRepository = '../../source/Shaders/';
+
+			var CreateScene = function (engine) {
+
+				var scene = new BABYLON.Scene(engine);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
+
+				camera.alpha = 2.8;
+				camera.beta = 2.25;
+				camera.attachControl(canvas);
+
+				var light0 = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(21.84, 50, -28.26), scene);
+
+				// Creating light sphere
+				// var lightSphere0 = BABYLON.Mesh.CreateSphere("Sphere0", 16, 0.5, scene);
+
+				// lightSphere0.material = new BABYLON.StandardMaterial("white", scene);
+				// lightSphere0.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
+				// lightSphere0.material.specularColor = new BABYLON.Color3(0, 0, 0);
+				// lightSphere0.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+
+				// lightSphere0.position = light0.position;
+
+				var lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", light0, scene);
+				var flare00 = new BABYLON.LensFlare(0.2, 0, new BABYLON.Color3(1, 1, 1), "../assets/images/lens_flare/lens5.png", lensFlareSystem);
+				var flare01 = new BABYLON.LensFlare(0.5, 0.2, new BABYLON.Color3(0.5, 0.5, 1), "../assets/images/lens_flare/lens4.png", lensFlareSystem);
+				var flare02 = new BABYLON.LensFlare(0.2, 1.0, new BABYLON.Color3(1, 1, 1), "../assets/images/lens_flare/lens4.png", lensFlareSystem);
+				var flare03 = new BABYLON.LensFlare(0.4, 0.4, new BABYLON.Color3(1, 0.5, 1), "../assets/images/lens_flare/Flare.png", lensFlareSystem);
+				var flare04 = new BABYLON.LensFlare(0.1, 0.6, new BABYLON.Color3(1, 1, 1), "../assets/images/lens_flare/lens5.png", lensFlareSystem);
+				var flare05 = new BABYLON.LensFlare(0.3, 0.8, new BABYLON.Color3(1, 1, 1), "../assets/images/lens_flare/lens4.png", lensFlareSystem);
+
+
+				// Skybox
+				var skybox = BABYLON.Mesh.CreateBox("skyBox", 100.0, scene);
+				var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+				skyboxMaterial.backFaceCulling = false;
+				skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("../assets/images/skybox/skybox", scene);
+				skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+				skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+				skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+				skybox.material = skyboxMaterial;
+
+				initGui(light0, lensFlareSystem);
+
+				return scene;
+			}
+
+			const gui = new lil.GUI();
+
+			function initGui(pointLight, lensFlareSystem){
+
+				const pointFolder = gui.addFolder('PointLight');
+
+				pointFolder.add( pointLight, '_isEnabled' ).name('isEnabled');
+				pointFolder.add( pointLight.position, 'x', -100, 100 ).name('position.x');
+				pointFolder.add( pointLight.position, 'y', -100, 100 ).name('position.y');
+				pointFolder.add( pointLight.position, 'z', -100, 100 ).name('position.z');
+
+				pointFolder.addColor( pointLight, 'diffuse' );
+				pointFolder.addColor( pointLight, 'specular' );
+
+				lensFlareSystem.lensFlares.forEach((lensFlare)=>{
+					initFlareGui(lensFlare);
+				});
+			}
+
+			function initFlareGui(lensFlare){
+
+				const lensFlareFolder = gui.addFolder('lensFlare');
+
+
+				lensFlareFolder.add( lensFlare, 'position', -10, 10 ).name('position');
+				lensFlareFolder.add( lensFlare, 'size', -10, 10 ).name('size');
+        lensFlareFolder.addColor( lensFlare, 'color' );
+			}
+
+			const scene = CreateScene(engine);
+
+			engine.runRenderLoop(()=>{
+				scene.render();
+			});
+
+		</script>
+	</body>
+</html>

@@ -11,6 +11,8 @@
 		<script type="text/javascript" src="../source/Tools/babylon.tools.js"></script>
 		<script type="text/javascript" src="../source/Tools/babylon.database.js"></script>
 
+		<script type="text/javascript" src="../source/Collisions/babylon.pickingInfo.js"></script>
+
 		<script type="text/javascript" src="../source/PostProcess/babylon.postProcess.js"></script>
 		<script type="text/javascript" src="../source/PostProcess/babylon.postProcessManager.js"></script>
 
@@ -93,11 +95,15 @@
 
 				const
 					{ clientX, clientY } = event,
-					pick = scene.pick(clientX, clientY),
-					pickedPoint = pick.pickedPoint;
+					pick = scene.pick(clientX, clientY);
 
-				box.position.x = pickedPoint.x;
-				box.position.y = pickedPoint.y;
+				if( pick && pick.pickedPoint ){
+
+					const pickedPoint = pick.pickedPoint;
+
+					box.position.x = pickedPoint.x;
+					box.position.y = pickedPoint.y;
+				}
 			});
 
 			engine.runRenderLoop(()=>{

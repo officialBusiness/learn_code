@@ -397,9 +397,10 @@
 
 ## Babylon.js-1.6.0: 添加完善 PostProcess 后处理相关 js 代码和 shader 代码
 
-<!--
+## Babylon.js-1.7.0: 添加 LensFlareSystem 相关、 PickingInfo 相关 , camera 添加距离等功能
 
-## Babylon.js-1.7.0
+
+<!--
 
 ## Babylon.js-1.7.1
 
