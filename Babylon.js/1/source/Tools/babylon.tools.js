@@ -151,6 +151,7 @@ var BABYLON = BABYLON || {};
 
     BABYLON.Tools.LoadImage = function (url, onload, onerror, database) {  
         var img = new Image();
+        img.crossOrigin = 'anonymous';
 
         img.onload = function () {
             onload(img);
