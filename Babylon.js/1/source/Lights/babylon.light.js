@@ -4,6 +4,7 @@
     BABYLON.Light = function (name, scene) {
         this.name = name;
         this.id = name;
+        this._childrenFlag = true;
 
         this._scene = scene;
 
@@ -11,6 +12,9 @@
         
         // Animations
         this.animations = [];
+        
+        // Exclusions
+        this.excludedMeshes = [];
     };
     
     BABYLON.Light.prototype = Object.create(BABYLON.Node.prototype);
