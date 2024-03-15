@@ -13,6 +13,8 @@
 
 		<script type="text/javascript" src="../source/Collisions/babylon.pickingInfo.js"></script>
 
+		<script type="text/javascript" src="../source/Math/babylon.math.js"></script>
+
 		<script type="text/javascript" src="../source/PostProcess/babylon.postProcess.js"></script>
 		<script type="text/javascript" src="../source/PostProcess/babylon.postProcessManager.js"></script>
 
@@ -25,7 +27,6 @@
 
 		<script type="text/javascript" src="../source/Cameras/babylon.camera.js"></script>
 		<script type="text/javascript" src="../source/Cameras/babylon.arcRotateCamera.js"></script>
-		<script type="text/javascript" src="../source/Tools/babylon.math.js"></script>
 
 		<script type="text/javascript" src="../source/Materials/babylon.effect.js"></script>
 		<script type="text/javascript" src="../source/Materials/babylon.material.js"></script>
@@ -38,6 +39,7 @@
 		<script type="text/javascript" src="../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../source/Mesh/babylon.mesh.js"></script>
 		<script type="text/javascript" src="../source/Mesh/babylon.subMesh.js"></script>
+		<script type="text/javascript" src="../source/Mesh/babylon.mesh.vertexData.js"></script>
 
 		<script type="text/javascript" src="../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../source/Culling/babylon.boundingBox.js"></script>
@@ -93,9 +95,13 @@
 
 			canvas.addEventListener('mousedown', (event)=>{
 
+				engine.setHardwareScalingLevel(1);
+
 				const
 					{ clientX, clientY } = event,
 					pick = scene.pick(clientX, clientY);
+
+				console.log('pick:', pick);
 
 				if( pick && pick.pickedPoint ){
 
@@ -104,6 +110,8 @@
 					box.position.x = pickedPoint.x;
 					box.position.y = pickedPoint.y;
 				}
+
+				engine.setHardwareScalingLevel(1.0 / (window.devicePixelRatio || 1.0));
 			});
 
 			engine.runRenderLoop(()=>{

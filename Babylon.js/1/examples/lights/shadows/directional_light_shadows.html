@@ -11,6 +11,8 @@
 		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
 		<script type="text/javascript" src="../../../source/Tools/babylon.database.js"></script>
 
+		<script type="text/javascript" src="../../../source/Math/babylon.math.js"></script>
+
 		<script type="text/javascript" src="../../../source/PostProcess/babylon.postProcess.js"></script>
 		<script type="text/javascript" src="../../../source/PostProcess/babylon.postProcessManager.js"></script>
 
@@ -23,7 +25,6 @@
 
 		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
 		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
-		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
 
 		<script type="text/javascript" src="../../../source/Materials/babylon.effect.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
@@ -48,6 +49,7 @@
 		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.vertexData.js"></script>
 
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
@@ -56,7 +58,7 @@
 		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
-		SpotLight 光照添加阴影效果
+		DirectionalLight 光照添加阴影效果
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -146,7 +148,7 @@
 
         const directionalFolder = gui.addFolder('DirectionalLight');
 
-        directionalFolder.add( directionalLight, 'isEnabled' );
+        directionalFolder.add( directionalLight, '_isEnabled' );
         directionalFolder.add( directionalLight.direction, 'x', -1, 1 ).name('direction.x');
         directionalFolder.add( directionalLight.direction, 'y', -1, 1 ).name('direction.y');
         directionalFolder.add( directionalLight.direction, 'z', -1, 1 ).name('direction.z');

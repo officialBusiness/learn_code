@@ -5,12 +5,14 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" type="image/png" href="../../../../favicon.ico">
-		<title>rabbit</title>
+		<title>texture</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
 		<script type="text/javascript" src="../../../source/Tools/babylon.database.js"></script>
-		<script type="text/javascript" src="../../../source/Tools/babylon.sceneLoader.js"></script>
+		<script type="text/javascript" src="../../../source/Tools/babylon.tools.dds.js"></script>
+
+		<script type="text/javascript" src="../../../source/Math/babylon.math.js"></script>
 
 		<script type="text/javascript" src="../../../source/PostProcess/babylon.postProcess.js"></script>
 		<script type="text/javascript" src="../../../source/PostProcess/babylon.postProcessManager.js"></script>
@@ -18,24 +20,12 @@
 		<script type="text/javascript" src="../../../source/Rendering/babylon.renderingManager.js"></script>
 		<script type="text/javascript" src="../../../source/Rendering/babylon.renderingGroup.js"></script>
 
-		<script type="text/javascript" src="../../../source/Animations/babylon.animatable.js"></script>
-		<script type="text/javascript" src="../../../source/Animations/babylon.animation.js"></script>
-
 		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
 		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
 		<script type="text/javascript" src="../../../source/babylon.node.js"></script>
 
 		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
 		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
-		<script type="text/javascript" src="../../../source/Tools/babylon.math.js"></script>
-
-		<script type="text/javascript" src="../../../source/Lights/Shadows/babylon.shadowGenerator.js"></script>
-
-		<script type="text/javascript" src="../../../source/Lights/babylon.light.js"></script>
-		<script type="text/javascript" src="../../../source/Lights/babylon.directionalLight.js"></script>
-		<script type="text/javascript" src="../../../source/Lights/babylon.hemisphericLight.js"></script>
-		<script type="text/javascript" src="../../../source/Lights/babylon.pointLight.js"></script>
-		<script type="text/javascript" src="../../../source/Lights/babylon.spotLight.js"></script>
 
 		<script type="text/javascript" src="../../../source/Materials/babylon.effect.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
@@ -44,26 +34,17 @@
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
 		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.cubeTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.dynamicTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.renderTargetTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.mirrorTexture.js"></script>
-
-		<script type="text/javascript" src="../../../source/Bones/babylon.bone.js"></script>
-		<script type="text/javascript" src="../../../source/Bones/babylon.skeleton.js"></script>
 
 		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.vertexData.js"></script>
 		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
 
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
 		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
-
-		<script type="text/javascript" src="../../../source/Sprites/babylon.sprite.js"></script>
-		<script type="text/javascript" src="../../../source/Sprites/babylon.spriteManager.js"></script>
 	</head>
-	<!-- 简单展示 SceneLoader babylon 效果 -->
+	<!-- 简单展示 standard 上的纹理贴图 -->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
@@ -82,43 +63,33 @@
 			var CreateScene = function (engine) {
 
 				var scene = new BABYLON.Scene(engine);
-				var light = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(0, -0.5, -1.0), scene);
-				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, new BABYLON.Vector3(0, 30, 0), scene);
-				camera.setPosition(new BABYLON.Vector3(20, 70, 120));
-				light.position = new BABYLON.Vector3(20, 150, 70);
 
-				scene.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+				var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 10, BABYLON.Vector3.Zero(), scene);
 
-				// Ground
-				var ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
-				var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
-				groundMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-				groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-				ground.material = groundMaterial;
-				ground.receiveShadows = true;
+				camera.setPosition(new BABYLON.Vector3(0, 0, -30));
+				camera.attachControl(canvas);
 
-				// Shadows
-				var shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+				var plane = BABYLON.Mesh.CreatePlane("Plane", 5, scene);
 
-				// Meshes
-				BABYLON.SceneLoader.ImportMesh("Rabbit", "../../assets/scenes/rabbit/", "Rabbit.format.babylon", scene, function (newMeshes, particleSystems, skeletons) {
-					var rabbit = newMeshes[1];
+				var planeMat = new BABYLON.StandardMaterial('plane', scene);
 
-					rabbit.scaling = new BABYLON.Vector3(0.4, 0.4, 0.4);
-					shadowGenerator.getShadowMap().renderList.push(rabbit);
+				planeMat.emissiveTexture = new BABYLON.Texture(
+					"../../assets/images/dds/test-dxt1.dds",
+					// "../../assets/images/dds/test-dxt5.dds",
+					// "../../assets/images/logo1.jpg",
+					scene, true, true
+				);
 
-					scene.beginAnimation(skeletons[0], 0, 100, true, 0.8);
-				});
+				plane.material = planeMat;
 
 				return scene;
 			}
 
-
 			const scene = CreateScene(engine);
 
 
-			engine.runRenderLoop(()=>{
 
+			engine.runRenderLoop(()=>{
 				scene.render();
 			});
 

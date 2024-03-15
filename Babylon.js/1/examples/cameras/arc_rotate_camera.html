@@ -8,9 +8,10 @@
 		<title>arc_rotate_camera</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../source/Tools/babylon.math.js"></script>
 		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
 		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
+
+		<script type="text/javascript" src="../../source/Math/babylon.math.js"></script>
 
 		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
 		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
@@ -38,6 +39,7 @@
 		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
 		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
+		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.vertexData.js"></script>
 
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
 		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
@@ -57,6 +59,8 @@
 			upperBetaLimit
 			lowerRadiusLimit
 			upperRadiusLimit
+
+		竖直旋转为负的话，会有镜像变化的情况
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -114,7 +118,7 @@
 				cameraFolder.add( camera, 'lowerAlphaLimit', -Math.PI, Math.PI ).name('水平旋转最小角度');
 				cameraFolder.add( camera, 'upperAlphaLimit', -Math.PI, Math.PI ).name('水平旋转最大角度');
 
-				camera.lowerBetaLimit = -Math.PI / 4;
+				camera.lowerBetaLimit = 0.01;
 				camera.upperBetaLimit = Math.PI / 4;
 				cameraFolder.add( camera, 'lowerBetaLimit', -Math.PI, Math.PI ).name('竖直旋转最小角度');
 				cameraFolder.add( camera, 'upperBetaLimit', -Math.PI, Math.PI ).name('竖直旋转最大角度');
