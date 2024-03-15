@@ -409,13 +409,12 @@
 
 ## Babylon.js-1.8.5: 修改 node 相关
 
-## Babylon.js-1.9.0: 有案例的最后的版本 ;
+## Babylon.js-1.9.0: 有案例的最后的版本 ; 添加 Serialize ; StandardMaterial 添加 legacydefault shader
 
+## Babylon.js-1.10.0: 添加相机 controller , 添加 OculusOrientedCamera ; 添加 dds 图像展示; 添加 filter 后处理 ;部分代码文件迁移调整
 
 
 <!--
-
-## Babylon.js-1.10.0
 
 ## Babylon.js-1.11: 有纯 js 的最后的版本
 
