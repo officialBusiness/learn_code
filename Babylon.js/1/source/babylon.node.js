@@ -15,6 +15,7 @@ var BABYLON = BABYLON || {};
     BABYLON.Node.prototype._childrenFlag = -1;
     BABYLON.Node.prototype._isReady = true;
     BABYLON.Node.prototype._isEnabled = true;
+    BABYLON.Node.prototype._currentRenderId = -1;
 
     // Cache
     BABYLON.Node.prototype._cache = null;
@@ -50,20 +51,16 @@ var BABYLON = BABYLON || {};
         return true;
     };
 
-    BABYLON.Node.prototype._syncChildFlag = function() {
-        this._childrenFlag = this.parent ? this.parent._childrenFlag : this._scene.getRenderId();
-    };
-
     BABYLON.Node.prototype.isSynchronizedWithParent = function() {
-        return this.parent ? !this.parent._needToSynchonizeChildren(this._childrenFlag) : true;
+        return this.parent ? !this.parent._currentRenderId === this._currentRenderId : true;
     };
 
     BABYLON.Node.prototype.isSynchronized = function (updateCache) {
         var check = this.hasNewParent();
 
-        check = check ? true : !this.isSynchronizedWithParent();
+        check = check || !this.isSynchronizedWithParent();
 
-        check = check ? true : !this._isSynchronized();
+        check = check || !this._isSynchronized();
 
         if (updateCache)
             this.updateCache(true);
@@ -79,10 +76,6 @@ var BABYLON = BABYLON || {};
             this._cache.parent = this.parent;
 
         return true;
-    };
-
-    BABYLON.Node.prototype._needToSynchonizeChildren = function (childFlag) {
-        return this._childrenFlag != childFlag;
     };
 
     BABYLON.Node.prototype.isReady = function () {
