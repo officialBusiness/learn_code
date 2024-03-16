@@ -22,18 +22,16 @@ THREE.Geometry.prototype = {
 			face = this.faces[ f ];
 			face.centroid.set( 0, 0, 0 );
 
+			face.centroid.addSelf( this.vertices[ face.a ].position );
+			face.centroid.addSelf( this.vertices[ face.b ].position );
+			face.centroid.addSelf( this.vertices[ face.c ].position );
+
 			if ( face instanceof THREE.Face3 ) {
 
-				face.centroid.addSelf( this.vertices[ face.a ].position );
-				face.centroid.addSelf( this.vertices[ face.b ].position );
-				face.centroid.addSelf( this.vertices[ face.c ].position );
 				face.centroid.divideScalar( 3 );
 
 			} else if ( face instanceof THREE.Face4 ) {
 
-				face.centroid.addSelf( this.vertices[ face.a ].position );
-				face.centroid.addSelf( this.vertices[ face.b ].position );
-				face.centroid.addSelf( this.vertices[ face.c ].position );
 				face.centroid.addSelf( this.vertices[ face.d ].position );
 				face.centroid.divideScalar( 4 );
 
@@ -45,7 +43,8 @@ THREE.Geometry.prototype = {
 
 	computeNormals: function ( useVertexNormals ) {
 
-		var n, nl, v, vl, vertex, f, fl, face, vA, vB, vC, cb = new THREE.Vector3(), ab = new THREE.Vector3();
+		var n, nl, v, vl, vertex, f, fl, face, vA, vB, vC,
+		cb = new THREE.Vector3(), ab = new THREE.Vector3();
 
 		for ( v = 0, vl = this.vertices.length; v < vl; v++ ) {
 
