@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="./icon.png">
+		<title>template</title>
+		<link href="./default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../source/src/Three.js"></script>
+		<script type="text/javascript" src="../source/src/core/Color.js"></script>
+		<script type="text/javascript" src="../source/src/core/Vector2.js"></script>
+		<script type="text/javascript" src="../source/src/core/Vector3.js"></script>
+		<script type="text/javascript" src="../source/src/core/Vector4.js"></script>
+		<script type="text/javascript" src="../source/src/core/Rectangle.js"></script>
+		<script type="text/javascript" src="../source/src/core/Matrix3.js"></script>
+		<script type="text/javascript" src="../source/src/core/Matrix4.js"></script>
+		<script type="text/javascript" src="../source/src/core/Vertex.js"></script>
+		<script type="text/javascript" src="../source/src/core/Face3.js"></script>
+		<script type="text/javascript" src="../source/src/core/Face4.js"></script>
+		<script type="text/javascript" src="../source/src/core/UV.js"></script>
+		<script type="text/javascript" src="../source/src/core/Geometry.js"></script>
+		<script type="text/javascript" src="../source/src/cameras/Camera.js"></script>
+		<script type="text/javascript" src="../source/src/lights/Light.js"></script>
+		<script type="text/javascript" src="../source/src/lights/AmbientLight.js"></script>
+		<script type="text/javascript" src="../source/src/lights/DirectionalLight.js"></script>
+		<script type="text/javascript" src="../source/src/lights/PointLight.js"></script>
+		<script type="text/javascript" src="../source/src/objects/Object3D.js"></script>
+		<script type="text/javascript" src="../source/src/objects/Particle.js"></script>
+		<script type="text/javascript" src="../source/src/objects/Line.js"></script>
+		<script type="text/javascript" src="../source/src/objects/Mesh.js"></script>
+		<script type="text/javascript" src="../source/src/materials/LineColorMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshPhongMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshBitmapMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshColorFillMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshColorStrokeMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshFaceMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/ParticleCircleMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/ParticleBitmapMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/scenes/Scene.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/Projector.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/CanvasRenderer.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/SVGRenderer.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/WebGLRenderer.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableFace3.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableFace4.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableParticle.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableLine.js"></script>
+
+		<script type="text/javascript" src="../source/examples/geometry/Bird.js"></script>
+		<script type="text/javascript" src="../source/examples/geometry/Qrcode.js"></script>
+		<script type="text/javascript" src="../source/examples/geometry/primitives/ClickCube.js"></script>
+		<script type="text/javascript" src="../source/examples/geometry/primitives/Cube.js"></script>
+		<script type="text/javascript" src="../source/examples/geometry/primitives/Cylinder.js"></script>
+		<script type="text/javascript" src="../source/examples/geometry/primitives/Plane.js"></script>
+		<script type="text/javascript" src="../source/examples/geometry/primitives/Sphere.js"></script>
+
+		<script type="text/javascript" src="../source/examples/js/Stats.js"></script>
+
+		<script type="text/javascript" src="../libs/lil-gui/lil-gui.umd.min.js"></script>
+	</head>
+	<!--
+		案例模板
+	-->
+	<body>
+		<script type="module">
+
+			var webglRenderer = new THREE.WebGLRenderer();
+
+			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
+
+			webglRenderer.domElement.id = 'renderCanvas';
+
+			document.body.appendChild( webglRenderer.domElement );
+
+			var scene = new THREE.Scene();
+
+			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
+
+			camera.position.z = 500;
+
+			var plane = new Plane(100, 100, 100, 100);
+
+			var mesh = new THREE.Mesh( plane, new THREE.MeshColorFillMaterial( 0x0000ff, 0.5 ) );
+			mesh.position.x = 0;
+			mesh.rotation.x = 0;
+			mesh.rotation.y = 0;
+			mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
+			mesh.updateMatrix();
+
+			scene.add(mesh);
+
+			var ambient = new THREE.AmbientLight( 0x80ffff );
+			scene.addLight( ambient );
+
+			var stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
+			loop();
+			function loop() {
+
+				mesh.rotation.y += 0.02;
+				mesh.updateMatrix();
+
+				webglRenderer.render( scene, camera );
+
+				stats.update();
+
+				requestAnimationFrame(loop)
+			}
+		</script>
+	</body>
+</html>
