@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>camera</title>
+		<title>mesh_basic_material</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -106,72 +106,136 @@
 
 			camera.position.z = 500;
 
-			var cube = new Cube(100, 100, 100);
+			var plane = new THREE.Geometry();
 
-			var mesh = new THREE.Mesh( cube,
-				new THREE.MeshBasicMaterial({
-					color: 0x0000ff,
-				})
+			plane.vertices.push(
+				new THREE.Vertex( new THREE.Vector3(-200, 200,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 200, 200,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3(-200,-200,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 200,-200,  0 ) )
 			);
-			mesh.position.x = 0;
-			mesh.rotation.x = 0;
-			mesh.rotation.y = 0;
-			mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
-			mesh.updateMatrix();
+
+			plane.faces.push(
+				new THREE.Face4( 0, 2, 3, 1 )
+			);
+
+			plane.uvs.push(
+				[
+					new THREE.UV(0, 0 ),
+					new THREE.UV(0, 1 ),
+					new THREE.UV(1, 1 ),
+					new THREE.UV(1, 0 )
+				]
+			);
+
+			plane.computeCentroids();
+			plane.computeNormals();
+
+			function nearest_pow2(n) {
+				var l = Math.log(n) / Math.LN2;
+				return Math.pow( 2, Math.round(l) );
+			}
+
+			function addTexture(url){
+
+				var img = new Image();
+				img.src = url;
+
+				var canvasElement = document.createElement('canvas');
+
+				img.onload = ()=>{
+
+					canvasElement.width = nearest_pow2(img.width);
+					canvasElement.height = nearest_pow2(img.height);
+
+					canvasElement.getContext("2d").drawImage( img, 0, 0, canvasElement.width, canvasElement.height );
+
+					canvasElement.loaded = true;
+				}
+
+				return canvasElement;
+			}
+
+			var r = "textures/cube/Escher/";
+
+			var urls = [ r + "px.jpg", r + "nx.jpg",
+						 r + "py.jpg", r + "ny.jpg",
+						 r + "pz.jpg", r + "nz.jpg" ];
+
+			var meshBasicMaterial = new THREE.MeshBasicMaterial({
+				color: 0xffffff,
+				map: new THREE.Texture(
+					addTexture('../assets/images/logo.jpeg')
+				),
+				env_map: new THREE.TextureCube( ImageUtils.loadArray(
+						[
+							"px.jpg", "nx.jpg",
+							"py.jpg", "ny.jpg",
+							"pz.jpg", "nz.jpg"
+						].map((url)=>{
+							 	return "../assets/images/cube/Escher/" + url;
+						})
+					)
+				),
+			})
+			var mesh = new THREE.Mesh( plane, meshBasicMaterial );
 
 			scene.addObject(mesh);
-
-			var ambient = new THREE.AmbientLight( 0x80ffff );
-			scene.addLight( ambient );
 
 			var stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-			initGui(camera);
-			function initGui(camera){
+
+			initGui();
+			function initGui(){
 
 				const gui = new lil.GUI();
 
-				const updateMatrix = ()=>{
-					camera.updateMatrix();
-				}
+				initMeshBasicMaterial(gui, meshBasicMaterial, 'meshBasicMaterial')
 
-				gui.add(camera, 'autoUpdateMatrix')
-
-				const matrixFolder = gui.addFolder('matrix');
-
-				matrixFolder.add(camera.position, 'x').name('position.x').onChange(updateMatrix);
-				matrixFolder.add(camera.position, 'y').name('position.y').onChange(updateMatrix);
-				matrixFolder.add(camera.position, 'z').name('position.z').onChange(updateMatrix);
-
-				matrixFolder.add(camera.target.position, 'x').name('target.x').onChange(updateMatrix);
-				matrixFolder.add(camera.target.position, 'y').name('target.y').onChange(updateMatrix);
-				matrixFolder.add(camera.target.position, 'z').name('target.z').onChange(updateMatrix);
-
-				matrixFolder.add(camera.up, 'x', -1, 1).name('up.x').onChange(updateMatrix);
-				matrixFolder.add(camera.up, 'y', -1, 1).name('up.y').onChange(updateMatrix);
-				matrixFolder.add(camera.up, 'z', -1, 1).name('up.z').onChange(updateMatrix);
+			}
 
 
-				const updateProjectionMatrix = ()=>{
-					camera.projectionMatrix = THREE.Matrix4.makePerspective( camera.fov, camera.aspect, camera.near, camera.far );
-				}
+			function initMeshBasicMaterial(gui, material, name){
 
-				const projectionMatrixFolder = gui.addFolder('projectionMatrix');
+				const materialFolder = gui.addFolder(name);
 
-				projectionMatrixFolder.add( camera, 'fov', 0, 180 ).onChange(updateProjectionMatrix);
-				projectionMatrixFolder.add( camera, 'aspect', 0, 4 ).onChange(updateProjectionMatrix);
-				projectionMatrixFolder.add( camera, 'near', 0, 4 ).onChange(updateProjectionMatrix);
-				projectionMatrixFolder.add( camera, 'far', 4, 10000 ).onChange(updateProjectionMatrix);
+				materialFolder.addColor(material, 'color');
+
+				materialFolder.add(material, 'combine', {
+					'Multiply': THREE.Multiply,
+					'Mix': THREE.Mix,
+				});
+				materialFolder.add(material, 'reflectivity', 0, 1);
+				materialFolder.add(material, 'refraction_ratio', 0, 10);
+
+				materialFolder.add(material.env_map, 'mapping', {
+					'UVMapping': THREE.UVMapping,
+					'ReflectionMapping': THREE.ReflectionMapping,
+					'RefractionMapping': THREE.RefractionMapping,
+				}).name('env_map.mapping');
+
+				materialFolder.add(material, 'opacity', 0, 1);
+				materialFolder.add(material, 'shading', {
+					'FlatShading': THREE.FlatShading,
+					'SmoothShading': THREE.SmoothShading,
+				});
+				materialFolder.add(material, 'blending', {
+					'NormalBlending': THREE.NormalBlending,
+					'AdditiveBlending': THREE.AdditiveBlending,
+					'SubtractiveBlending': THREE.SubtractiveBlending,
+				})
+
+				materialFolder.add(material, 'wireframe');
 			}
 
 			loop();
 			function loop() {
 
-				mesh.rotation.y += 0.05;
-				mesh.updateMatrix();
+				// mesh.rotation.y += 0.001;
+				// mesh.updateMatrix();
 
 				webglRenderer.render( scene, camera );
 

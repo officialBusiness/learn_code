@@ -9,6 +9,7 @@
 		<link href="./default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../source/src/Three.js"></script>
+
 		<script type="text/javascript" src="../source/src/core/Color.js"></script>
 		<script type="text/javascript" src="../source/src/core/Vector2.js"></script>
 		<script type="text/javascript" src="../source/src/core/Vector3.js"></script>
@@ -21,40 +22,59 @@
 		<script type="text/javascript" src="../source/src/core/Face4.js"></script>
 		<script type="text/javascript" src="../source/src/core/UV.js"></script>
 		<script type="text/javascript" src="../source/src/core/Geometry.js"></script>
+		<script type="text/javascript" src="../source/src/core/Ray.js"></script>
+
 		<script type="text/javascript" src="../source/src/cameras/Camera.js"></script>
+
 		<script type="text/javascript" src="../source/src/lights/Light.js"></script>
 		<script type="text/javascript" src="../source/src/lights/AmbientLight.js"></script>
 		<script type="text/javascript" src="../source/src/lights/DirectionalLight.js"></script>
 		<script type="text/javascript" src="../source/src/lights/PointLight.js"></script>
+
 		<script type="text/javascript" src="../source/src/objects/Object3D.js"></script>
 		<script type="text/javascript" src="../source/src/objects/Particle.js"></script>
 		<script type="text/javascript" src="../source/src/objects/Line.js"></script>
 		<script type="text/javascript" src="../source/src/objects/Mesh.js"></script>
-		<script type="text/javascript" src="../source/src/materials/LineColorMaterial.js"></script>
-		<script type="text/javascript" src="../source/src/materials/MeshPhongMaterial.js"></script>
-		<script type="text/javascript" src="../source/src/materials/MeshBitmapMaterial.js"></script>
-		<script type="text/javascript" src="../source/src/materials/MeshColorFillMaterial.js"></script>
-		<script type="text/javascript" src="../source/src/materials/MeshColorStrokeMaterial.js"></script>
+
+		<script type="text/javascript" src="../source/src/materials/textures/Texture.js"></script>
+		<script type="text/javascript" src="../source/src/materials/textures/TextureCube.js"></script>
+
+		<script type="text/javascript" src="../source/src/materials/LineBasicMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/Material.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshBasicMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshCubeMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshDepthMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshLambertMaterial.js"></script>
 		<script type="text/javascript" src="../source/src/materials/MeshFaceMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshNormalMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshPhongMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/MeshShaderMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/ParticleBasicMaterial.js"></script>
 		<script type="text/javascript" src="../source/src/materials/ParticleCircleMaterial.js"></script>
-		<script type="text/javascript" src="../source/src/materials/ParticleBitmapMaterial.js"></script>
+		<script type="text/javascript" src="../source/src/materials/ParticleDOMMaterial.js"></script>
+
 		<script type="text/javascript" src="../source/src/scenes/Scene.js"></script>
-		<script type="text/javascript" src="../source/src/renderers/Projector.js"></script>
+
 		<script type="text/javascript" src="../source/src/renderers/CanvasRenderer.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/DOMRenderer.js"></script>
+		<script type="text/javascript" src="../source/src/renderers/Projector.js"></script>
 		<script type="text/javascript" src="../source/src/renderers/SVGRenderer.js"></script>
 		<script type="text/javascript" src="../source/src/renderers/WebGLRenderer.js"></script>
 		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableFace3.js"></script>
-		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableFace4.js"></script>
 		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableParticle.js"></script>
 		<script type="text/javascript" src="../source/src/renderers/renderables/RenderableLine.js"></script>
 
-		<script type="text/javascript" src="../source/examples/geometry/Bird.js"></script>
-		<script type="text/javascript" src="../source/examples/geometry/Qrcode.js"></script>
-		<script type="text/javascript" src="../source/examples/geometry/primitives/ClickCube.js"></script>
-		<script type="text/javascript" src="../source/examples/geometry/primitives/Cube.js"></script>
-		<script type="text/javascript" src="../source/examples/geometry/primitives/Cylinder.js"></script>
-		<script type="text/javascript" src="../source/examples/geometry/primitives/Plane.js"></script>
-		<script type="text/javascript" src="../source/examples/geometry/primitives/Sphere.js"></script>
+		<script type="text/javascript" src="../source/src/extras/primitives/Cube.js"></script>
+		<script type="text/javascript" src="../source/src/extras/primitives/Cylinder.js"></script>
+		<script type="text/javascript" src="../source/src/extras/primitives/Plane.js"></script>
+		<script type="text/javascript" src="../source/src/extras/primitives/Sphere.js"></script>
+
+		<script type="text/javascript" src="../source/src/extras/io/Loader.js"></script>
+
+		<script type="text/javascript" src="../source/src/extras/GeometryUtils.js"></script>
+		<script type="text/javascript" src="../source/src/extras/ImageUtils.js"></script>
+		<script type="text/javascript" src="../source/src/extras/SceneUtils.js"></script>
+		<script type="text/javascript" src="../source/src/extras/ShaderUtils.js"></script>
 
 		<script type="text/javascript" src="../source/examples/js/Stats.js"></script>
 
@@ -66,7 +86,9 @@
 	<body>
 		<script type="module">
 
-			var webglRenderer = new THREE.WebGLRenderer();
+			var scene = new THREE.Scene();
+
+			var webglRenderer = new THREE.WebGLRenderer(scene);
 
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
@@ -74,7 +96,6 @@
 
 			document.body.appendChild( webglRenderer.domElement );
 
-			var scene = new THREE.Scene();
 
 			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
 
@@ -82,14 +103,18 @@
 
 			var plane = new Plane(100, 100, 100, 100);
 
-			var mesh = new THREE.Mesh( plane, new THREE.MeshColorFillMaterial( 0x0000ff, 0.5 ) );
+			var mesh = new THREE.Mesh( plane,
+				new THREE.MeshBasicMaterial({
+					color: 0x0000ff,
+				})
+			);
 			mesh.position.x = 0;
 			mesh.rotation.x = 0;
 			mesh.rotation.y = 0;
 			mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
 			mesh.updateMatrix();
 
-			scene.add(mesh);
+			scene.addObject(mesh);
 
 			var ambient = new THREE.AmbientLight( 0x80ffff );
 			scene.addLight( ambient );
