@@ -28,7 +28,7 @@
 	</head>
 	<body>
 
-		<div id="container"></div> 
+		<div id="container"></div>
 		<div id="info"><a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a> - panorama fisheye demo. cubemap by <a href="http://www.zfight.com/" target="_blank">Jochum Skoglund</a>. (mousewheel: change fov)</div>
 
 		<script type="text/javascript" src="../build/Three.js"></script>
@@ -39,7 +39,7 @@
 			var camera, scene, renderer;
 
 			var fov = 75,
-			texture_placeholder, wireframe,
+			texture_placeholder,
 			isUserInteracting = false,
 			onMouseDownMouseX = 0, onMouseDownMouseY = 0,
 			lon = 90, onMouseDownLon = 0,
@@ -62,19 +62,20 @@
 				texture_placeholder.width = 128;
 				texture_placeholder.height = 128;
 
-				wireframe = new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 0, wireframe: true } );
-
 				var context = texture_placeholder.getContext( '2d' );
 				context.fillStyle = 'rgb( 200, 200, 200 )';
 				context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
 
-				var materials = [];
-				materials.push( [ loadTexture( 'textures/cube/skybox/px.jpg' ), wireframe ] ); // right
-				materials.push( [ loadTexture( 'textures/cube/skybox/nx.jpg' ), wireframe ] ); // left
-				materials.push( [ loadTexture( 'textures/cube/skybox/py.jpg' ), wireframe ] ); // top
-				materials.push( [ loadTexture( 'textures/cube/skybox/ny.jpg' ), wireframe ] ); // bottom
-				materials.push( [ loadTexture( 'textures/cube/skybox/pz.jpg' ), wireframe ] ); // back
-				materials.push( [ loadTexture( 'textures/cube/skybox/nz.jpg' ), wireframe ] ); // front
+				var materials = [
+
+					loadTexture( 'textures/cube/skybox/px.jpg' ), // right
+					loadTexture( 'textures/cube/skybox/nx.jpg' ), // left
+					loadTexture( 'textures/cube/skybox/py.jpg' ), // top
+					loadTexture( 'textures/cube/skybox/ny.jpg' ), // bottom
+					loadTexture( 'textures/cube/skybox/pz.jpg' ), // back
+					loadTexture( 'textures/cube/skybox/nz.jpg' ) // front
+
+				];
 
 				mesh = new THREE.Mesh( new Cube( 300, 300, 300, 7, 7, materials, true ), new THREE.MeshFaceMaterial() );
 				mesh.overdraw = true;
@@ -99,7 +100,7 @@
 				document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 				document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
 				document.addEventListener( 'DOMMouseScroll', onDocumentMouseWheel, false);
-				
+
 				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 
@@ -107,18 +108,19 @@
 
 			function loadTexture( path ) {
 
-				var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture( texture_placeholder, THREE.UVMapping ) } );
+				var material = new THREE.MeshBasicMaterial( { map: new THREE.Texture( texture_placeholder ) } );
 
-				var texture = new Image();
+				var image = new Image();
 
-				texture.onload = function () {
+				image.onload = function () {
 
+					this.loaded = true;
 					material.map.image = this;
 					render();
 
 				};
 
-				texture.src = path;
+				image.src = path;
 
 				return material;
 			}
@@ -128,8 +130,6 @@
 				event.preventDefault();
 
 				isUserInteracting = true;
-
-				wireframe.opacity = 0.2;
 
 				onPointerDownPointerX = event.clientX;
 				onPointerDownPointerY = event.clientY;
@@ -153,33 +153,32 @@
 			function onDocumentMouseUp( event ) {
 
 				isUserInteracting = false;
-				wireframe.opacity = 0;
 				render();
 
 			}
 
 			function onDocumentMouseWheel( event ) {
-				
+
 				// WebKit
-				
+
 				if ( event.wheelDeltaY ) {
-					
+
 					fov -= event.wheelDeltaY * 0.05;
-					
+
 				// Opera / Explorer 9
-				
+
 				} else if ( event.wheelDelta ) {
-					
+
 					fov -= event.wheelDelta * 0.05;
-					
+
 				// Firefox
-				
+
 				} else if ( event.detail ) {
-				
+
 					fov += event.detail * 1.0;
-				
+
 				}
-				
+
 				camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
 				render();
 

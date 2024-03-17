@@ -36,14 +36,14 @@
 		<div id="info"><a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a> - webgl cube Fresnel shader demo. texture by <a href="http://www.humus.name/index.php?page=Textures" target="_blank">Humus</a> </div>
 
 		<script type="text/javascript" src="../build/ThreeExtras.js"></script> 
+		<script type="text/javascript" src="js/Stats.js"></script>
 
 		<!--
-		<script type="text/javascript" src="js/Stats.js"></script>
 		-->
 		
 		<script type="text/javascript">
 
-			var statsEnabled = false;
+			var statsEnabled = true;
 
 			var container, stats;
 
@@ -78,20 +78,7 @@
 				scene = new THREE.Scene();
 				sceneCube = new THREE.Scene();
 
-				var geometry = new THREE.Geometry();
-				var sphere = new THREE.Mesh( new Sphere( 100, 32, 16 ) );
-
-				for ( var i = 0; i < 200; i ++ ) {
-
-					sphere.position.x = Math.random() * 10000 - 5000;
-					sphere.position.y = Math.random() * 10000 - 5000;
-					sphere.position.z = Math.random() * 10000 - 5000;
-					sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.random() * 4 + 1;
-
-					// Merging spheres in a single geometry
-					GeometryUtils.merge( geometry, sphere );
-					
-				}
+				var geometry = new Sphere( 100, 32, 16 );
 
 				var path = "textures/cube/Park2/";
 				var format = '.jpg';
@@ -103,22 +90,28 @@
 
 
 				var images = ImageUtils.loadArray( urls );
-				var textureCube = new THREE.TextureCube( images );
-				
+				var textureCube = new THREE.Texture( images );
+
 				var fragment_shader = ShaderUtils.lib["fresnel"].fragment_shader;
 				var vertex_shader = ShaderUtils.lib["fresnel"].vertex_shader;
 				var uniforms = ShaderUtils.lib["fresnel"].uniforms;
-				
+
 				uniforms["tCube"][2] = textureCube;
-				
+
 				var material = new THREE.MeshShaderMaterial( { fragment_shader: fragment_shader, 
 															   vertex_shader: vertex_shader, 
 															   uniforms: uniforms
 															} );
 
-				var mesh = new THREE.Mesh( geometry, material );
-				mesh.position.x = 100;
-				scene.addObject( mesh );
+				for ( var i = 0; i < 200; i ++ ) {
+
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.x = Math.random() * 10000 - 5000;
+					mesh.position.y = Math.random() * 10000 - 5000;
+					mesh.position.z = Math.random() * 10000 - 5000;
+					mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 4 + 1;
+					scene.addObject( mesh );
+				}
 
 				SceneUtils.addPanoramaCubeWebGL( sceneCube, 100000, textureCube );
 
