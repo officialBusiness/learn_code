@@ -29,7 +29,10 @@ THREE.SVGRenderer = function () {
 	_quality = 1;
 
 	this.domElement = _svg;
+
 	this.autoClear = true;
+	this.sortObjects = true;
+	this.sortElements = true;
 
 	this.setQuality = function( quality ) {
 
@@ -75,7 +78,7 @@ THREE.SVGRenderer = function () {
 
 		}
 
-		_renderList = _projector.projectScene( scene, camera );
+		_renderList = _projector.projectScene( scene, camera, this.sortElements );
 
 		_pathCount = 0; _circleCount = 0; _lineCount = 0;
 
@@ -98,9 +101,9 @@ THREE.SVGRenderer = function () {
 				_v1 = element;
 				_v1.x *= _svgWidthHalf; _v1.y *= -_svgHeightHalf;
 
-				for ( m = 0, ml = element.material.length; m < ml; m++ ) {
+				for ( m = 0, ml = element.materials.length; m < ml; m++ ) {
 
-					material = element.material[ m ];
+					material = element.materials[ m ];
 					material && renderParticle( _v1, element, material, scene );
 
 				}
@@ -121,11 +124,11 @@ THREE.SVGRenderer = function () {
 
 				}
 
-				m = 0; ml = element.material.length;
+				m = 0; ml = element.materials.length;
 
 				while ( m < ml ) {
 
-					material = element.material[ m ++ ];
+					material = element.materials[ m ++ ];
 					material && renderLine( _v1, _v2, element, material, scene );
 
 				}
@@ -148,19 +151,19 @@ THREE.SVGRenderer = function () {
 
 				}
 
-				m = 0; ml = element.meshMaterial.length;
+				m = 0; ml = element.meshMaterials.length;
 
 				while ( m < ml ) {
 
-					material = element.meshMaterial[ m ++ ];
+					material = element.meshMaterials[ m ++ ];
 
 					if ( material instanceof THREE.MeshFaceMaterial ) {
 
-						fm = 0; fml = element.faceMaterial.length;
+						fm = 0; fml = element.faceMaterials.length;
 
 						while ( fm < fml ) {
 
-							material = element.faceMaterial[ fm ++ ];
+							material = element.faceMaterials[ fm ++ ];
 							material && renderFace3( _v1, _v2, _v3, element, material, scene );
 
 						}
@@ -193,19 +196,19 @@ THREE.SVGRenderer = function () {
 
 				}
 
-				m = 0; ml = element.meshMaterial.length;
+				m = 0; ml = element.meshMaterials.length;
 
 				while ( m < ml ) {
 
-					material = element.meshMaterial[ m ++ ];
+					material = element.meshMaterials[ m ++ ];
 
 					if ( material instanceof THREE.MeshFaceMaterial ) {
 
-						fm = 0; fml = element.faceMaterial.length;
+						fm = 0; fml = element.faceMaterials.length;
 
 						while ( fm < fml ) {
 
-							material = element.faceMaterial[ fm ++ ];
+							material = element.faceMaterials[ fm ++ ];
 							material && renderFace4( _v1, _v2, _v3, _v4, element, material, scene );
 
 						}

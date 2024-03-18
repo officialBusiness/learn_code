@@ -23,13 +23,15 @@ THREE.MeshLambertMaterial = function ( parameters ) {
 
 	this.id = THREE.MeshLambertMaterialCounter.value ++;
 
-	this.color = new THREE.Color( 0xeeeeee );
+	this.color = new THREE.Color( 0xffffff );
 	this.map = null;
 
 	this.env_map = null;
 	this.combine = THREE.MultiplyOperation;
 	this.reflectivity = 1;
 	this.refraction_ratio = 0.98;
+
+	this.fog = true;
 
 	this.opacity = 1;
 	this.shading = THREE.SmoothShading;
@@ -50,6 +52,8 @@ THREE.MeshLambertMaterial = function ( parameters ) {
 		if ( parameters.reflectivity !== undefined ) this.reflectivity  = parameters.reflectivity;
 		if ( parameters.refraction_ratio !== undefined ) this.refraction_ratio  = parameters.refraction_ratio;
 
+		if ( parameters.fog !== undefined ) this.fog  = parameters.fog;
+
 		if ( parameters.opacity !== undefined ) this.opacity  = parameters.opacity;
 		if ( parameters.shading !== undefined ) this.shading = parameters.shading;
 		if ( parameters.blending !== undefined ) this.blending = parameters.blending;
@@ -61,7 +65,11 @@ THREE.MeshLambertMaterial = function ( parameters ) {
 
 	}
 
-	this.toString = function () {
+};
+
+THREE.MeshLambertMaterial.prototype = {
+
+	toString: function () {
 
 		return 'THREE.MeshLambertMaterial (<br/>' +
 			'id: ' + this.id + '<br/>' +
@@ -83,7 +91,7 @@ THREE.MeshLambertMaterial = function ( parameters ) {
 			'wireframe_linejoin: ' + this.wireframe_linejoin +'<br/>' +
 			' )';
 
-	};
+	}
 
 };
 

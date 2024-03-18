@@ -10,7 +10,7 @@
 
 THREE.ParticleCircleMaterial = function ( parameters ) {
 
-	this.color = new THREE.Color( 0xff0000 );
+	this.color = new THREE.Color( 0xffffff );
 	this.opacity = 1;
 	this.blending = THREE.NormalBlending;
 
@@ -22,7 +22,11 @@ THREE.ParticleCircleMaterial = function ( parameters ) {
 
 	}
 
-	this.toString = function () {
+};
+
+THREE.ParticleCircleMaterial.prototype = {
+
+	toString: function () {
 
 		return 'THREE.ParticleCircleMaterial (<br/>' +
 			'color: ' + this.color + '<br/>' +
@@ -30,6 +34,6 @@ THREE.ParticleCircleMaterial = function ( parameters ) {
 			'blending: ' + this.blending + '<br/>' +
 			')';
 
-	};
+	}
 
 };

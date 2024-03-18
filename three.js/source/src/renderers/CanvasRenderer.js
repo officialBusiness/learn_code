@@ -11,13 +11,14 @@ THREE.CanvasRenderer = function () {
 	_canvasWidth, _canvasHeight, _canvasWidthHalf, _canvasHeightHalf,
 	_context = _canvas.getContext( '2d' ),
 
+	_clearColor = null,
+	_clearOpacity = null,
+
 	_contextGlobalAlpha = 1,
 	_contextGlobalCompositeOperation = 0,
 	_contextStrokeStyle = null,
 	_contextFillStyle = null,
 	_contextLineWidth = 1,
-
-	_min = Math.min, _max = Math.max,
 
 	_v1, _v2, _v3,
 	_v1x, _v1y, _v2x, _v2y, _v3x, _v3y,
@@ -27,7 +28,8 @@ THREE.CanvasRenderer = function () {
 	_color2 = new THREE.Color(),
 	_color3 = new THREE.Color(),
 	_color4 = new THREE.Color(),
-	_2near, _farPlusNear, _farMinusNear,
+
+	_near, _far,
 
 	_bitmap,
 	_uv1x, _uv1y, _uv2x, _uv2y, _uv3x, _uv3y,
@@ -68,7 +70,10 @@ THREE.CanvasRenderer = function () {
 	_gradientMapQuality --; // Fix UVs
 
 	this.domElement = _canvas;
+
 	this.autoClear = true;
+	this.sortObjects = true;
+	this.sortElements = true;
 
 	this.setSize = function ( width, height ) {
 
@@ -84,6 +89,16 @@ THREE.CanvasRenderer = function () {
 
 	};
 
+	this.setClearColor = function( hex, opacity ) {
+
+		_clearColor = hex !== null ? new THREE.Color( hex ) : null;
+		_clearOpacity = opacity;
+
+		_clearRect.set( - _canvasWidthHalf, - _canvasHeightHalf, _canvasWidthHalf, _canvasHeightHalf );
+		_context.setTransform( 1, 0, 0, - 1, _canvasWidthHalf, _canvasHeightHalf );
+		this.clear();
+	};
+
 	this.clear = function () {
 
 		if ( !_clearRect.isEmpty() ) {
@@ -91,7 +106,19 @@ THREE.CanvasRenderer = function () {
 			_clearRect.inflate( 1 );
 			_clearRect.minSelf( _clipRect );
 
-			_context.clearRect( _clearRect.getX(), _clearRect.getY(), _clearRect.getWidth(), _clearRect.getHeight() );
+			if ( _clearColor !== null ) {
+
+				setBlending( THREE.NormalBlending );
+				setOpacity( 1 );
+
+				_context.fillStyle = 'rgba(' + Math.floor( _clearColor.r * 255 ) + ',' + Math.floor( _clearColor.g * 255 ) + ',' + Math.floor( _clearColor.b * 255 ) + ',' + _clearOpacity + ')';
+				_context.fillRect( _clearRect.getX(), _clearRect.getY(), _clearRect.getWidth(), _clearRect.getHeight() );
+
+			} else {
+
+				_context.clearRect( _clearRect.getX(), _clearRect.getY(), _clearRect.getWidth(), _clearRect.getHeight() );
+
+			}
 
 			_clearRect.empty();
 
@@ -106,10 +133,10 @@ THREE.CanvasRenderer = function () {
 
 		this.autoClear && this.clear();
 
-		_renderList = _projector.projectScene( scene, camera );
+		_renderList = _projector.projectScene( scene, camera, this.sortElements );
 
 		/* DEBUG
-		_context.fillStyle = 'rgba(0, 255, 255, 0.5)';
+		_context.fillStyle = 'rgba( 0, 255, 255, 0.5 )';
 		_context.fillRect( _clipRect.getX(), _clipRect.getY(), _clipRect.getWidth(), _clipRect.getHeight() );
 		*/
 
@@ -132,9 +159,9 @@ THREE.CanvasRenderer = function () {
 				_v1 = element;
 				_v1.x *= _canvasWidthHalf; _v1.y *= _canvasHeightHalf;
 
-				for ( m = 0, ml = element.material.length; m < ml; m++ ) {
+				for ( m = 0, ml = element.materials.length; m < ml; m++ ) {
 
-					renderParticle( _v1, element, element.material[ m ], scene );
+					renderParticle( _v1, element, element.materials[ m ], scene );
 
 				}
 
@@ -150,11 +177,11 @@ THREE.CanvasRenderer = function () {
 
 				if ( _clipRect.instersects( _bboxRect ) ) {
 
-					m = 0; ml = element.material.length;
+					m = 0; ml = element.materials.length;
 
 					while ( m < ml ) {
 
-						renderLine( _v1, _v2, element, element.material[ m ++ ], scene );
+						renderLine( _v1, _v2, element, element.materials[ m ++ ], scene );
 
 					}
 
@@ -177,25 +204,25 @@ THREE.CanvasRenderer = function () {
 
 				}
 
-				_bboxRect.addPoint( _v1.positionScreen.x, _v1.positionScreen.y );
-				_bboxRect.addPoint( _v2.positionScreen.x, _v2.positionScreen.y );
-				_bboxRect.addPoint( _v3.positionScreen.x, _v3.positionScreen.y );
+				_bboxRect.add3Points( _v1.positionScreen.x, _v1.positionScreen.y,
+						      _v2.positionScreen.x, _v2.positionScreen.y,
+						      _v3.positionScreen.x, _v3.positionScreen.y );
 
 				if ( _clipRect.instersects( _bboxRect ) ) {
 
-					m = 0; ml = element.meshMaterial.length;
+					m = 0; ml = element.meshMaterials.length;
 
 					while ( m < ml ) {
 
-						material = element.meshMaterial[ m ++ ];
+						material = element.meshMaterials[ m ++ ];
 
 						if ( material instanceof THREE.MeshFaceMaterial ) {
 
-							fm = 0; fml = element.faceMaterial.length;
+							fm = 0; fml = element.faceMaterials.length;
 
 							while ( fm < fml ) {
 
-								material = element.faceMaterial[ fm ++ ];
+								material = element.faceMaterials[ fm ++ ];
 								material && renderFace3( _v1, _v2, _v3, element, material, scene );
 
 							}
@@ -574,13 +601,12 @@ THREE.CanvasRenderer = function () {
 				_color.setRGB( _w, _w, _w );
 				*/
 
-				_2near = material.__2near;
-				_farPlusNear = material.__farPlusNear;
-				_farMinusNear = material.__farMinusNear;
+				_near = camera.near;
+				_far = camera.far;
 
-				_color1.r = _color1.g = _color1.b = 1 - ( _2near / ( _farPlusNear - v1.positionScreen.z * _farMinusNear ) );
-				_color2.r = _color2.g = _color2.b = 1 - ( _2near / ( _farPlusNear - v2.positionScreen.z * _farMinusNear ) );
-				_color3.r = _color3.g = _color3.b = 1 - ( _2near / ( _farPlusNear - v3.positionScreen.z * _farMinusNear ) );
+				_color1.r = _color1.g = _color1.b = 1 - smoothstep( v1.positionScreen.z, _near, _far );
+				_color2.r = _color2.g = _color2.b = 1 - smoothstep( v2.positionScreen.z, _near, _far );
+				_color3.r = _color3.g = _color3.b = 1 - smoothstep( v3.positionScreen.z, _near, _far );
 
 				_color4.r = ( _color2.r + _color3.r ) * 0.5;
 				_color4.g = ( _color2.g + _color3.g ) * 0.5;
@@ -682,99 +708,30 @@ THREE.CanvasRenderer = function () {
 
 		}
 
-		//
-
-		function setOpacity( value ) {
-
-			if ( _contextGlobalAlpha != value ) {
-
-				_context.globalAlpha = _contextGlobalAlpha = value;
-
-			}
-
-		}
-
-		function setBlending( value ) {
-
-			if ( _contextGlobalCompositeOperation != value ) {
-
-				switch ( value ) {
-
-					case THREE.NormalBlending:
-
-						_context.globalCompositeOperation = 'source-over';
-
-						break;
-
-					case THREE.AdditiveBlending:
-
-						_context.globalCompositeOperation = 'lighter';
-
-						break;
-
-					case THREE.SubtractiveBlending:
-
-						_context.globalCompositeOperation = 'darker';
-
-						break;
-
-				}
-
-				_contextGlobalCompositeOperation = value;
-
-			}
-
-		}
-
-		function setLineWidth( value ) {
-
-			if ( _contextLineWidth != value ) {
-
-				_context.lineWidth = _contextLineWidth = value;
-
-			}
-
-		}
-
-		function setStrokeStyle( value ) {
-
-			if ( _contextStrokeStyle != value ) {
-
-				_context.strokeStyle = _contextStrokeStyle  = value;
-
-			}
-
-		}
-
-		function setFillStyle( value ) {
-
-			if ( _contextFillStyle != value ) {
-
-				_context.fillStyle = _contextFillStyle = value;
-
-			}
-
-		}
-
 		function getGradientTexture( color1, color2, color3, color4 ) {
 
 			// http://mrdoob.com/blog/post/710
 
-			_pixelMapData[ 0 ] = _max( 0, _min( 255, ~~ ( color1.r * 255 ) ) );
-			_pixelMapData[ 1 ] = _max( 0, _min( 255, ~~ ( color1.g * 255 ) ) );
-			_pixelMapData[ 2 ] = _max( 0, _min( 255, ~~ ( color1.b * 255 ) ) );
+			var c1r = ~~ ( color1.r * 255 ), c1g = ~~ ( color1.g * 255 ), c1b = ~~ ( color1.b * 255 ),
+			c2r = ~~ ( color2.r * 255 ), c2g = ~~ ( color2.g * 255 ), c2b = ~~ ( color2.b * 255 ),
+			c3r = ~~ ( color3.r * 255 ), c3g = ~~ ( color3.g * 255 ), c3b = ~~ ( color3.b * 255 ),
+			c4r = ~~ ( color4.r * 255 ), c4g = ~~ ( color4.g * 255 ), c4b = ~~ ( color4.b * 255 );
 
-			_pixelMapData[ 4 ] = _max( 0, _min( 255, ~~ ( color2.r * 255 ) ) );
-			_pixelMapData[ 5 ] = _max( 0, _min( 255, ~~ ( color2.g * 255 ) ) );
-			_pixelMapData[ 6 ] = _max( 0, _min( 255, ~~ ( color2.b * 255 ) ) );
+			_pixelMapData[ 0 ] = c1r < 0 ? 0 : c1r > 255 ? 255 : c1r;
+			_pixelMapData[ 1 ] = c1g < 0 ? 0 : c1g > 255 ? 255 : c1g;
+			_pixelMapData[ 2 ] = c1b < 0 ? 0 : c1b > 255 ? 255 : c1b;
 
-			_pixelMapData[ 8 ] = _max( 0, _min( 255, ~~ ( color3.r * 255 ) ) );
-			_pixelMapData[ 9 ] = _max( 0, _min( 255, ~~ ( color3.g * 255 ) ) );
-			_pixelMapData[ 10 ] = _max( 0, _min( 255, ~~ ( color3.b * 255 ) ) );
+			_pixelMapData[ 4 ] = c2r < 0 ? 0 : c2r > 255 ? 255 : c2r;
+			_pixelMapData[ 5 ] = c2g < 0 ? 0 : c2g > 255 ? 255 : c2g;
+			_pixelMapData[ 6 ] = c2b < 0 ? 0 : c2b > 255 ? 255 : c2b;
 
-			_pixelMapData[ 12 ] = _max( 0, _min( 255, ~~ ( color4.r * 255 ) ) );
-			_pixelMapData[ 13 ] = _max( 0, _min( 255, ~~ ( color4.g * 255 ) ) );
-			_pixelMapData[ 14 ] = _max( 0, _min( 255, ~~ ( color4.b * 255 ) ) );
+			_pixelMapData[ 8 ] = c3r < 0 ? 0 : c3r > 255 ? 255 : c3r;
+			_pixelMapData[ 9 ] = c3g < 0 ? 0 : c3g > 255 ? 255 : c3g;
+			_pixelMapData[ 10 ] = c3b < 0 ? 0 : c3b > 255 ? 255 : c3b;
+
+			_pixelMapData[ 12 ] = c4r < 0 ? 0 : c4r > 255 ? 255 : c4r;
+			_pixelMapData[ 13 ] = c4g < 0 ? 0 : c4g > 255 ? 255 : c4g;
+			_pixelMapData[ 14 ] = c4b < 0 ? 0 : c4b > 255 ? 255 : c4b;
 
 			_pixelMapContext.putImageData( _pixelMapImage, 0, 0 );
 			_gradientMapContext.drawImage( _pixelMap, 0, 0 );
@@ -783,11 +740,22 @@ THREE.CanvasRenderer = function () {
 
 		}
 
+		function smoothstep( value, min, max ) {
+
+			/*
+			if ( value <= min ) return 0;
+			if ( value >= max ) return 1;
+			*/
+
+			var x = ( value - min ) / ( max - min );
+			return x * x * ( 3 - 2 * x );
+
+		}
+
 		function normalToComponent( normal ) {
 
-			// https://gist.github.com/665829
-
-			return normal < 0 ? _min( ( 1 + normal ) * 0.5, 0.5 ) : 0.5 + _min( normal * 0.5, 0.5 );
+			var component = ( normal + 1 ) * 0.5;
+			return component < 0 ? 0 : ( component > 1 ? 1 : component );
 
 		}
 
@@ -806,5 +774,79 @@ THREE.CanvasRenderer = function () {
 		}
 
 	};
+
+	// Context cached methods.
+
+	function setOpacity( value ) {
+
+		if ( _contextGlobalAlpha != value ) {
+
+			_context.globalAlpha = _contextGlobalAlpha = value;
+
+		}
+
+	}
+
+	function setBlending( value ) {
+
+		if ( _contextGlobalCompositeOperation != value ) {
+
+			switch ( value ) {
+
+				case THREE.NormalBlending:
+
+					_context.globalCompositeOperation = 'source-over';
+
+					break;
+
+				case THREE.AdditiveBlending:
+
+					_context.globalCompositeOperation = 'lighter';
+
+					break;
+
+				case THREE.SubtractiveBlending:
+
+					_context.globalCompositeOperation = 'darker';
+
+					break;
+
+			}
+
+			_contextGlobalCompositeOperation = value;
+
+		}
+
+	}
+
+	function setLineWidth( value ) {
+
+		if ( _contextLineWidth != value ) {
+
+			_context.lineWidth = _contextLineWidth = value;
+
+		}
+
+	}
+
+	function setStrokeStyle( value ) {
+
+		if ( _contextStrokeStyle != value ) {
+
+			_context.strokeStyle = _contextStrokeStyle  = value;
+
+		}
+
+	}
+
+	function setFillStyle( value ) {
+
+		if ( _contextFillStyle != value ) {
+
+			_context.fillStyle = _contextFillStyle = value;
+
+		}
+
+	}
 
 };

@@ -28,7 +28,7 @@ THREE.MeshPhongMaterial = function ( parameters ) {
 
 	this.id = THREE.MeshPhongMaterialCounter.value ++;
 
-	this.color = new THREE.Color( 0xeeeeee );
+	this.color = new THREE.Color( 0xffffff );
 	this.ambient = new THREE.Color( 0x050505 );
 	this.specular = new THREE.Color( 0x111111 );
 	this.shininess = 30;
@@ -40,6 +40,8 @@ THREE.MeshPhongMaterial = function ( parameters ) {
 	this.combine = THREE.MultiplyOperation;
 	this.reflectivity = 1;
 	this.refraction_ratio = 0.98;
+
+	this.fog = true;
 
 	this.opacity = 1;
 	this.shading = THREE.SmoothShading;
@@ -65,6 +67,8 @@ THREE.MeshPhongMaterial = function ( parameters ) {
 		if ( parameters.reflectivity !== undefined ) this.reflectivity  = parameters.reflectivity;
 		if ( parameters.refraction_ratio !== undefined ) this.refraction_ratio  = parameters.refraction_ratio;
 
+		if ( parameters.fog !== undefined ) this.fog  = parameters.fog;
+
 		if ( parameters.opacity !== undefined ) this.opacity = parameters.opacity;
 		if ( parameters.shading !== undefined ) this.shading = parameters.shading;
 		if ( parameters.blending !== undefined ) this.blending = parameters.blending;
@@ -76,7 +80,11 @@ THREE.MeshPhongMaterial = function ( parameters ) {
 
 	}
 
-	this.toString = function () {
+};
+
+THREE.MeshPhongMaterial.prototype = {
+
+	toString: function () {
 
 		return 'THREE.MeshPhongMaterial (<br/>' +
 			'id: ' + this.id + '<br/>' +
@@ -100,9 +108,9 @@ THREE.MeshPhongMaterial = function ( parameters ) {
 			'wireframe_linewidth: ' + this.wireframe_linewidth + '<br/>' +
 			'wireframe_linecap: ' + this.wireframe_linecap +'<br/>' +
 			'wireframe_linejoin: ' + this.wireframe_linejoin +'<br/>' +
-			+ ')';
+			')';
 
-	};
+	}
 
 };
 

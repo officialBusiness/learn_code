@@ -5,7 +5,6 @@
  *  fragment_shader: <string>,
  *  vertex_shader: <string>,
  *  uniforms: { "parameter1": { type: "f", value: 1.0 }, "parameter2": { type: "i" value2: 2 } },
- 
  *  shading: THREE.SmoothShading,
  *  blending: THREE.NormalBlending,
  *  wireframe: <boolean>,
@@ -21,6 +20,7 @@ THREE.MeshShaderMaterial = function ( parameters ) {
 	this.vertex_shader = "void main() {}";
 	this.uniforms = {};
 
+	this.opacity = 1;
 	this.shading = THREE.SmoothShading;
 	this.blending = THREE.NormalBlending;
 
@@ -46,7 +46,11 @@ THREE.MeshShaderMaterial = function ( parameters ) {
 
 	}
 
-	this.toString = function () {
+};
+
+THREE.MeshShaderMaterial.prototype = {
+
+	toString: function () {
 
 		return 'THREE.MeshShaderMaterial (<br/>' +
 			'id: ' + this.id + '<br/>' +
@@ -58,8 +62,8 @@ THREE.MeshShaderMaterial = function ( parameters ) {
 			'wireframe_linejoin: ' + this.wireframe_linejoin +'<br/>' +
 			')';
 
-	};
+	}
 
-}
+};
 
 THREE.MeshShaderMaterialCounter = { value: 0 };

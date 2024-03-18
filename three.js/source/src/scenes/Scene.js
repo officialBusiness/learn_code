@@ -6,10 +6,17 @@ THREE.Scene = function () {
 
 	this.objects = [];
 	this.lights = [];
+	this.fog = null;
 
 	this.addObject = function ( object ) {
 
-		this.objects.push( object );
+		var i = this.objects.indexOf( object );
+
+		if ( i === -1 ) {
+
+			this.objects.push( object );
+
+		}
 
 	};
 
@@ -22,12 +29,18 @@ THREE.Scene = function () {
 			this.objects.splice( i, 1 );
 
 		}
-		
+
 	};
 
 	this.addLight = function ( light ) {
 
-		this.lights.push( light );
+		var i = this.lights.indexOf( light );
+
+		if ( i === -1 ) {
+
+			this.lights.push( light );
+
+		}
 
 	};
 
@@ -46,6 +59,7 @@ THREE.Scene = function () {
 	this.toString = function () {
 
 		return 'THREE.Scene ( ' + this.objects + ' )';
+
 	};
 
 };

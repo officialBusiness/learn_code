@@ -15,7 +15,17 @@ THREE.Texture = function ( image, mapping, wrap_s, wrap_t, mag_filter, min_filte
 	this.mag_filter = mag_filter !== undefined ? mag_filter : THREE.LinearFilter;
 	this.min_filter = min_filter !== undefined ? min_filter : THREE.LinearMipMapLinearFilter;
 
-	this.toString = function () {
+};
+
+THREE.Texture.prototype = {
+
+	clone: function () {
+
+		return new THREE.Texture( this.image, this.mapping, this.wrap_s, this.wrap_t, this.mag_filter, this.min_filter );
+
+	},
+	
+	toString: function () {
 
 		return 'THREE.Texture (<br/>' +
 			'image: ' + this.image + '<br/>' +
@@ -25,7 +35,7 @@ THREE.Texture = function ( image, mapping, wrap_s, wrap_t, mag_filter, min_filte
 			'min_filter: ' + this.min_filter + '<br/>' +
 			')';
 
-	};
+	}
 
 };
 
