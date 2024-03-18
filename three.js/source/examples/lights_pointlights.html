@@ -46,7 +46,7 @@
 			var camera, scene, renderer,
 			particle1, particle2, particle2,
 			light1, light2, light3,
-			object;
+			mesh;
 
 			init();
 			setInterval( loop, 1000 / 60 );
@@ -60,9 +60,16 @@
 
 				scene = new THREE.Scene();
 
-				object = new THREE.Mesh( new WaltHead(), new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading } ) );
-				object.overdraw = true;
-				scene.addObject( object );
+				scene.addLight( new THREE.AmbientLight( 0x00020 ) );
+
+				light1 = new THREE.PointLight( 0xff0040 );
+				scene.addLight( light1 );
+
+				light2 = new THREE.PointLight( 0x0040ff );
+				scene.addLight( light2 );
+
+				light3 = new THREE.PointLight( 0x80ff80 );
+				scene.addLight( light3 );
 
 				particle1 = new THREE.Particle( new THREE.ParticleCircleMaterial( { color: 0xff0040 } ) );
 				particle1.scale.x = particle1.scale.y = particle1.scale.z = 0.5;
@@ -76,16 +83,9 @@
 				particle3.scale.x = particle3.scale.y = particle3.scale.z = 0.5;
 				scene.addObject( particle3 );
 
-				scene.addLight( new THREE.AmbientLight( 0x00020 ) );
-
-				light1 = new THREE.PointLight( 0xff0040 );
-				scene.addLight( light1 );
-
-				light2 = new THREE.PointLight( 0x0040ff );
-				scene.addLight( light2 );
-
-				light3 = new THREE.PointLight( 0x80ff80 );
-				scene.addLight( light3 );
+				mesh = new THREE.Mesh( new WaltHead(), new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading } ) );
+				mesh.overdraw = true;
+				scene.addObject( mesh );
 
 				renderer = new THREE.CanvasRenderer();
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -97,7 +97,7 @@
 
 				var time = new Date().getTime() * 0.0005;
 
-				object.rotation.y -= 0.01;
+				mesh.rotation.y -= 0.01;
 
 				particle1.position.x = Math.sin( time * 0.7 ) * 30;
 				particle1.position.y = Math.cos( time * 0.5 ) * 40;

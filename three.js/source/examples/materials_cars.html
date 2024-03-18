@@ -54,12 +54,7 @@
 
 		<div id="log"></div>
 
-		<script type="text/javascript" src="../build/Three.js"></script>
-
-		<script type="text/javascript" src="../src/extras/primitives/Cube.js"></script>
-		<script type="text/javascript" src="../src/extras/ImageUtils.js"></script>
-		<script type="text/javascript" src="../src/extras/SceneUtils.js"></script>
-		<script type="text/javascript" src="../src/extras/io/Loader.js"></script>
+		<script type="text/javascript" src="../build/ThreeExtras.js"></script>
 
 		<script type="text/javascript" src="js/Stats.js"></script>
 
@@ -204,7 +199,7 @@
 
 				SceneUtils.addPanoramaCubeWebGL( sceneCube, 100000, textureCube );
 
-				webglRenderer = new THREE.WebGLRenderer( scene );
+				webglRenderer = new THREE.WebGLRenderer();
 				webglRenderer.setSize( window.innerWidth, window.innerHeight );
 				webglRenderer.setFaceCulling( 0 );
 				webglRenderer.autoClear = false;
