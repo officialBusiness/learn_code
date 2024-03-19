@@ -54,7 +54,6 @@
 		<script type="text/javascript" src="../../source/src/materials/LineBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/Material.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshBasicMaterial.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/MeshCubeMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshDepthMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshFaceMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshLambertMaterial.js"></script>
@@ -67,6 +66,8 @@
 
 		<script type="text/javascript" src="../../source/src/materials/Texture.js"></script>
 
+		<script type="text/javascript" src="../../source/src/materials/Uniforms.js"></script>
+
 		<script type="text/javascript" src="../../source/src/objects/Object3D.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Line.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Mesh.js"></script>
@@ -74,6 +75,7 @@
 
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableFace3.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableLine.js"></script>
+		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableObject.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableParticle.js"></script>
 
 		<script type="text/javascript" src="../../source/src/renderers/CanvasRenderer.js"></script>
@@ -81,7 +83,10 @@
 		<script type="text/javascript" src="../../source/src/renderers/Projector.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/SVGRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderer.js"></script>
+		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderer2.js"></script>
 
+		<script type="text/javascript" src="../../source/src/scenes/Fog.js"></script>
+		<script type="text/javascript" src="../../source/src/scenes/FogExp2.js"></script>
 		<script type="text/javascript" src="../../source/src/scenes/Scene.js"></script>
 
 		<script type="text/javascript" src="../../source/examples/js/Stats.js"></script>
@@ -96,7 +101,10 @@
 
 			var scene = new THREE.Scene();
 
-			var webglRenderer = new THREE.WebGLRenderer(scene);
+			var webglRenderer = new THREE.WebGLRenderer({
+				scene
+			});
+			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
@@ -164,7 +172,7 @@
 
 
 				const updateProjectionMatrix = ()=>{
-					camera.projectionMatrix = THREE.Matrix4.makePerspective( camera.fov, camera.aspect, camera.near, camera.far );
+					camera.updateProjectionMatrix()
 				}
 
 				const projectionMatrixFolder = gui.addFolder('projectionMatrix');
