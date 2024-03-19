@@ -12,7 +12,12 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 	_projector = new THREE.Projector(),
 
 	_canvas = document.createElement( 'canvas' ),
+
+	_clearColor = new THREE.Color( 0x000000 ),
+	_clearOpacity = 0,
+
 	_gl, _currentProgram,
+
 	_modelViewMatrix = new THREE.Matrix4(),
 	_normalMatrix = new THREE.Matrix4(),
 	_viewMatrixArray = new Float32Array( 16 ),
@@ -47,7 +52,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 	_gl.enable( _gl.BLEND );
 	_gl.blendFunc( _gl.ONE, _gl.ONE_MINUS_SRC_ALPHA );
-	_gl.clearColor( 0, 0, 0, 0 );
+	_gl.clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearOpacity );
 
 	this.domElement = _canvas;
 
@@ -59,6 +64,24 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 		_canvas.width = width;
 		_canvas.height = height;
 		_gl.viewport( 0, 0, _canvas.width, _canvas.height );
+
+	};
+
+	this.setClearColor = function( color, opacity ) {
+
+		_clearColor = color;
+		_clearOpacity = opacity;
+
+		_gl.clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearOpacity );
+
+	};
+
+	this.setClearColorHex = function( hex, opacity ) {
+
+		_clearColor.setHex( hex );
+		_clearOpacity = opacity;
+
+		_gl.clearColor( _clearColor.r, _clearColor.g, _clearColor.b, _clearOpacity );
 
 	};
 
@@ -74,11 +97,11 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 		this.autoClear && this.clear();
 
-		camera.autoUpdateMatrix && camera.updateMatrix();
+		camera.matrixAutoUpdate && camera.update();
 
 		// Setup camera matrices
 
-		_viewMatrixArray.set( camera.matrix.flatten() );
+		_viewMatrixArray.set( camera.matrixWorld.flatten() );
 		_projectionMatrixArray.set( camera.projectionMatrix.flatten() );
 
 		_currentProgram = null;
@@ -90,6 +113,8 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 		}
 		*/
+
+		scene.update( undefined, false, camera );
 
 		_renderList = _projector.projectObjects( scene, camera, this.sortObjects );
 
@@ -104,14 +129,14 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 			var geometry, material, m, ml,
 			program, uniforms, attributes;
 
-			object.autoUpdateMatrix && object.updateMatrix();
+			object.matrixAutoUpdate && object.updateMatrix();
 
 			// Setup object matrices
 
-			_objectMatrixArray.set( object.matrix.flatten() );
+			object.matrixWorld.flattenToArray( _objectMatrixArray )
 
-			_modelViewMatrix.multiply( camera.matrix, object.matrix );
-			_modelViewMatrixArray.set( _modelViewMatrix.flatten() );
+			_modelViewMatrix.multiply( camera.matrixWorld, object.matrixWorld );
+			_modelViewMatrix.flattenToArray( _modelViewMatrixArray );
 
 			_normalMatrix = THREE.Matrix4.makeInvert3x3( _modelViewMatrix ).transpose();
 			_normalMatrixArray.set( _normalMatrix.m );
@@ -177,9 +202,9 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 							}
 
-							if ( material.env_map ) {
+							if ( material.envMap ) {
 
-								setTexture( material.env_map, 1 );
+								setTexture( material.envMap, 1 );
 								_gl.uniform1i( uniforms.tSpherical, 1 );
 
 							}
@@ -257,7 +282,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 						} else {
 
-							_gl.lineWidth( material.wireframe_linewidth );
+							_gl.lineWidth( material.wireframeLinewidth );
 							_gl.bindBuffer( _gl.ELEMENT_ARRAY_BUFFER, buffer.lines );
 							_gl.drawElements( _gl.LINES, buffer.lineCount, _gl.UNSIGNED_SHORT, 0 );
 
@@ -417,7 +442,6 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 					// TODO: don't add lines that already exist (faces sharing edge)
 
 					lines.push( vertexIndex, vertexIndex + 1 );
-					lines.push( vertexIndex, vertexIndex + 2 );
 					lines.push( vertexIndex, vertexIndex + 3 );
 					lines.push( vertexIndex + 1, vertexIndex + 2 );
 					lines.push( vertexIndex + 2, vertexIndex + 3 );
@@ -492,19 +516,19 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 				vs = [
 					material.map ? 'varying vec2 vUv;' : null,
-					material.env_map ? 'varying vec2 vSpherical;' : null,
+					material.envMap ? 'varying vec2 vSpherical;' : null,
 
 					'void main() {',
 						'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
 						material.map ? 'vUv = uv;' : null,
 
-						material.env_map ? 'vec3 u = normalize( modelViewMatrix * vec4( position, 1.0 ) ).xyz;' : null,
-						material.env_map ? 'vec3 n = normalize( normalMatrix * normal );' : null,
-						material.env_map ? 'vec3 r = reflect( u, n );' : null,
-						material.env_map ? 'float m = 2.0 * sqrt( r.x * r.x + r.y * r.y + ( r.z + 1.0 ) * ( r.z + 1.0 ) );' : null,
-						material.env_map ? 'vSpherical.x = r.x / m + 0.5;' : null,
-						material.env_map ? 'vSpherical.y = - r.y / m + 0.5;' : null,
+						material.envMap ? 'vec3 u = normalize( modelViewMatrix * vec4( position, 1.0 ) ).xyz;' : null,
+						material.envMap ? 'vec3 n = normalize( normalMatrix * normal );' : null,
+						material.envMap ? 'vec3 r = reflect( u, n );' : null,
+						material.envMap ? 'float m = 2.0 * sqrt( r.x * r.x + r.y * r.y + ( r.z + 1.0 ) * ( r.z + 1.0 ) );' : null,
+						material.envMap ? 'vSpherical.x = r.x / m + 0.5;' : null,
+						material.envMap ? 'vSpherical.y = - r.y / m + 0.5;' : null,
 
 					'}'
 				].filter( removeNull ).join( '\n' );
@@ -516,8 +540,8 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 					material.map ? 'uniform sampler2D tMap;' : null,
 					material.map ? 'varying vec2 vUv;' : null,
 
-					material.env_map ? 'uniform sampler2D tSpherical;' : null,
-					material.env_map ? 'varying vec2 vSpherical;' : null,
+					material.envMap ? 'uniform sampler2D tSpherical;' : null,
+					material.envMap ? 'varying vec2 vSpherical;' : null,
 
 					material.fog ? 'uniform float fog;' : null,
 					material.fog ? 'uniform float fogNear;' : null,
@@ -534,7 +558,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 						material.map ? 'gl_FragColor *= texture2D( tMap, vUv );' : null,
 
-						material.env_map ? 'gl_FragColor += texture2D( tSpherical, vSpherical );' : null,
+						material.envMap ? 'gl_FragColor += texture2D( tSpherical, vSpherical );' : null,
 
 						material.fog ? 'float depth = gl_FragCoord.z / gl_FragCoord.w;' : null,
 						material.fog ? 'float fogFactor = fog * smoothstep( fogNear, fogFar, depth );' : null,
@@ -545,7 +569,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 				identifiers.push( 'mColor', 'mOpacity' );
 
 				if ( material.map ) identifiers.push( 'tMap' );
-				if ( material.env_map ) identifiers.push( 'tSpherical' );
+				if ( material.envMap ) identifiers.push( 'tSpherical' );
 				if ( material.fog ) identifiers.push( 'fog', 'fogColor', 'fogNear', 'fogFar' );
 
 
@@ -596,8 +620,8 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 			} else if ( material instanceof THREE.MeshShaderMaterial ) {
 
-				vs = material.vertex_shader;
-				fs = material.fragment_shader;
+				vs = material.vertexShader;
+				fs = material.fragmentShader;
 
 				for( uniform in material.uniforms ) {
 
@@ -620,7 +644,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 		}
 
-		function compileProgram( vertex_shader, fragment_shader ) {
+		function compileProgram( vertexShader, fragmentShader ) {
 
 			var program = _gl.createProgram(), shader, prefix_vertex, prefix_fragment;
 
@@ -650,7 +674,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 			// Vertex shader
 
 			shader = _gl.createShader( _gl.VERTEX_SHADER );
-			_gl.shaderSource( shader, prefix_vertex + vertex_shader );
+			_gl.shaderSource( shader, prefix_vertex + vertexShader );
 			_gl.compileShader( shader );
 			_gl.attachShader( program, shader );
 
@@ -664,7 +688,7 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 			// Fragment Shader
 
 			shader = _gl.createShader( _gl.FRAGMENT_SHADER );
-			_gl.shaderSource( shader, prefix_fragment + fragment_shader );
+			_gl.shaderSource( shader, prefix_fragment + fragmentShader );
 			_gl.compileShader( shader );
 			_gl.attachShader( program, shader );
 
@@ -682,8 +706,8 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 				alert( "Could not initialise shaders.\n" +
 				"VALIDATE_STATUS: " + _gl.getProgramParameter( program, _gl.VALIDATE_STATUS ) + "\n" +
 				"ERROR: " + _gl.getError() + "\n\n" +
-				"- Vertex Shader -\n" + prefix_vertex + vertex_shader + "\n\n" +
-				"- Fragment Shader -\n" + prefix_fragment + fragment_shader );
+				"- Vertex Shader -\n" + prefix_vertex + vertexShader + "\n\n" +
+				"- Fragment Shader -\n" + prefix_fragment + fragmentShader );
 
 			}
 
@@ -730,27 +754,34 @@ THREE.WebGLRenderer2 = function ( antialias ) {
 
 		function setTexture( texture, slot ) {
 
-			if ( !texture.__webglTexture && texture.image.loaded ) {
-
+			if ( !texture.__webglTexture ) {
+				
 				texture.__webglTexture = _gl.createTexture();
+				
+			}
+			
+			if ( texture.needsUpdate ) {
+
 				_gl.bindTexture( _gl.TEXTURE_2D, texture.__webglTexture );
 				_gl.texImage2D( _gl.TEXTURE_2D, 0, _gl.RGBA, _gl.RGBA, _gl.UNSIGNED_BYTE, texture.image );
 
-				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_WRAP_S, paramThreeToGL( texture.wrap_s ) );
-				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_WRAP_T, paramThreeToGL( texture.wrap_t ) );
+				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_WRAP_S, paramThreeToGL( texture.wrapS ) );
+				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_WRAP_T, paramThreeToGL( texture.wrapT ) );
 
-				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, paramThreeToGL( texture.mag_filter ) );
-				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, paramThreeToGL( texture.min_filter ) );
+				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, paramThreeToGL( texture.magFilter ) );
+				_gl.texParameteri( _gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, paramThreeToGL( texture.minFilter ) );
 				_gl.generateMipmap( _gl.TEXTURE_2D );
 				_gl.bindTexture( _gl.TEXTURE_2D, null );
+				
+				texture.needsUpdate = false;
 
 			}
 
 			_gl.activeTexture( _gl.TEXTURE0 + slot );
 			_gl.bindTexture( _gl.TEXTURE_2D, texture.__webglTexture );
 
-		}
-
+		};
+		
 		function maxVertexTextures() {
 
 			return _gl.getParameter( _gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS );

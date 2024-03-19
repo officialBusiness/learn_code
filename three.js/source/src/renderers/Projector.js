@@ -15,7 +15,15 @@ THREE.Projector = function() {
 	_vector4 = new THREE.Vector4(),
 	_projScreenMatrix = new THREE.Matrix4(),
 	_projScreenObjectMatrix = new THREE.Matrix4(),
-	_frustum = [],
+
+	_frustum = [
+		new THREE.Vector4(),
+		new THREE.Vector4(),
+		new THREE.Vector4(),
+		new THREE.Vector4(),
+		new THREE.Vector4(),
+		new THREE.Vector4()
+	 ],
 
 	_clippedVertex1PositionScreen = new THREE.Vector4(),
 	_clippedVertex2PositionScreen = new THREE.Vector4(),
@@ -25,12 +33,9 @@ THREE.Projector = function() {
 	this.projectObjects = function ( scene, camera, sort ) {
 
 		var renderList = [],
-		o, ol, objects, object;
+		o, ol, objects, object, matrix;
 
 		_objectCount = 0;
-		_projScreenMatrix.multiply( camera.projectionMatrix, camera.matrix );
-
-		computeFrustum( _projScreenMatrix );
 
 		objects = scene.objects;
 
@@ -60,21 +65,25 @@ THREE.Projector = function() {
 
 	};
 
-	// TODO: Rename to projectElements? Test also using it with projectObjects to speed up sorting?
+	// TODO: Rename to projectElements?
 
 	this.projectScene = function ( scene, camera, sort ) {
 
 		var renderList = [], near = camera.near, far = camera.far,
 		o, ol, v, vl, f, fl, n, nl, objects, object,
-		objectMatrix, objectRotationMatrix, objectMaterials, objectOverdraw,
+		objectMatrix, objectMaterials, objectOverdraw,
+		objectMatrixRotation,
 		geometry, vertices, vertex, vertexPositionScreen,
 		faces, face, faceVertexNormals, normal, v1, v2, v3, v4;
 
 		_face3Count = _lineCount = _particleCount = 0;
 
-		camera.autoUpdateMatrix && camera.updateMatrix();
+		camera.matrixAutoUpdate && camera.update();
 
-		_projScreenMatrix.multiply( camera.projectionMatrix, camera.matrix );
+		_projScreenMatrix.multiply( camera.projectionMatrix, camera.matrixWorldInverse );
+		computeFrustum( _projScreenMatrix );
+
+		scene.update( undefined, false, camera );
 
 		objects = this.projectObjects( scene, camera, true ); // scene.objects;
 
@@ -84,10 +93,9 @@ THREE.Projector = function() {
 
 			if ( !object.visible ) continue;
 
-			object.autoUpdateMatrix && object.updateMatrix();
+			objectMatrix = object.matrixWorld;
+			objectMatrixRotation = object.matrixRotationWorld;
 
-			objectMatrix = object.matrix;
-			objectRotationMatrix = object.rotationMatrix;
 			objectMaterials = object.materials;
 			objectOverdraw = object.overdraw;
 
@@ -146,7 +154,7 @@ THREE.Projector = function() {
 								_face3.v3.positionScreen.copy( v3.positionScreen );
 
 								_face3.normalWorld.copy( face.normal );
-								objectRotationMatrix.multiplyVector3( _face3.normalWorld );
+								objectMatrixRotation.multiplyVector3( _face3.normalWorld );
 
 								_face3.centroidWorld.copy( face.centroid );
 								objectMatrix.multiplyVector3( _face3.centroidWorld );
@@ -161,7 +169,7 @@ THREE.Projector = function() {
 
 									normal = _face3VertexNormals[ n ] = _face3VertexNormals[ n ] || new THREE.Vector3();
 									normal.copy( faceVertexNormals[ n ] );
-									objectRotationMatrix.multiplyVector3( normal );
+									objectMatrixRotation.multiplyVector3( normal );
 
 								}
 
@@ -210,7 +218,7 @@ THREE.Projector = function() {
 								_face3.v3.positionScreen.copy( v4.positionScreen );
 
 								_face3.normalWorld.copy( face.normal );
-								objectRotationMatrix.multiplyVector3( _face3.normalWorld );
+								objectMatrixRotation.multiplyVector3( _face3.normalWorld );
 
 								_face3.centroidWorld.copy( face.centroid );
 								objectMatrix.multiplyVector3( _face3.centroidWorld );
@@ -321,6 +329,7 @@ THREE.Projector = function() {
 						renderList.push( _line );
 
 						_lineCount ++;
+
 					}
 				}
 
@@ -364,9 +373,9 @@ THREE.Projector = function() {
 
 	this.unprojectVector = function ( vector, camera ) {
 
-		var matrix = new THREE.Matrix4();
+		var matrix = camera.matrixWorld.clone();
 
-		matrix.multiply( THREE.Matrix4.makeInvert( camera.matrix ), THREE.Matrix4.makeInvert( camera.projectionMatrix ) );
+		matrix.multiplySelf( THREE.Matrix4.makeInvert( camera.projectionMatrix ) );
 		matrix.multiplyVector3( vector );
 
 		return vector;
@@ -381,14 +390,14 @@ THREE.Projector = function() {
 
 	function computeFrustum( m ) {
 
-		_frustum[ 0 ] = new THREE.Vector4( m.n41 - m.n11, m.n42 - m.n12, m.n43 - m.n13, m.n44 - m.n14 );
-		_frustum[ 1 ] = new THREE.Vector4( m.n41 + m.n11, m.n42 + m.n12, m.n43 + m.n13, m.n44 + m.n14 );
-		_frustum[ 2 ] = new THREE.Vector4( m.n41 + m.n21, m.n42 + m.n22, m.n43 + m.n23, m.n44 + m.n24 );
-		_frustum[ 3 ] = new THREE.Vector4( m.n41 - m.n21, m.n42 - m.n22, m.n43 - m.n23, m.n44 - m.n24 );
-		_frustum[ 4 ] = new THREE.Vector4( m.n41 - m.n31, m.n42 - m.n32, m.n43 - m.n33, m.n44 - m.n34 );
-		_frustum[ 5 ] = new THREE.Vector4( m.n41 + m.n31, m.n42 + m.n32, m.n43 + m.n33, m.n44 + m.n34 );
+		_frustum[ 0 ].set( m.n41 - m.n11, m.n42 - m.n12, m.n43 - m.n13, m.n44 - m.n14 );
+		_frustum[ 1 ].set( m.n41 + m.n11, m.n42 + m.n12, m.n43 + m.n13, m.n44 + m.n14 );
+		_frustum[ 2 ].set( m.n41 + m.n21, m.n42 + m.n22, m.n43 + m.n23, m.n44 + m.n24 );
+		_frustum[ 3 ].set( m.n41 - m.n21, m.n42 - m.n22, m.n43 - m.n23, m.n44 - m.n24 );
+		_frustum[ 4 ].set( m.n41 - m.n31, m.n42 - m.n32, m.n43 - m.n33, m.n44 - m.n34 );
+		_frustum[ 5 ].set( m.n41 + m.n31, m.n42 + m.n32, m.n43 + m.n33, m.n44 + m.n34 );
 
-		for ( var i = 0, l = _frustum.length; i < l; i ++ ) {
+		for ( var i = 0; i < 6; i ++ ) {
 
 			var plane = _frustum[ i ];
 			plane.divideScalar( Math.sqrt( plane.x * plane.x + plane.y * plane.y + plane.z * plane.z ) );
@@ -399,19 +408,19 @@ THREE.Projector = function() {
 
 	function isInFrustum( object ) {
 
-		var d, position = object.position,
+		var distance, matrix = object.matrixWorld,
 		radius = - object.geometry.boundingSphere.radius * Math.max( object.scale.x, Math.max( object.scale.y, object.scale.z ) );
 
 		for ( var i = 0; i < 6; i ++ ) {
 
-			d = _frustum[ i ].x * position.x + _frustum[ i ].y * position.y + _frustum[ i ].z * position.z + _frustum[ i ].w;
-			if ( d <= radius ) return false;
+			distance = _frustum[ i ].x * matrix.n14 + _frustum[ i ].y * matrix.n24 + _frustum[ i ].z * matrix.n34 + _frustum[ i ].w;
+			if ( distance <= radius ) return false;
 
 		}
 
 		return true;
 
-	}
+	};
 
 	function clipLine( s1, s2 ) {
 

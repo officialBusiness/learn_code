@@ -1,3 +1,7 @@
+/**
+ * @author mr.doob / http://mrdoob.com/
+ */
+
 THREE.PointLight = function ( hex, intensity ) {
 
 	THREE.Light.call( this, hex );
@@ -7,5 +11,5 @@ THREE.PointLight = function ( hex, intensity ) {
 
 };
 
-THREE.DirectionalLight.prototype = new THREE.Light();
-THREE.DirectionalLight.prototype.constructor = THREE.PointLight; 
+THREE.PointLight.prototype = new THREE.Light();
+THREE.PointLight.prototype.constructor = THREE.PointLight; 

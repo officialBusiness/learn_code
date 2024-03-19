@@ -11,8 +11,8 @@ THREE.CanvasRenderer = function () {
 	_canvasWidth, _canvasHeight, _canvasWidthHalf, _canvasHeightHalf,
 	_context = _canvas.getContext( '2d' ),
 
-	_clearColor = null,
-	_clearOpacity = null,
+	_clearColor = new THREE.Color( 0x000000 ),
+	_clearOpacity = 0,
 
 	_contextGlobalAlpha = 1,
 	_contextGlobalCompositeOperation = 0,
@@ -87,26 +87,52 @@ THREE.CanvasRenderer = function () {
 
 		_clipRect.set( - _canvasWidthHalf, - _canvasHeightHalf, _canvasWidthHalf, _canvasHeightHalf );
 
+		_contextGlobalAlpha = 1;
+		_contextGlobalCompositeOperation = 0;
+		_contextStrokeStyle = null;
+		_contextFillStyle = null;
+		_contextLineWidth = 1;
+
 	};
 
-	this.setClearColor = function( hex, opacity ) {
+	this.setClearColor = function( color, opacity ) {
 
-		_clearColor = hex !== null ? new THREE.Color( hex ) : null;
+		_clearColor = color;
 		_clearOpacity = opacity;
 
 		_clearRect.set( - _canvasWidthHalf, - _canvasHeightHalf, _canvasWidthHalf, _canvasHeightHalf );
 		_context.setTransform( 1, 0, 0, - 1, _canvasWidthHalf, _canvasHeightHalf );
+
 		this.clear();
+
+	};
+
+	this.setClearColorHex = function( hex, opacity ) {
+
+		_clearColor.setHex( hex );
+		_clearOpacity = opacity;
+
+		_clearRect.set( - _canvasWidthHalf, - _canvasHeightHalf, _canvasWidthHalf, _canvasHeightHalf );
+		_context.setTransform( 1, 0, 0, - 1, _canvasWidthHalf, _canvasHeightHalf );
+
+		this.clear();
+
 	};
 
 	this.clear = function () {
+
+		_context.setTransform( 1, 0, 0, - 1, _canvasWidthHalf, _canvasHeightHalf );
 
 		if ( !_clearRect.isEmpty() ) {
 
 			_clearRect.inflate( 1 );
 			_clearRect.minSelf( _clipRect );
 
-			if ( _clearColor !== null ) {
+			if ( _clearColor.hex == 0x000000 && _clearOpacity == 0 ) {
+
+				_context.clearRect( _clearRect.getX(), _clearRect.getY(), _clearRect.getWidth(), _clearRect.getHeight() );
+
+			} else {
 
 				setBlending( THREE.NormalBlending );
 				setOpacity( 1 );
@@ -114,24 +140,19 @@ THREE.CanvasRenderer = function () {
 				_context.fillStyle = 'rgba(' + Math.floor( _clearColor.r * 255 ) + ',' + Math.floor( _clearColor.g * 255 ) + ',' + Math.floor( _clearColor.b * 255 ) + ',' + _clearOpacity + ')';
 				_context.fillRect( _clearRect.getX(), _clearRect.getY(), _clearRect.getWidth(), _clearRect.getHeight() );
 
-			} else {
-
-				_context.clearRect( _clearRect.getX(), _clearRect.getY(), _clearRect.getWidth(), _clearRect.getHeight() );
-
 			}
 
 			_clearRect.empty();
 
 		}
+
 	};
 
 	this.render = function ( scene, camera ) {
 
 		var e, el, element, m, ml, fm, fml, material;
 
-		_context.setTransform( 1, 0, 0, - 1, _canvasWidthHalf, _canvasHeightHalf );
-
-		this.autoClear && this.clear();
+		this.autoClear ? this.clear() : _context.setTransform( 1, 0, 0, - 1, _canvasWidthHalf, _canvasHeightHalf );
 
 		_renderList = _projector.projectScene( scene, camera, this.sortElements );
 
@@ -356,7 +377,7 @@ THREE.CanvasRenderer = function () {
 
 				if ( material.map ) {
 
-					bitmap = material.map;
+					bitmap = material.map.image;
 					bitmapWidth = bitmap.width >> 1;
 					bitmapHeight = bitmap.height >> 1;
 
@@ -489,51 +510,46 @@ THREE.CanvasRenderer = function () {
 
 			if ( material instanceof THREE.MeshBasicMaterial ) {
 
-				if ( material.map/* && !material.wireframe*/ ) {
+				if ( material.map/* && !material.wireframe*/ ) {					
 
-					if ( material.map.image.loaded ) {
+					if ( material.map.mapping instanceof THREE.UVMapping ) {
 
-						if ( material.map.mapping instanceof THREE.UVMapping ) {
-
-							texturePath( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, material.map.image, element.uvs[ 0 ].u, element.uvs[ 0 ].v, element.uvs[ 1 ].u, element.uvs[ 1 ].v, element.uvs[ 2 ].u, element.uvs[ 2 ].v );
-
-						}
+						texturePath( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, material.map.image, element.uvs[ 0 ].u, element.uvs[ 0 ].v, element.uvs[ 1 ].u, element.uvs[ 1 ].v, element.uvs[ 2 ].u, element.uvs[ 2 ].v );
 
 					}
 
-				} else if ( material.env_map ) {
 
-					if ( material.env_map.image.loaded ) {
+				} else if ( material.envMap ) {
 
-						if ( material.env_map.mapping instanceof THREE.SphericalReflectionMapping ) {
 
-							var cameraMatrix = camera.matrix;
+					if ( material.envMap.mapping instanceof THREE.SphericalReflectionMapping ) {
 
-							_vector3.copy( element.vertexNormalsWorld[ 0 ] );
-							_uv1x = ( _vector3.x * cameraMatrix.n11 + _vector3.y * cameraMatrix.n12 + _vector3.z * cameraMatrix.n13 ) * 0.5 + 0.5;
-							_uv1y = - ( _vector3.x * cameraMatrix.n21 + _vector3.y * cameraMatrix.n22 + _vector3.z * cameraMatrix.n23 ) * 0.5 + 0.5;
+						var cameraMatrix = camera.matrixWorldInverse;
 
-							_vector3.copy( element.vertexNormalsWorld[ 1 ] );
-							_uv2x = ( _vector3.x * cameraMatrix.n11 + _vector3.y * cameraMatrix.n12 + _vector3.z * cameraMatrix.n13 ) * 0.5 + 0.5;
-							_uv2y = - ( _vector3.x * cameraMatrix.n21 + _vector3.y * cameraMatrix.n22 + _vector3.z * cameraMatrix.n23 ) * 0.5 + 0.5;
+						_vector3.copy( element.vertexNormalsWorld[ 0 ] );
+						_uv1x = ( _vector3.x * cameraMatrix.n11 + _vector3.y * cameraMatrix.n12 + _vector3.z * cameraMatrix.n13 ) * 0.5 + 0.5;
+						_uv1y = - ( _vector3.x * cameraMatrix.n21 + _vector3.y * cameraMatrix.n22 + _vector3.z * cameraMatrix.n23 ) * 0.5 + 0.5;
 
-							_vector3.copy( element.vertexNormalsWorld[ 2 ] );
-							_uv3x = ( _vector3.x * cameraMatrix.n11 + _vector3.y * cameraMatrix.n12 + _vector3.z * cameraMatrix.n13 ) * 0.5 + 0.5;
-							_uv3y = - ( _vector3.x * cameraMatrix.n21 + _vector3.y * cameraMatrix.n22 + _vector3.z * cameraMatrix.n23 ) * 0.5 + 0.5;
+						_vector3.copy( element.vertexNormalsWorld[ 1 ] );
+						_uv2x = ( _vector3.x * cameraMatrix.n11 + _vector3.y * cameraMatrix.n12 + _vector3.z * cameraMatrix.n13 ) * 0.5 + 0.5;
+						_uv2y = - ( _vector3.x * cameraMatrix.n21 + _vector3.y * cameraMatrix.n22 + _vector3.z * cameraMatrix.n23 ) * 0.5 + 0.5;
 
-							texturePath( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, material.env_map.image, _uv1x, _uv1y, _uv2x, _uv2y, _uv3x, _uv3y );
+						_vector3.copy( element.vertexNormalsWorld[ 2 ] );
+						_uv3x = ( _vector3.x * cameraMatrix.n11 + _vector3.y * cameraMatrix.n12 + _vector3.z * cameraMatrix.n13 ) * 0.5 + 0.5;
+						_uv3y = - ( _vector3.x * cameraMatrix.n21 + _vector3.y * cameraMatrix.n22 + _vector3.z * cameraMatrix.n23 ) * 0.5 + 0.5;
 
-						}/* else if ( material.env_map.mapping == THREE.RefractionMapping ) {
+						texturePath( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, material.envMap.image, _uv1x, _uv1y, _uv2x, _uv2y, _uv3x, _uv3y );
+
+					}/* else if ( material.envMap.mapping == THREE.RefractionMapping ) {
 
 						
 
-						}*/
+					}*/
 
-					}
 
 				} else {
 
-					material.wireframe ? strokePath( material.color.__styleString, material.wireframe_linewidth ) : fillPath( material.color.__styleString );
+					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth ) : fillPath( material.color.__styleString );
 
 				}
 
@@ -584,13 +600,13 @@ THREE.CanvasRenderer = function () {
 						_color.b = material.color.b * _light.b;
 
 						_color.updateStyleString();
-						material.wireframe ? strokePath( _color.__styleString, material.wireframe_linewidth ) : fillPath( _color.__styleString );
+						material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth ) : fillPath( _color.__styleString );
 
 					} 
 
 				} else {
 
-					material.wireframe ? strokePath( material.color.__styleString, material.wireframe_linewidth ) : fillPath( material.color.__styleString );
+					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth ) : fillPath( material.color.__styleString );
 
 				}
 
@@ -623,7 +639,7 @@ THREE.CanvasRenderer = function () {
 				_color.b = normalToComponent( element.normalWorld.z );
 				_color.updateStyleString();
 
-				material.wireframe ? strokePath( _color.__styleString, material.wireframe_linewidth ) : fillPath( _color.__styleString );
+				material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth ) : fillPath( _color.__styleString );
 
 			}
 
@@ -676,7 +692,7 @@ THREE.CanvasRenderer = function () {
 
 			// http://extremelysatisfactorytotalitarianism.com/blog/?p=2120
 
-			var a, b, c, d, e, f, det,
+			var a, b, c, d, e, f, det, idet,
 			width = bitmap.width - 1,
 			height = bitmap.height - 1;
 
@@ -690,14 +706,18 @@ THREE.CanvasRenderer = function () {
 			u1 -= u0; v1 -= v0;
 			u2 -= u0; v2 -= v0;
 
-			det = 1 / ( u1 * v2 - u2 * v1 ),
+			det = u1 * v2 - u2 * v1;
 
-			a = ( v2 * x1 - v1 * x2 ) * det,
-			b = ( v2 * y1 - v1 * y2 ) * det,
-			c = ( u1 * x2 - u2 * x1 ) * det,
-			d = ( u1 * y2 - u2 * y1 ) * det,
+			if ( det == 0 ) return;
 
-			e = x0 - a * u0 - c * v0,
+			idet = 1 / det;
+
+			a = ( v2 * x1 - v1 * x2 ) * idet;
+			b = ( v2 * y1 - v1 * y2 ) * idet;
+			c = ( u1 * x2 - u2 * x1 ) * idet;
+			d = ( u1 * y2 - u2 * y1 ) * idet;
+
+			e = x0 - a * u0 - c * v0;
 			f = y0 - b * u0 - d * v0;
 
 			_context.save();
