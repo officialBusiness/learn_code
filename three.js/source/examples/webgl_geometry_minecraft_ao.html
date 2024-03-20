@@ -368,7 +368,7 @@
 
 						sides = { px: px, nx: nx, py: true, ny: false, pz: pz, nz: nz };
 
-						cube = new Cube( 100, 100, 100, 1, 1, materials, false, sides );
+						cube = new Cube( 100, 100, 100, 1, 1, 1, materials, false, sides );
 
 						// set UV tiles
 
@@ -433,8 +433,6 @@
 					}
 
 				}
-
-				geometry.sortFacesByMaterial();
 
 				mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial() );
 				scene.addObject( mesh );
