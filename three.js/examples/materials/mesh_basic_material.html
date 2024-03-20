@@ -7,31 +7,44 @@
 		<link rel="icon" href="../icon.png">
 		<title>mesh_basic_material</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
-
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
 
+		<script type="text/javascript" src="../../source/src/core/Object3D.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Vector3.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Vector4.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Matrix3.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Matrix4.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Quaternion.js"></script>
+
+		<script type="text/javascript" src="../../source/src/animation/Animation.js"></script>
+		<script type="text/javascript" src="../../source/src/animation/AnimationHandler.js"></script>
+
 		<script type="text/javascript" src="../../source/src/cameras/Camera.js"></script>
+		<script type="text/javascript" src="../../source/src/cameras/QuakeCamera.js"></script>
 
 		<script type="text/javascript" src="../../source/src/core/Color.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face3.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Geometry.js"></script>
-		<script type="text/javascript" src="../../source/src/core/Matrix3.js"></script>
-		<script type="text/javascript" src="../../source/src/core/Matrix4.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Quaternion.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Ray.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Rectangle.js"></script>
 		<script type="text/javascript" src="../../source/src/core/UV.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Vector2.js"></script>
-		<script type="text/javascript" src="../../source/src/core/Vector3.js"></script>
-		<script type="text/javascript" src="../../source/src/core/Vector4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Vertex.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/io/Loader.js"></script>
 
+		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
+
 		<script type="text/javascript" src="../../source/src/extras/primitives/Cube.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/primitives/Cylinder.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/primitives/Icosahedron.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/primitives/LathedObject.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/primitives/Plane.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/primitives/Sphere.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/primitives/Torus.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/primitives/Torusknot.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/GeometryUtils.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/ImageUtils.js"></script>
@@ -43,15 +56,8 @@
 		<script type="text/javascript" src="../../source/src/lights/DirectionalLight.js"></script>
 		<script type="text/javascript" src="../../source/src/lights/PointLight.js"></script>
 
-		<script type="text/javascript" src="../../source/src/materials/mappings/CubeReflectionMapping.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/mappings/CubeRefractionMapping.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/mappings/LatitudeReflectionMapping.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/mappings/LatitudeRefractionMapping.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/mappings/SphericalReflectionMapping.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/mappings/SphericalRefractionMapping.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/mappings/UVMapping.js"></script>
-
 		<script type="text/javascript" src="../../source/src/materials/LineBasicMaterial.js"></script>
+		<script type="text/javascript" src="../../source/src/materials/Mappings.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/Material.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshDepthMaterial.js"></script>
@@ -64,14 +70,21 @@
 		<script type="text/javascript" src="../../source/src/materials/ParticleCircleMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleDOMMaterial.js"></script>
 
+		<script type="text/javascript" src="../../source/src/materials/RenderTarget.js"></script>
+
 		<script type="text/javascript" src="../../source/src/materials/Texture.js"></script>
 
 		<script type="text/javascript" src="../../source/src/materials/Uniforms.js"></script>
 
-		<script type="text/javascript" src="../../source/src/objects/Object3D.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/Bone.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Line.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/LOD.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Mesh.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Particle.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/ParticleSystem.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/Ribbon.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/SkinnedMesh.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/Sound.js"></script>
 
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableFace3.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableLine.js"></script>
@@ -81,6 +94,7 @@
 		<script type="text/javascript" src="../../source/src/renderers/CanvasRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/DOMRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/Projector.js"></script>
+		<script type="text/javascript" src="../../source/src/renderers/SoundRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/SVGRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderer2.js"></script>
@@ -101,10 +115,10 @@
 
 			var scene = new THREE.Scene();
 
-			// var webglRenderer = new THREE.WebGLRenderer({
-			// 	scene
-			// });
-			var webglRenderer = new THREE.WebGLRenderer2(true);
+			var webglRenderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
@@ -155,22 +169,25 @@
 
 			function addTexture(url){
 
-				var img = new Image();
-				img.src = url;
+				var image = new Image();
+				image.src = url;
 
 				var canvasElement = document.createElement('canvas');
 
-				img.onload = ()=>{
+				var texture = new THREE.Texture( canvasElement );
 
-					canvasElement.width = nearest_pow2(img.width);
-					canvasElement.height = nearest_pow2(img.height);
 
-					canvasElement.getContext("2d").drawImage( img, 0, 0, canvasElement.width, canvasElement.height );
+				image.onload = ()=>{
 
-					canvasElement.loaded = true;
+					canvasElement.width = nearest_pow2(image.naturalWidth);
+					canvasElement.height = nearest_pow2(image.naturalHeight);
+
+					canvasElement.getContext("2d").drawImage( image, 0, 0, canvasElement.width, canvasElement.height );
+
+					texture.needsUpdate = true;
 				}
 
-				return canvasElement;
+				return texture;
 			}
 
 			var r = "textures/cube/Escher/";
@@ -180,20 +197,19 @@
 						 r + "pz.jpg", r + "nz.jpg" ];
 
 			var meshBasicMaterial = new THREE.MeshBasicMaterial({
-				color: 0xffffff,
-				map: new THREE.Texture(
-					addTexture('../assets/images/logo.jpeg')
+				color: 0xff0000,
+				map: addTexture('../assets/images/logo.jpeg'),
+				envMap: ImageUtils.loadTextureCube(
+					[
+						"px.jpg", "nx.jpg",
+						"py.jpg", "ny.jpg",
+						"pz.jpg", "nz.jpg"
+					].map((url)=>{
+						 	return "../assets/images/cube/Escher/" + url;
+					})
 				),
-				env_map: new THREE.Texture( ImageUtils.loadArray(
-						[
-							"px.jpg", "nx.jpg",
-							"py.jpg", "ny.jpg",
-							"pz.jpg", "nz.jpg"
-						].map((url)=>{
-							 	return "../assets/images/cube/Escher/" + url;
-						})
-					)
-				),
+				// lightMap:
+				depthTest: false,
 			})
 			var mesh = new THREE.Mesh( plane, meshBasicMaterial );
 
@@ -211,7 +227,6 @@
 				const gui = new lil.GUI();
 
 				initMeshBasicMaterial(gui, meshBasicMaterial, 'meshBasicMaterial')
-
 			}
 
 
@@ -221,16 +236,17 @@
 
 				materialFolder.addColor(material, 'color');
 
+				materialFolder.add(material, 'opacity', 0, 1);
+
 				materialFolder.add(material, 'combine', {
 					'Multiply': THREE.MultiplyOperation,
 					'Mix': THREE.MixOperation,
 				});
 				materialFolder.add(material, 'reflectivity', 0, 1);
-				materialFolder.add(material, 'refraction_ratio', 0, 10);
+				materialFolder.add(material, 'refractionRatio', 0, 10);
 
 				materialFolder.add(material, 'fog');
 
-				materialFolder.add(material, 'opacity', 0, 1);
 				materialFolder.add(material, 'shading', {
 					'FlatShading': THREE.FlatShading,
 					'SmoothShading': THREE.SmoothShading,
@@ -239,15 +255,15 @@
 					'NormalBlending': THREE.NormalBlending,
 					'AdditiveBlending': THREE.AdditiveBlending,
 					'SubtractiveBlending': THREE.SubtractiveBlending,
+					'BillboardBlending': THREE.BillboardBlending,
+					'ReverseSubtractiveBlending': THREE.ReverseSubtractiveBlending,
 				});
+				materialFolder.add(material, 'depthTest');
+
 				materialFolder.add(material, 'wireframe');
 
-				materialFolder.add(material.env_map, 'mapping', {
-					"UVMapping": material.env_map.mapping,
-					'ReflectionMapping': new THREE.CubeReflectionMapping(),
-					'RefractionMapping': new THREE.CubeRefractionMapping(),
-				}).name('env_map.mapping');
-
+				materialFolder.add(material, 'vertexColors');
+				materialFolder.add(material, 'skinning');
 			}
 
 			loop();
