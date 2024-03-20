@@ -14,7 +14,13 @@
  *  lookSpeed: <float>,
  
  *  noFly: <bool>, 
- *  lookVertical: <bool>, 
+ *  lookVertical: <bool>,
+ *  autoForward: <bool>,
+ 
+ *  heightSpeed: <bool>,
+ *  heightCoef: <float>,
+ *  heightMin: <float>,
+ *  heightMax: <float>,
  
  *  domElement: <HTMLElement>, 
  * }
@@ -30,6 +36,17 @@ function bind( scope, fn ) {
 
 }
 
+function clamp_bottom( x, a ) {
+	
+	return x < a ? a : x;
+	
+};
+
+function clamp( x, a, b ) {
+	
+	return x < a ? a : ( x > b ? b : x );
+	
+};
 
 THREE.QuakeCamera = function ( parameters ) {
 
@@ -40,7 +57,12 @@ THREE.QuakeCamera = function ( parameters ) {
 
 	this.noFly = false;
 	this.lookVertical = true;
-
+	this.autoForward = false;
+	
+	this.heightSpeed = false;
+	this.heightCoef = 1.0;
+	this.heightMin = 0.0;
+	
 	this.domElement = document;
 
 	if ( parameters ) {
@@ -49,11 +71,20 @@ THREE.QuakeCamera = function ( parameters ) {
 		if ( parameters.lookSpeed !== undefined ) this.lookSpeed  = parameters.lookSpeed;
 		if ( parameters.noFly !== undefined ) this.noFly = parameters.noFly;
 		if ( parameters.lookVertical !== undefined ) this.lookVertical = parameters.lookVertical;
+		
+		if ( parameters.autoForward !== undefined ) this.autoForward = parameters.autoForward;
+		
+		if ( parameters.heightSpeed !== undefined ) this.heightSpeed = parameters.heightSpeed;
+		if ( parameters.heightCoef !== undefined ) this.heightCoef = parameters.heightCoef;
+		if ( parameters.heightMin !== undefined ) this.heightMin = parameters.heightMin;
+		if ( parameters.heightMax !== undefined ) this.heightMax = parameters.heightMax;
 
 		if ( parameters.domElement !== undefined ) this.domElement = parameters.domElement;
 
 	}
 
+	this.autoSpeedFactor = 0.0;
+	
 	this.mouseX = 0;
 	this.mouseY = 0;
 
@@ -147,7 +178,20 @@ THREE.QuakeCamera = function ( parameters ) {
 
 	this.update = function() {
 
-		if ( this.moveForward ) this.translateZ( - this.movementSpeed, this.noFly );
+		if ( this.heightSpeed ) {
+
+			var y = clamp( this.position.y, this.heightMin, this.heightMax ),
+				delta = y - this.heightMin;
+			
+			this.autoSpeedFactor = delta * this.heightCoef;
+			
+		} else {
+				
+			this.autoSpeedFactor = 0.0;
+
+		}
+
+		if ( this.moveForward || this.autoForward ) this.translateZ( - ( this.movementSpeed + this.autoSpeedFactor ), this.noFly );
 		if ( this.moveBackward ) this.translateZ( this.movementSpeed, this.noFly );
 		if ( this.moveLeft ) this.translateX( - this.movementSpeed, this.noFly );
 		if ( this.moveRight ) this.translateX( this.movementSpeed, this.noFly );
