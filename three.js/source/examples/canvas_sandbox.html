@@ -51,7 +51,7 @@
 		<script type="text/javascript" src="../src/materials/MeshFaceMaterial.js"></script>
 		<script type="text/javascript" src="../src/materials/MeshShaderMaterial.js"></script>
 		<script type="text/javascript" src="../src/materials/ParticleBasicMaterial.js"></script>
-		<script type="text/javascript" src="../src/materials/ParticleCircleMaterial.js"></script>
+		<script type="text/javascript" src="../src/materials/ParticleCanvasMaterial.js"></script>
 		<script type="text/javascript" src="../src/materials/ParticleDOMMaterial.js"></script>
 		<script type="text/javascript" src="../src/materials/Texture.js"></script>
 		<script type="text/javascript" src="../src/materials/RenderTarget.js"></script>
@@ -75,28 +75,30 @@
 		<script type="text/javascript" src="../src/renderers/WebGLShaders.js"></script>
 		<script type="text/javascript" src="../src/renderers/WebGLRenderer.js"></script>
 		<script type="text/javascript" src="../src/renderers/SoundRenderer.js"></script>
-		<script type="text/javascript" src="../src/renderers/renderables/RenderableObject.js"></script>
+		<script type="text/javascript" src="../src/renderers/renderables/RenderableVertex.js"></script>
 		<script type="text/javascript" src="../src/renderers/renderables/RenderableFace3.js"></script>
+		<script type="text/javascript" src="../src/renderers/renderables/RenderableFace4.js"></script>
+		<script type="text/javascript" src="../src/renderers/renderables/RenderableObject.js"></script>
 		<script type="text/javascript" src="../src/renderers/renderables/RenderableParticle.js"></script>
 		<script type="text/javascript" src="../src/renderers/renderables/RenderableLine.js"></script>
 		<script type="text/javascript" src="../src/extras/GeometryUtils.js"></script>
 		<script type="text/javascript" src="../src/extras/ImageUtils.js"></script>
 		<script type="text/javascript" src="../src/extras/SceneUtils.js"></script>
 		<script type="text/javascript" src="../src/extras/ShaderUtils.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/Cube.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/Cylinder.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/Plane.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/Sphere.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/Torus.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/Icosahedron.js"></script>
-		<script type="text/javascript" src="../src/extras/primitives/LathedObject.js"></script>
-		<script type="text/javascript" src="../src/extras/objects/MarchingCubes.js"></script>
 		<script type="text/javascript" src="../src/extras/cameras/QuakeCamera.js"></script>
 		<script type="text/javascript" src="../src/extras/cameras/PathCamera.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Cube.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Cylinder.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Icosahedron.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Lathe.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Plane.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Sphere.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/Torus.js"></script>
+		<script type="text/javascript" src="../src/extras/geometries/TorusKnot.js"></script>
 		<script type="text/javascript" src="../src/extras/io/Loader.js"></script>
-		
-		<script type="text/javascript" src="../src/extras/primitives/Sphere.js"></script>
-		<script type="text/javascript" src="../src/extras/ImageUtils.js"></script>
+		<script type="text/javascript" src="../src/extras/io/JSONLoader.js"></script>
+		<script type="text/javascript" src="../src/extras/io/BinaryLoader.js"></script>
+		<script type="text/javascript" src="../src/extras/objects/MarchingCubes.js"></script>
 
 		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
 		<script type="text/javascript" src="js/Stats.js"></script>
@@ -175,7 +177,7 @@
 				for ( var i = 0; i < 10; i ++ ) {
 
 					sphere = new THREE.Mesh( geometry, material );
-					sphere.overdraw = true;
+					// sphere.overdraw = true;
 
 					sphere.position.x = Math.random() * 1000 - 500;
 					sphere.position.y = Math.random() * 1000 - 500;
