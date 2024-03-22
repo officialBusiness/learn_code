@@ -19,6 +19,7 @@
 
 		<script type="text/javascript" src="../../source/src/animation/Animation.js"></script>
 		<script type="text/javascript" src="../../source/src/animation/AnimationHandler.js"></script>
+		<script type="text/javascript" src="../../source/src/animation/AnimationMorphTarget.js"></script>
 
 		<script type="text/javascript" src="../../source/src/cameras/Camera.js"></script>
 
@@ -37,18 +38,21 @@
 		<script type="text/javascript" src="../../source/src/extras/cameras/PathCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/QuakeCamera.js"></script>
 
+		<script type="text/javascript" src="../../source/src/extras/geometries/Cube.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Cylinder.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Icosahedron.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Lathe.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Plane.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Sphere.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Torus.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/Torusknot.js"></script>
+
 		<script type="text/javascript" src="../../source/src/extras/io/Loader.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/io/BinaryLoader.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/io/JSONLoader.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/io/LoaderOld.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
-
-		<script type="text/javascript" src="../../source/src/extras/primitives/Cube.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/Cylinder.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/Icosahedron.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/LathedObject.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/Plane.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/Sphere.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/Torus.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/primitives/Torusknot.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/GeometryUtils.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/ImageUtils.js"></script>
@@ -71,7 +75,7 @@
 		<script type="text/javascript" src="../../source/src/materials/MeshPhongMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshShaderMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleBasicMaterial.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/ParticleCircleMaterial.js"></script>
+		<script type="text/javascript" src="../../source/src/materials/ParticleCanvasMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleDOMMaterial.js"></script>
 
 		<script type="text/javascript" src="../../source/src/materials/RenderTarget.js"></script>
@@ -91,9 +95,11 @@
 		<script type="text/javascript" src="../../source/src/objects/Sound.js"></script>
 
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableFace3.js"></script>
+		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableFace4.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableLine.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableObject.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableParticle.js"></script>
+		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableVertex.js"></script>
 
 		<script type="text/javascript" src="../../source/src/renderers/CanvasRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/DOMRenderer.js"></script>
@@ -113,6 +119,9 @@
 	</head>
 	<!--
 		感觉相关的 shader 有问题, 需要改一下才行
+		skinning_vertex 修改
+			"mat4 m = boneGlobalMatrices[ int( skinIndex.x ) ] * skinWeight.x;",
+			"gl_Position  = projectionMatrix * viewMatrix * objectMatrix * m * vec4(position, 1.0);",
 	-->
 	<body>
 		<script type="module">
@@ -154,14 +163,16 @@
 				new THREE.Face4( 0, 2, 3, 1 )
 			);
 
-			plane.uvs.push(
+			plane.faceVertexUvs = [
 				[
-					new THREE.UV(0, 0 ),
-					new THREE.UV(0, 1 ),
-					new THREE.UV(1, 1 ),
-					new THREE.UV(1, 0 )
+					[
+						new THREE.UV(0, 0 ),
+						new THREE.UV(0, 1 ),
+						new THREE.UV(1, 1 ),
+						new THREE.UV(1, 0 )
+					]
 				]
-			);
+			];
 
 			plane.skinWeights.push(
 				new THREE.Vector4(1, 0, 0, 0),
@@ -248,8 +259,17 @@
 
 			var mesh = new THREE.SkinnedMesh( plane,
 				new THREE.MeshBasicMaterial({
-					color: 0xff0000,
+					color: 0xffffff,
 					map: ImageUtils.loadTexture('../assets/images/logo1.jpg'),
+					envMap: ImageUtils.loadTextureCube(
+						[
+							"px.jpg", "nx.jpg",
+							"py.jpg", "ny.jpg",
+							"pz.jpg", "nz.jpg"
+						].map((url)=>{
+							 	return "../assets/images/cube/Escher/" + url;
+						})
+					),
 					skinning: true,
 				})
 			);

@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>mesh_basic_material</title>
+		<title>geomerty_morph_targets</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -130,6 +130,7 @@
 			});
 			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
+
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
 			webglRenderer.domElement.id = 'renderCanvas';
@@ -140,19 +141,19 @@
 			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
 			camera.fov = 75;
 			camera.aspect = document.body.clientWidth / document.body.clientHeight;
-			camera.near = 1;
-			camera.far = 10000;
+			camera.near = 0.1;
+			camera.far = 1000;
 
 
-			camera.position.z = 500;
+			camera.position.z = 6;
 
 			var plane = new THREE.Geometry();
 
 			plane.vertices.push(
-				new THREE.Vertex( new THREE.Vector3(-200, 200,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 200, 200,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3(-200,-200,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 200,-200,  0 ) )
+				new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
 			);
 
 			plane.faces.push(
@@ -168,7 +169,83 @@
 						new THREE.UV(1, 0 )
 					]
 				]
-			]
+			];
+
+			plane.morphTargets.push(
+				{
+					name: 'morphTarget1',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2 + 1, 2 + 1,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget2',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2 + 1, 2 + 1,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget3',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2 + 1,-2 + 1,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget4',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2 + 1,-2 + 1,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget5',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget6',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget7',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+				{
+					name: 'morphTarget8',
+					vertices: [
+						new THREE.Vertex( new THREE.Vector3(-2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2, 2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3(-2,-2,  0 ) ),
+						new THREE.Vertex( new THREE.Vector3( 2,-2,  0 ) )
+					]
+				},
+			);
+
 			plane.computeCentroids();
 			plane.computeFaceNormals();
 
@@ -179,43 +256,42 @@
 
 			function addTexture(url){
 
-				var image = new Image();
-				image.src = url;
+				var img = new Image();
+				img.src = url;
 
 				var canvasElement = document.createElement('canvas');
 
-				var texture = new THREE.Texture( canvasElement );
+				img.onload = ()=>{
 
+					canvasElement.width = nearest_pow2(img.width);
+					canvasElement.height = nearest_pow2(img.height);
 
-				image.onload = ()=>{
+					canvasElement.getContext("2d").drawImage( img, 0, 0, canvasElement.width, canvasElement.height );
 
-					canvasElement.width = nearest_pow2(image.naturalWidth);
-					canvasElement.height = nearest_pow2(image.naturalHeight);
-
-					canvasElement.getContext("2d").drawImage( image, 0, 0, canvasElement.width, canvasElement.height );
-
-					texture.needsUpdate = true;
+					canvasElement.loaded = true;
 				}
 
-				return texture;
+				return canvasElement;
 			}
 
-			var meshBasicMaterial = new THREE.MeshBasicMaterial({
-				color: 0xff0000,
-				map: addTexture('../assets/images/logo.jpeg'),
-				envMap: ImageUtils.loadTextureCube(
-					[
-						"px.jpg", "nx.jpg",
-						"py.jpg", "ny.jpg",
-						"pz.jpg", "nz.jpg"
-					].map((url)=>{
-						 	return "../assets/images/cube/Escher/" + url;
-					})
-				),
-				// lightMap:
-				depthTest: false,
-			})
-			var mesh = new THREE.Mesh( plane, meshBasicMaterial );
+			var mesh = new THREE.SkinnedMesh( plane,
+				new THREE.MeshBasicMaterial({
+					color: 0xffffff,
+					map: ImageUtils.loadTexture('../assets/images/logo1.jpg'),
+					envMap: ImageUtils.loadTextureCube(
+						[
+							"px.jpg", "nx.jpg",
+							"py.jpg", "ny.jpg",
+							"pz.jpg", "nz.jpg"
+						].map((url)=>{
+							 	return "../assets/images/cube/Escher/" + url;
+						})
+					),
+					morphTargets: true,
+				})
+			);
+
+			// mesh.morphTargetInfluences = [0,0,0,0,0,0,0,0]
 
 			scene.addObject(mesh);
 
@@ -224,57 +300,21 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-
 			initGui();
 			function initGui(){
 
 				const gui = new lil.GUI();
 
-				initMeshBasicMaterial(gui, meshBasicMaterial, 'meshBasicMaterial')
-			}
-
-
-			function initMeshBasicMaterial(gui, material, name){
-
-				const materialFolder = gui.addFolder(name);
-
-				materialFolder.addColor(material, 'color');
-
-				materialFolder.add(material, 'opacity', 0, 1);
-
-				materialFolder.add(material, 'combine', {
-					'Multiply': THREE.MultiplyOperation,
-					'Mix': THREE.MixOperation,
-				});
-				materialFolder.add(material, 'reflectivity', 0, 1);
-				materialFolder.add(material, 'refractionRatio', 0, 10);
-
-				materialFolder.add(material, 'fog');
-
-				materialFolder.add(material, 'shading', {
-					'FlatShading': THREE.FlatShading,
-					'SmoothShading': THREE.SmoothShading,
-				});
-				materialFolder.add(material, 'blending', {
-					'NormalBlending': THREE.NormalBlending,
-					'AdditiveBlending': THREE.AdditiveBlending,
-					'SubtractiveBlending': THREE.SubtractiveBlending,
-					'BillboardBlending': THREE.BillboardBlending,
-					'ReverseSubtractiveBlending': THREE.ReverseSubtractiveBlending,
-				});
-				materialFolder.add(material, 'depthTest');
-
-				materialFolder.add(material, 'wireframe');
-
-				materialFolder.add(material, 'vertexColors');
-				materialFolder.add(material, 'skinning');
+				gui.add( mesh.morphTargetInfluences, '0', -5, 5 );
+				gui.add( mesh.morphTargetInfluences, '1', -5, 5 );
+				gui.add( mesh.morphTargetInfluences, '2', -5, 5 );
+				gui.add( mesh.morphTargetInfluences, '3', -5, 5 );
+				gui.add( mesh.morphTargetInfluences, '4', -5, 5 );
 			}
 
 			loop();
 			function loop() {
 
-				// mesh.rotation.y += 0.001;
-				// mesh.updateMatrix();
 
 				webglRenderer.render( scene, camera );
 
