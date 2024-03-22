@@ -18,7 +18,9 @@ THREE.CanvasRenderer = function () {
 	_contextGlobalCompositeOperation = 0,
 	_contextStrokeStyle = null,
 	_contextFillStyle = null,
-	_contextLineWidth = 1,
+	_contextLineWidth = null,
+	_contextLineCap = null,
+	_contextLineJoin = null,
 
 	_v1, _v2, _v3, _v4,
 	_v5 = new THREE.RenderableVertex(),
@@ -95,7 +97,9 @@ THREE.CanvasRenderer = function () {
 		_contextGlobalCompositeOperation = 0;
 		_contextStrokeStyle = null;
 		_contextFillStyle = null;
-		_contextLineWidth = 1;
+		_contextLineWidth = null;
+		_contextLineCap = null;
+		_contextLineJoin = null;
 
 	};
 
@@ -358,11 +362,15 @@ THREE.CanvasRenderer = function () {
 
 				} else if ( light instanceof THREE.DirectionalLight ) {
 
+					// for particles
+
 					_directionalLights.r += lightColor.r;
 					_directionalLights.g += lightColor.g;
 					_directionalLights.b += lightColor.b;
 
 				} else if ( light instanceof THREE.PointLight ) {
+
+					// for particles
 
 					_pointLights.r += lightColor.r;
 					_pointLights.g += lightColor.g;
@@ -376,41 +384,41 @@ THREE.CanvasRenderer = function () {
 
 		function calculateLight( scene, position, normal, color ) {
 
-			var l, ll, light, lightColor, lightIntensity,
+			var l, ll, light, lightColor,
 			amount, lights = scene.lights;
 
 			for ( l = 0, ll = lights.length; l < ll; l ++ ) {
 
 				light = lights[ l ];
 				lightColor = light.color;
-				lightIntensity = light.intensity;
 
 				if ( light instanceof THREE.DirectionalLight ) {
 
-					amount = normal.dot( light.position ) * lightIntensity;
+					amount = normal.dot( light.position );
 
-					if ( amount > 0 ) {
+					if ( amount <= 0 ) continue;
 
-						color.r += lightColor.r * amount;
-						color.g += lightColor.g * amount;
-						color.b += lightColor.b * amount;
+					amount *= light.intensity;
 
-					}
+					color.r += lightColor.r * amount;
+					color.g += lightColor.g * amount;
+					color.b += lightColor.b * amount;
 
 				} else if ( light instanceof THREE.PointLight ) {
 
-					_vector3.sub( light.position, position );
-					_vector3.normalize();
+					amount = normal.dot( _vector3.sub( light.position, position ).normalize() );
 
-					amount = normal.dot( _vector3 ) * lightIntensity;
+					if ( amount <= 0 ) continue;
 
-					if ( amount > 0 ) {
+					amount *= light.distance == 0 ? 1 : 1 - Math.min( position.distanceTo( light.position ) / light.distance, 1 );
 
-						color.r += lightColor.r * amount;
-						color.g += lightColor.g * amount;
-						color.b += lightColor.b * amount;
+					if ( amount == 0 ) continue;
 
-					}
+					amount *= light.intensity;
+
+					color.r += lightColor.r * amount;
+					color.g += lightColor.g * amount;
+					color.b += lightColor.b * amount;
 
 				}
 
@@ -475,24 +483,6 @@ THREE.CanvasRenderer = function () {
 
 			} else if ( material instanceof THREE.ParticleCanvasMaterial ) {
 
-				if ( _enableLighting ) {
-
-					_light.r = _ambientLight.r + _directionalLights.r + _pointLights.r;
-					_light.g = _ambientLight.g + _directionalLights.g + _pointLights.g;
-					_light.b = _ambientLight.b + _directionalLights.b + _pointLights.b;
-
-					_color.r = material.color.r * _light.r;
-					_color.g = material.color.g * _light.g;
-					_color.b = material.color.b * _light.b;
-
-					_color.updateStyleString();
-
-				} else {
-
-					_color.__styleString = material.color.__styleString;
-
-				}
-
 				width = element.scale.x * _canvasWidthHalf;
 				height = element.scale.y * _canvasHeightHalf;
 
@@ -504,12 +494,15 @@ THREE.CanvasRenderer = function () {
 
 				}
 
+				setStrokeStyle( material.color.__styleString );
+				setFillStyle( material.color.__styleString );
+
 				_context.save();
 				_context.translate( v1.x, v1.y );
 				_context.rotate( - element.rotation );
 				_context.scale( width, height );
 
-				material.program( _context, _color );
+				material.program( _context );
 
 				_context.restore();
 
@@ -532,6 +525,8 @@ THREE.CanvasRenderer = function () {
 				_color.__styleString = material.color.__styleString;
 
 				setLineWidth( material.linewidth );
+				setLineCap( material.linecap );
+				setLineJoin( material.linejoin );
 				setStrokeStyle( _color.__styleString );
 
 				_context.stroke();
@@ -594,7 +589,7 @@ THREE.CanvasRenderer = function () {
 
 				} else {
 
-					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth ) : fillPath( material.color.__styleString );
+					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( material.color.__styleString );
 
 				}
 
@@ -646,13 +641,14 @@ THREE.CanvasRenderer = function () {
 						_color.b = material.color.b * _light.b;
 
 						_color.updateStyleString();
-						material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth ) : fillPath( _color.__styleString );
+
+						material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( _color.__styleString );
 
 					}
 
 				} else {
 
-					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth ) : fillPath( material.color.__styleString );
+					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( material.color.__styleString );
 
 				}
 
@@ -680,7 +676,7 @@ THREE.CanvasRenderer = function () {
 				_color.b = normalToComponent( element.normalWorld.z );
 				_color.updateStyleString();
 
-				material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth ) : fillPath( _color.__styleString );
+				material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( _color.__styleString );
 
 			}
 
@@ -712,7 +708,8 @@ THREE.CanvasRenderer = function () {
 			if ( material instanceof THREE.MeshBasicMaterial ) {
 
 				drawQuad( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, _v4x, _v4y );
-				material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth ) : fillPath( material.color.__styleString );
+
+				material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( material.color.__styleString );
 
 			} else if ( material instanceof THREE.MeshLambertMaterial ) {
 
@@ -754,14 +751,16 @@ THREE.CanvasRenderer = function () {
 						_color.updateStyleString();
 
 						drawQuad( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, _v4x, _v4y );
-						material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth ) : fillPath( _color.__styleString );
+
+						material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( _color.__styleString );
 
 					}
 
 				} else {
 
 					drawQuad( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, _v4x, _v4y );
-					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth ) : fillPath( material.color.__styleString );
+
+					material.wireframe ? strokePath( material.color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( material.color.__styleString );
 
 				}
 
@@ -773,7 +772,8 @@ THREE.CanvasRenderer = function () {
 				_color.updateStyleString();
 
 				drawQuad( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, _v4x, _v4y );
-				material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth ) : fillPath( _color.__styleString );
+
+				material.wireframe ? strokePath( _color.__styleString, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin ) : fillPath( _color.__styleString );
 
 			} else if ( material instanceof THREE.MeshDepthMaterial ) {
 
@@ -824,10 +824,12 @@ THREE.CanvasRenderer = function () {
 
 		}
 
-		function strokePath( color, linewidth ) {
+		function strokePath( color, linewidth, linecap, linejoin ) {
 
-			setStrokeStyle( color );
 			setLineWidth( linewidth );
+			setLineCap( linecap );
+			setLineJoin( linejoin );
+			setStrokeStyle( color );
 
 			_context.stroke();
 
@@ -1029,6 +1031,30 @@ THREE.CanvasRenderer = function () {
 		if ( _contextLineWidth != value ) {
 
 			_context.lineWidth = _contextLineWidth = value;
+
+		}
+
+	}
+
+	function setLineCap( value ) {
+
+		// "butt", "round", "square"
+
+		if ( _contextLineCap != value ) {
+
+			_context.lineCap = _contextLineCap = value;
+
+		}
+
+	}
+
+	function setLineJoin( value ) {
+
+		// "round", "bevel", "miter"
+
+		if ( _contextLineJoin != value ) {
+
+			_context.lineJoin = _contextLineJoin = value;
 
 		}
 
