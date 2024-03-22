@@ -1,5 +1,8 @@
 var scene = {
 	
+"type"		  :	"scene",
+"urlBaseType" : "relativeToHTML",
+	
 "objects": 
 {	
 	"cube1" : {
@@ -256,7 +259,7 @@ var scene = {
 	
 	"lambert_green": {
 		"type": "MeshLambertMaterial",
-		"parameters": { color: 0x007711, blending: "AdditiveBlending" } 
+		"parameters": { color: 0x007711, blending: "AdditiveBlending", transparent: true } 
 	},
 
 	"lambert_blue": {
@@ -291,7 +294,7 @@ var scene = {
 	
 	"glass": {
 		"type": "MeshLambertMaterial",
-		"parameters": { color: 0x101046, envMap: "cube_reflection", opacity: 0.25 }
+		"parameters": { color: 0x101046, envMap: "cube_reflection", opacity: 0.25, transparent: true }
 	},
 
 	"interior": {
@@ -393,14 +396,14 @@ var scene = {
 	"light1": {
 		"type"		 : "directional",
 		"direction"	 : [0,1,1],
-		"color" 	 : [1,1,1],
+		"color" 	 : 0xffffff,
 		"intensity"	 : 0.8
 	},
 
 	"light2": {
 		"type"	  : "point",
 		"position": [0,0,0],
-		"color"   : [1,1,1]
+		"color"   : 0xffffff
 	}
 	
 },
