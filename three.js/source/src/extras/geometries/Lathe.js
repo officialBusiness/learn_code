@@ -2,16 +2,16 @@
  * @author astrodud / http://astrodud.isgreat.org/
  */
 
-function Lathe( points, steps, angle ) {
+THREE.Lathe = function ( points, steps, angle ) {
 
 	THREE.Geometry.call( this );
-	
+
 	this.steps = steps || 12;
 	this.angle = angle || 2 * Math.PI;
 
-	var stepSize = this.angle / this.steps;
-
-	var newV = [], oldInds = [], newInds = [], startInds = [];
+	var stepSize = this.angle / this.steps,
+	newV = [], oldInds = [], newInds = [], startInds = [],
+	matrix = new THREE.Matrix4().setRotationZ( stepSize );
 
 	for ( var j = 0; j < points.length; j ++ ) {
 
@@ -21,8 +21,6 @@ function Lathe( points, steps, angle ) {
 		oldInds[ j ] = this.vertices.length - 1;
 
 	}
-
-	var matrix = new THREE.Matrix4().setRotationZ( stepSize );
 
 	for ( var r = 0; r <= this.angle + 0.001; r += stepSize ) { // need the +0.001 for it go up to angle
 
@@ -49,10 +47,10 @@ function Lathe( points, steps, angle ) {
 			this.faces.push( new THREE.Face4( newInds[ j ], newInds[ j + 1 ], oldInds[ j + 1 ], oldInds[ j ] ) );
 			this.faceVertexUvs[ 0 ].push( [
 
-				new THREE.UV( r / angle, j / points.length ),
-				new THREE.UV( r / angle, ( j + 1 ) / points.length ),
-				new THREE.UV( ( r - stepSize ) / angle, ( j + 1 ) / points.length ),
-				new THREE.UV( ( r - stepSize ) / angle, j / points.length )
+				new THREE.UV( 1 - r / this.angle, j / points.length ),
+				new THREE.UV( 1 - r / this.angle, ( j + 1 ) / points.length ),
+				new THREE.UV( 1 - ( r - stepSize ) / this.angle, ( j + 1 ) / points.length ),
+				new THREE.UV( 1 - ( r - stepSize ) / this.angle, j / points.length )
 
 			] );
 
@@ -60,6 +58,7 @@ function Lathe( points, steps, angle ) {
 
 		oldInds = newInds;
 		newInds = [];
+
 	}
 
 	this.computeCentroids();
@@ -68,5 +67,5 @@ function Lathe( points, steps, angle ) {
 
 };
 
-Lathe.prototype = new THREE.Geometry();
-Lathe.prototype.constructor = Lathe;
+THREE.Lathe.prototype = new THREE.Geometry();
+THREE.Lathe.prototype.constructor = THREE.Lathe;
