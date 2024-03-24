@@ -81,21 +81,20 @@
 				light.position.normalize();
 				scene.addLight( light );
 
-				var material = [
-							new THREE.MeshLambertMaterial( { color: 0xffffff } ),
-							new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, wireframe: true } )
-						];
+				var material = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe: true } );
 
 				var geometry = [
-							[ new Sphere( 100, 64, 32 ), 300 ],
-							[ new Sphere( 100, 32, 16 ), 1000 ],
-							[ new Sphere( 100, 16, 8 ), 2000 ],
-							[ new Sphere( 100, 8, 4 ), 10000 ]
-						  ];
+
+					[ new THREE.Sphere( 100, 64, 32 ), 300 ],
+					[ new THREE.Sphere( 100, 32, 16 ), 1000 ],
+					[ new THREE.Sphere( 100, 16, 8 ), 2000 ],
+					[ new THREE.Sphere( 100, 8, 4 ), 10000 ]
+
+				];
 
 				var i, j, mesh, lod;
 
-				for ( j = 0; j < 1000; j++ ) {
+				for ( j = 0; j < 1000; j ++ ) {
 
 					lod = new THREE.LOD();
 
@@ -103,6 +102,8 @@
 
 						mesh = new THREE.Mesh( geometry[ i ][ 0 ], material );
 						mesh.scale.set( 1.5, 1.5, 1.5 );
+						mesh.updateMatrix();
+						mesh.matrixAutoUpdate = false;
 						lod.add( mesh, geometry[ i ][ 1 ] );
 
 					}
@@ -110,7 +111,8 @@
 					lod.position.x = 10000 * ( 0.5 - Math.random() );
 					lod.position.y =  7500 * ( 0.5 - Math.random() );
 					lod.position.z = 10000 * ( 0.5 - Math.random() );
-
+					lod.updateMatrix();
+					lod.matrixAutoUpdate = false;
 					scene.addObject( lod );
 
 				}
