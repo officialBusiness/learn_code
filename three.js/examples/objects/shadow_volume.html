@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>geomerty</title>
+		<title>shadow_volume</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -121,7 +121,7 @@
 		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
-
+		阴影形成的原理不是很理解
 	-->
 	<body>
 		<script type="module">
@@ -129,10 +129,10 @@
 			var scene = new THREE.Scene();
 
 			var webglRenderer = new THREE.WebGLRenderer({
-				antialias: true
+				antialias: true,
+				// stencil: false,
 			});
 			// var webglRenderer = new THREE.WebGLRenderer2(true);
-
 
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
@@ -140,42 +140,10 @@
 
 			document.body.appendChild( webglRenderer.domElement );
 
+			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 1000 );
 
-			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
-			camera.fov = 75;
-			camera.aspect = document.body.clientWidth / document.body.clientHeight;
-			camera.near = 1;
-			camera.far = 10000;
-
-
-			camera.position.z = 500;
-
-			var plane = new THREE.Geometry();
-
-			plane.vertices.push(
-				new THREE.Vertex( new THREE.Vector3(-150, 150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 150, 150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3(-150,-150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 150,-150,  0 ) )
-			);
-
-			plane.faces.push(
-				new THREE.Face4( 0, 2, 3, 1 )
-			);
-
-			plane.faceVertexUvs = [
-				[
-					[
-						new THREE.UV(0, 0 ),
-						new THREE.UV(0, 1 ),
-						new THREE.UV(1, 1 ),
-						new THREE.UV(1, 0 )
-					]
-				]
-			];
-
-			plane.computeCentroids();
-			plane.computeFaceNormals();
+			// camera.position.y = 10;
+			camera.position.z = 10;
 
 			function nearest_pow2(n) {
 				var l = Math.log(n) / Math.LN2;
@@ -184,40 +152,72 @@
 
 			function addTexture(url){
 
-				var img = new Image();
-				img.src = url;
+				var image = new Image();
+				image.src = url;
 
 				var canvasElement = document.createElement('canvas');
 
-				img.onload = ()=>{
+				var texture = new THREE.Texture( canvasElement );
 
-					canvasElement.width = nearest_pow2(img.width);
-					canvasElement.height = nearest_pow2(img.height);
 
-					canvasElement.getContext("2d").drawImage( img, 0, 0, canvasElement.width, canvasElement.height );
+				image.onload = ()=>{
 
-					canvasElement.loaded = true;
+					canvasElement.width = nearest_pow2(image.naturalWidth);
+					canvasElement.height = nearest_pow2(image.naturalHeight);
+
+					canvasElement.getContext("2d").drawImage( image, 0, 0, canvasElement.width, canvasElement.height );
+
+					texture.needsUpdate = true;
 				}
 
-				return canvasElement;
+				return texture;
 			}
 
-			var mesh = new THREE.Mesh( plane,
-				new THREE.MeshBasicMaterial({
-					color: 0xffffff,
-					envMap: ImageUtils.loadTextureCube(
-						[
-							"px.jpg", "nx.jpg",
-							"py.jpg", "ny.jpg",
-							"pz.jpg", "nz.jpg"
-						].map((url)=>{
-							 	return "../assets/images/cube/Escher/" + url;
-						})
-					),
-				})
-			);
+			var plane = new Plane(14, 14, 14);
 
-			scene.addObject(mesh);
+			var planeMesh = new THREE.Mesh(plane,
+				new THREE.MeshPhongMaterial({
+					color: 0xffffff,
+					map: addTexture('../assets/images/logo.jpeg'),
+					// envMap: ImageUtils.loadTextureCube(
+					// 	[
+					// 		"px.jpg", "nx.jpg",
+					// 		"py.jpg", "ny.jpg",
+					// 		"pz.jpg", "nz.jpg"
+					// 	].map((url)=>{
+					// 		 	return "../assets/images/cube/Escher/" + url;
+					// 	})
+					// ),
+				}));
+
+			scene.addChild(planeMesh);
+			// new THREE.ShadowVolume( planeMesh );
+
+
+			var	light = new THREE.DirectionalLight( 0xffffff );
+			light.position.set( 0, 0, 1 );
+			scene.addChild( light );
+
+			var cube = new Cube( 1, 1, 1 );
+
+			var cubeMesh = new THREE.Mesh( cube, new THREE.MeshPhongMaterial({
+				color: 0xff0000,
+				// envMap: ImageUtils.loadTextureCube(
+				// 	[
+				// 		"px.jpg", "nx.jpg",
+				// 		"py.jpg", "ny.jpg",
+				// 		"pz.jpg", "nz.jpg"
+				// 	].map((url)=>{
+				// 		 	return "../assets/images/cube/Escher/" + url;
+				// 	})
+				// ),
+			}) );
+
+			cubeMesh.position.z = 3;
+
+			scene.addChild(cubeMesh);
+			new THREE.ShadowVolume( cubeMesh );
+
 
 			var stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -225,14 +225,32 @@
 			document.body.appendChild( stats.domElement );
 
 
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				initDirectionalLight(gui, light, 'directionalLight')
+			}
+
+			function initDirectionalLight(gui, light, name){
+
+				const lightFolder = gui.addFolder(name);
+
+				lightFolder.addColor(light, 'color');
+
+				lightFolder.add(light.position, 'x', -3, 3).name('position.x');
+				lightFolder.add(light.position, 'y', -3, 3).name('position.y');
+				lightFolder.add(light.position, 'z', -3, 3).name('position.z');
+			}
+
 			loop();
-			function loop() {
+			function loop(t) {
 
-				if(mesh){
-
-					mesh.rotation.y += 0.05;
-					mesh.updateMatrix();
-				}
+				// mesh.rotation.y += 0.001;
+				// mesh.updateMatrix();
+				cubeMesh.position.y = Math.cos( t / 1000 ) * 2;
+				cubeMesh.position.x = Math.sin( t / 1000 ) * 2;
 
 				webglRenderer.render( scene, camera );
 

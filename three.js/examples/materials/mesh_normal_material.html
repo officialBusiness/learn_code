@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>geomerty</title>
+		<title>mesh_normal_material</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -133,7 +133,6 @@
 			});
 			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
 			webglRenderer.domElement.id = 'renderCanvas';
@@ -153,10 +152,10 @@
 			var plane = new THREE.Geometry();
 
 			plane.vertices.push(
-				new THREE.Vertex( new THREE.Vector3(-150, 150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 150, 150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3(-150,-150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 150,-150,  0 ) )
+				new THREE.Vertex( new THREE.Vector3(-200, 200,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 200, 200,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3(-200,-200,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 200,-200,  0 ) )
 			);
 
 			plane.faces.push(
@@ -172,8 +171,7 @@
 						new THREE.UV(1, 0 )
 					]
 				]
-			];
-
+			]
 			plane.computeCentroids();
 			plane.computeFaceNormals();
 
@@ -184,38 +182,31 @@
 
 			function addTexture(url){
 
-				var img = new Image();
-				img.src = url;
+				var image = new Image();
+				image.src = url;
 
 				var canvasElement = document.createElement('canvas');
 
-				img.onload = ()=>{
+				var texture = new THREE.Texture( canvasElement );
 
-					canvasElement.width = nearest_pow2(img.width);
-					canvasElement.height = nearest_pow2(img.height);
 
-					canvasElement.getContext("2d").drawImage( img, 0, 0, canvasElement.width, canvasElement.height );
+				image.onload = ()=>{
 
-					canvasElement.loaded = true;
+					canvasElement.width = nearest_pow2(image.naturalWidth);
+					canvasElement.height = nearest_pow2(image.naturalHeight);
+
+					canvasElement.getContext("2d").drawImage( image, 0, 0, canvasElement.width, canvasElement.height );
+
+					texture.needsUpdate = true;
 				}
 
-				return canvasElement;
+				return texture;
 			}
 
-			var mesh = new THREE.Mesh( plane,
-				new THREE.MeshBasicMaterial({
-					color: 0xffffff,
-					envMap: ImageUtils.loadTextureCube(
-						[
-							"px.jpg", "nx.jpg",
-							"py.jpg", "ny.jpg",
-							"pz.jpg", "nz.jpg"
-						].map((url)=>{
-							 	return "../assets/images/cube/Escher/" + url;
-						})
-					),
-				})
-			);
+			var meshNormalMaterial = new THREE.MeshNormalMaterial({
+				depthTest: false,
+			})
+			var mesh = new THREE.Mesh( plane, meshNormalMaterial );
 
 			scene.addObject(mesh);
 
@@ -225,14 +216,44 @@
 			document.body.appendChild( stats.domElement );
 
 
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				initMeshNormalMaterial(gui, meshNormalMaterial, 'meshNormalMaterial')
+			}
+
+
+			function initMeshNormalMaterial(gui, material, name){
+
+				const materialFolder = gui.addFolder(name);
+
+				materialFolder.add(material, 'transparent');
+				materialFolder.add(material, 'opacity', 0, 1);
+
+
+				materialFolder.add(material, 'blending', {
+					'NormalBlending': THREE.NormalBlending,
+					'AdditiveBlending': THREE.AdditiveBlending,
+					'SubtractiveBlending': THREE.SubtractiveBlending,
+					'BillboardBlending': THREE.BillboardBlending,
+					'ReverseSubtractiveBlending': THREE.ReverseSubtractiveBlending,
+				});
+				materialFolder.add(material, 'depthTest');
+
+				materialFolder.add(material, 'shading', {
+					'FlatShading': THREE.FlatShading,
+					'SmoothShading': THREE.SmoothShading,
+				});
+				materialFolder.add(material, 'wireframe');
+			}
+
 			loop();
 			function loop() {
 
-				if(mesh){
-
-					mesh.rotation.y += 0.05;
-					mesh.updateMatrix();
-				}
+				// mesh.rotation.y += 0.001;
+				// mesh.updateMatrix();
 
 				webglRenderer.render( scene, camera );
 

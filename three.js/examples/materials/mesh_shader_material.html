@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>geomerty</title>
+		<title>mesh_shader_material</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -133,7 +133,6 @@
 			});
 			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
 			webglRenderer.domElement.id = 'renderCanvas';
@@ -144,19 +143,19 @@
 			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
 			camera.fov = 75;
 			camera.aspect = document.body.clientWidth / document.body.clientHeight;
-			camera.near = 1;
-			camera.far = 10000;
+			camera.near = 0.1;
+			camera.far = 2;
 
 
-			camera.position.z = 500;
+			camera.position.z = 2;
 
 			var plane = new THREE.Geometry();
 
 			plane.vertices.push(
-				new THREE.Vertex( new THREE.Vector3(-150, 150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 150, 150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3(-150,-150,  0 ) ),
-				new THREE.Vertex( new THREE.Vector3( 150,-150,  0 ) )
+				new THREE.Vertex( new THREE.Vector3(-1, 1,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 1, 1,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3(-1,-1,  0 ) ),
+				new THREE.Vertex( new THREE.Vector3( 1,-1,  0 ) )
 			);
 
 			plane.faces.push(
@@ -172,8 +171,7 @@
 						new THREE.UV(1, 0 )
 					]
 				]
-			];
-
+			]
 			plane.computeCentroids();
 			plane.computeFaceNormals();
 
@@ -184,38 +182,58 @@
 
 			function addTexture(url){
 
-				var img = new Image();
-				img.src = url;
+				var image = new Image();
+				image.src = url;
 
 				var canvasElement = document.createElement('canvas');
 
-				img.onload = ()=>{
+				var texture = new THREE.Texture( canvasElement );
 
-					canvasElement.width = nearest_pow2(img.width);
-					canvasElement.height = nearest_pow2(img.height);
 
-					canvasElement.getContext("2d").drawImage( img, 0, 0, canvasElement.width, canvasElement.height );
+				image.onload = ()=>{
 
-					canvasElement.loaded = true;
+					canvasElement.width = nearest_pow2(image.naturalWidth);
+					canvasElement.height = nearest_pow2(image.naturalHeight);
+
+					canvasElement.getContext("2d").drawImage( image, 0, 0, canvasElement.width, canvasElement.height );
+
+					texture.needsUpdate = true;
 				}
 
-				return canvasElement;
+				return texture;
 			}
 
-			var mesh = new THREE.Mesh( plane,
-				new THREE.MeshBasicMaterial({
-					color: 0xffffff,
-					envMap: ImageUtils.loadTextureCube(
-						[
-							"px.jpg", "nx.jpg",
-							"py.jpg", "ny.jpg",
-							"pz.jpg", "nz.jpg"
-						].map((url)=>{
-							 	return "../assets/images/cube/Escher/" + url;
-						})
-					),
-				})
-			);
+			var meshShaderMaterial = new THREE.MeshShaderMaterial({
+				uniforms: {
+					map: {
+						type: "t",
+						value: 0,
+						// texture: addTexture('../assets/images/logo.jpeg'),
+						texture: ImageUtils.loadTexture('../assets/images/logo.jpeg'),
+					}
+				},
+				fragmentShader: `
+					uniform	sampler2D	map;
+
+					varying vec2 vUv;
+
+					void main() {
+
+						vec4 color = texture2D( map, vUv );
+
+						gl_FragColor = color;
+					}
+				`,
+				vertexShader: `
+					varying vec2 vUv;
+
+					void main(void) {
+						vUv = uv;
+						gl_Position = vec4( position.xyz, 1.0 );
+					}
+				`
+			})
+			var mesh = new THREE.Mesh( plane, meshShaderMaterial );
 
 			scene.addObject(mesh);
 
@@ -227,12 +245,6 @@
 
 			loop();
 			function loop() {
-
-				if(mesh){
-
-					mesh.rotation.y += 0.05;
-					mesh.updateMatrix();
-				}
 
 				webglRenderer.render( scene, camera );
 

@@ -10,10 +10,10 @@
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
 
-		<script type="text/javascript" src="../../source/src/core/Object3D.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Vector3.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Vector4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Matrix3.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Object3D.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Matrix4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Quaternion.js"></script>
 
@@ -61,12 +61,13 @@
 
 		<script type="text/javascript" src="../../source/src/lights/Light.js"></script>
 		<script type="text/javascript" src="../../source/src/lights/AmbientLight.js"></script>
+		<script type="text/javascript" src="../../source/src/lights/LensFlare.js"></script>
 		<script type="text/javascript" src="../../source/src/lights/DirectionalLight.js"></script>
 		<script type="text/javascript" src="../../source/src/lights/PointLight.js"></script>
 
+		<script type="text/javascript" src="../../source/src/materials/Material.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/LineBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/Mappings.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/Material.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshDepthMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshFaceMaterial.js"></script>
@@ -78,7 +79,7 @@
 		<script type="text/javascript" src="../../source/src/materials/ParticleCanvasMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleDOMMaterial.js"></script>
 
-		<script type="text/javascript" src="../../source/src/materials/RenderTarget.js"></script>
+		<script type="text/javascript" src="../../source/src/materials/ShadowVolumeDynamicMaterial.js"></script>
 
 		<script type="text/javascript" src="../../source/src/materials/Texture.js"></script>
 
@@ -91,6 +92,7 @@
 		<script type="text/javascript" src="../../source/src/objects/Particle.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/ParticleSystem.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Ribbon.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/ShadowVolume.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/SkinnedMesh.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Sound.js"></script>
 
@@ -107,6 +109,7 @@
 		<script type="text/javascript" src="../../source/src/renderers/SoundRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/SVGRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderer.js"></script>
+		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderTarget.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLShaders.js"></script>
 
 		<script type="text/javascript" src="../../source/src/scenes/Fog.js"></script>
@@ -184,8 +187,8 @@
 			plane.skinIndices.push(
 				new THREE.Vector4(0, 1, 1, 1),
 				new THREE.Vector4(1, 1, 1, 1),
-				new THREE.Vector4(1, 1, 1, 1),
 				new THREE.Vector4(2, 1, 1, 1),
+				new THREE.Vector4(3, 1, 1, 1),
 			);
 
 			plane.skinVerticesA = [
@@ -217,16 +220,16 @@
 				},
 				{
 					parent: -1,
-					pos: [1, 0, 0],
+					pos: [0, 0, 0],
 					scl: [1, 1, 1],
 					rotq: [0, 0, 0, 1],
 				},
-				// {
-				// 	parent: -1,
-				// 	pos: [0, 0, 0],
-				// 	scl: [1, 1, 1],
-				// 	rotq: [0, 0, 0, 1],
-				// }
+				{
+					parent: -1,
+					pos: [1, 0, 0],
+					scl: [1, 1, 1],
+					rotq: [0, 0, 0, 1],
+				}
 			]
 
 			plane.computeCentroids();
@@ -281,6 +284,34 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
+
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				initBone(gui, mesh.bones[0], 'bone1');
+				initBone(gui, mesh.bones[1], 'bone2');
+				initBone(gui, mesh.bones[2], 'bone3');
+				initBone(gui, mesh.bones[3], 'bone4');
+			}
+
+			function boneChange(){
+				mesh.pose();
+			}
+
+			function initBone(gui, bone, boneName){
+
+				const boneFolder = gui.addFolder(boneName);
+
+				boneFolder.add(bone.position, 'x', -3, 3).name('position.x').onChange(boneChange);
+				boneFolder.add(bone.position, 'y', -3, 3).name('position.y').onChange(boneChange);
+				boneFolder.add(bone.position, 'z', -3, 3).name('position.z').onChange(boneChange);
+
+				boneFolder.add(bone.scale, 'x', -3, 3).name('scale.x').onChange(boneChange);
+				boneFolder.add(bone.scale, 'y', -3, 3).name('scale.y').onChange(boneChange);
+				boneFolder.add(bone.scale, 'z', -3, 3).name('scale.z').onChange(boneChange);
+			}
 
 			loop();
 			function loop() {
