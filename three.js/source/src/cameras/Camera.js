@@ -20,7 +20,7 @@ THREE.Camera = function ( fov, aspect, near, far, target ) {
 
 	this.updateProjectionMatrix();
 
-}
+};
 
 THREE.Camera.prototype = new THREE.Object3D();
 THREE.Camera.prototype.constructor = THREE.Camera;
@@ -33,21 +33,14 @@ THREE.Camera.prototype.translate = function ( distance, axis ) {
 	this.position.addSelf( axis.multiplyScalar( distance ) );
 	this.target.position.addSelf( axis.multiplyScalar( distance ) );
 
-}
+};
 
 
 THREE.Camera.prototype.updateProjectionMatrix = function () {
 
 	this.projectionMatrix = THREE.Matrix4.makePerspective( this.fov, this.aspect, this.near, this.far );
 
-}
-
-THREE.Camera.prototype.updateMatrix = function () {
-
-	// this.parent === undefined && this.update( undefined, true );
-	this.update( undefined, true );
-
-}
+};
 
 THREE.Camera.prototype.update = function ( parentMatrixWorld, forceUpdate, camera ) {
 
@@ -77,11 +70,7 @@ THREE.Camera.prototype.update = function ( parentMatrixWorld, forceUpdate, camer
 
 	} else {
 
-		if ( this.matrixAutoUpdate ) {
-
-			forceUpdate |= this.updateMatrix();
-
-		}
+		this.matrixAutoUpdate && this.updateMatrix();
 
 		if ( forceUpdate || this.matrixWorldNeedsUpdate ) {
 

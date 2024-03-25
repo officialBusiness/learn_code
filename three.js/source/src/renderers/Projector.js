@@ -98,8 +98,8 @@ THREE.Projector = function() {
 		_face4Count = 0;
 		_lineCount = 0;
 		_particleCount = 0;
-
-		camera.matrixAutoUpdate && camera.updateMatrix();
+	
+		camera.matrixAutoUpdate && camera.update( undefined, true );
 
 		scene.update( undefined, false, camera );
 
@@ -287,7 +287,7 @@ THREE.Projector = function() {
 
 			} else if ( object instanceof THREE.Particle ) {
 
-				_vector4.set( object.position.x, object.position.y, object.position.z, 1 );
+				_vector4.set( object.matrixWorld.n14, object.matrixWorld.n24, object.matrixWorld.n34, 1 );
 				_projScreenMatrix.multiplyVector4( _vector4 );
 
 				_vector4.z /= _vector4.w;

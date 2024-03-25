@@ -3,11 +3,21 @@
  */
 
 THREE.SceneLoader = function () {
+
+	this.onLoadStart = function () {};
+	this.onLoadProgress = function() {};
+	this.onLoadComplete = function () {};
+		
+	this.callbackSync = function () {};
+	this.callbackProgress = function () {};
+
 };
 
 THREE.SceneLoader.prototype = {
 
-	load : function ( url, callback_sync, callback_async, callback_progress ) {
+	load : function ( url, callbackFinished ) {
+
+		var scope = this;
 
 		var worker = new Worker( url );
 		worker.postMessage( 0 );
@@ -43,9 +53,34 @@ THREE.SceneLoader.prototype = {
 				objects: {},
 				cameras: {},
 				lights: {},
-				fogs: {}
+				fogs: {},
+				triggers: {},
+				empties: {}
 
 			};
+
+			// find out if there are some colliders
+			
+			var hasColliders = false;
+			
+			for( dd in data.objects ) {
+				
+				o = data.objects[ dd ];
+
+				if ( o.meshCollider )  {
+					
+					hasColliders = true;
+					break;
+
+				}
+				
+			}
+			
+			if ( hasColliders ) {
+			
+				result.scene.collisions = new THREE.CollisionSystem();
+
+			}
 
 			if ( data.transform ) {
 
@@ -89,16 +124,104 @@ THREE.SceneLoader.prototype = {
 
 						o = data.objects[ dd ];
 
-						geometry = result.geometries[ o.geometry ];
+						if ( o.geometry !== undefined ) {
 
-						if ( geometry ) {
+							geometry = result.geometries[ o.geometry ];
 
-							materials = [];
-							for( i = 0; i < o.materials.length; i++ ) {
+							// geometry already loaded
 
-								materials[ i ] = result.materials[ o.materials[i] ];
+							if ( geometry ) {
+
+								materials = [];
+								for( i = 0; i < o.materials.length; i++ ) {
+
+									materials[ i ] = result.materials[ o.materials[i] ];
+
+								}
+
+								p = o.position;
+								r = o.rotation;
+								q = o.quaternion;
+								s = o.scale;
+
+								// turn off quaternions, for the moment
+
+								q = 0;
+
+								if ( materials.length == 0 ) {
+
+									materials[ 0 ] = new THREE.MeshFaceMaterial();
+
+								}
+
+								// dirty hack to handle meshes with multiple materials
+								// just use face materials defined in model
+
+								if ( materials.length > 1 ) {
+
+									materials = [ new THREE.MeshFaceMaterial() ];
+
+								}
+
+								object = new THREE.Mesh( geometry, materials );
+								object.name = dd;
+								object.position.set( p[0], p[1], p[2] );
+
+								if ( q ) {
+
+									object.quaternion.set( q[0], q[1], q[2], q[3] );
+									object.useQuaternion = true;
+
+								} else {
+
+									object.rotation.set( r[0], r[1], r[2] );
+
+								}
+
+								object.scale.set( s[0], s[1], s[2] );
+								object.visible = o.visible;
+
+								result.scene.addObject( object );
+
+								result.objects[ dd ] = object;
+
+								if ( o.meshCollider ) {
+
+									var meshCollider = THREE.CollisionUtils.MeshColliderWBox( object );
+									result.scene.collisions.colliders.push( meshCollider );
+
+								}
+
+								if ( o.castsShadow ) {
+									
+									//object.visible = true;
+									//object.materials = [ new THREE.MeshBasicMaterial( { color: 0xff0000 } ) ];
+
+									var shadow = new THREE.ShadowVolume( geometry )
+									result.scene.addChild( shadow );
+									
+									shadow.position = object.position;
+									shadow.rotation = object.rotation;
+									shadow.scale = object.scale;
+
+								}
+								
+								if ( o.trigger && o.trigger.toLowerCase() != "none" ) {
+									
+									var trigger = {
+									"type" 		: o.trigger,
+									"object"	: o
+									};
+									
+									result.triggers[ object.name ] = trigger;
+
+								}
 
 							}
+
+						// pure Object3D
+
+						} else {
 
 							p = o.position;
 							r = o.rotation;
@@ -109,13 +232,8 @@ THREE.SceneLoader.prototype = {
 
 							q = 0;
 
-							if ( materials.length == 0 ) {
-
-								materials[ 0 ] = new THREE.MeshFaceMaterial();
-
-							}
-
-							object = new THREE.Mesh( geometry, materials );
+							object = new THREE.Object3D();
+							object.name = dd;
 							object.position.set( p[0], p[1], p[2] );
 
 							if ( q ) {
@@ -130,21 +248,14 @@ THREE.SceneLoader.prototype = {
 							}
 
 							object.scale.set( s[0], s[1], s[2] );
-							object.visible = o.visible;
+							object.visible = ( o.visible !== undefined ) ? o.visible : false;
 
 							result.scene.addObject( object );
 
 							result.objects[ dd ] = object;
-
-							if ( o.meshCollider ) {
-
-								var meshCollider = THREE.CollisionUtils.MeshColliderWBox( object );
-								THREE.Collisions.colliders.push( meshCollider );
-
-							}
+							result.empties[ dd ] = object;
 
 						}
-
 
 					}
 
@@ -166,8 +277,20 @@ THREE.SceneLoader.prototype = {
 					handle_mesh( geo, id );
 
 					counter_models -= 1;
+					
+					scope.onLoadComplete();
 
 					async_callback_gate();
+
+				}
+
+			};
+
+			function create_callback_embed( id ) {
+
+				return function( geo ) {
+
+					result.geometries[ id ] = geo;
 
 				}
 
@@ -177,27 +300,31 @@ THREE.SceneLoader.prototype = {
 
 				var progress = {
 
-					total_models: total_models,
-					total_textures: total_textures,
-					loaded_models: total_models - counter_models,
-					loaded_textures: total_textures - counter_textures
+					totalModels		: total_models,
+					totalTextures	: total_textures,
+					loadedModels	: total_models - counter_models,
+					loadedTextures	: total_textures - counter_textures
 
 				};
 
-				callback_progress( progress, result );
+				scope.callbackProgress( progress, result );
+				
+				scope.onLoadProgress();
 
 				if( counter_models == 0 && counter_textures == 0 ) {
 
-					callback_async( result );
+					callbackFinished( result );
 
 				}
 
 			};
 
-			var callback_texture = function( images ) {
+			var callbackTexture = function( images ) {
 
 				counter_textures -= 1;
 				async_callback_gate();
+
+				scope.onLoadComplete();
 
 			};
 
@@ -319,6 +446,8 @@ THREE.SceneLoader.prototype = {
 				if ( g.type == "bin_mesh" || g.type == "ascii_mesh" ) {
 
 					counter_models += 1;
+					
+					scope.onLoadStart();
 
 				}
 
@@ -372,6 +501,17 @@ THREE.SceneLoader.prototype = {
 									   callback: create_callback( dg )
 									} );
 
+				} else if ( g.type == "embedded_mesh" ) {
+
+					var modelJson = data.embeds[ g.id ],
+						texture_path = "";
+
+					if ( modelJson ) {
+
+						jsonLoader.createModel( modelJson, create_callback_embed( dg ), texture_path );
+						
+					}
+
 				}
 
 			}
@@ -387,10 +527,18 @@ THREE.SceneLoader.prototype = {
 				if( tt.url instanceof Array ) {
 
 					counter_textures += tt.url.length;
+					
+					for( var n = 0; n < tt.url.length; n ++ ) {
+						
+						scope.onLoadStart();
+
+					}
 
 				} else {
 
 					counter_textures += 1;
+
+					scope.onLoadStart();
 
 				}
 
@@ -418,11 +566,11 @@ THREE.SceneLoader.prototype = {
 
 					}
 
-					texture = THREE.ImageUtils.loadTextureCube( url_array, tt.mapping, callback_texture );
+					texture = THREE.ImageUtils.loadTextureCube( url_array, tt.mapping, callbackTexture );
 
 				} else {
 
-					texture = THREE.ImageUtils.loadTexture( get_url( tt.url, data.urlBaseType ), tt.mapping, callback_texture );
+					texture = THREE.ImageUtils.loadTexture( get_url( tt.url, data.urlBaseType ), tt.mapping, callbackTexture );
 
 					if ( THREE[ tt.minFilter ] != undefined )
 						texture.minFilter = THREE[ tt.minFilter ];
@@ -460,10 +608,30 @@ THREE.SceneLoader.prototype = {
 
 						m.parameters[ pp ] = ( m.parameters[ pp ] == "MixOperation" ) ? THREE.MixOperation : THREE.MultiplyOperation;
 
+					} else if ( pp == "vertexColors" ) {
+
+						if ( m.parameters[ pp ] == "face" ) {
+
+							m.parameters[ pp ] = THREE.FaceColors;
+
+						// default to vertex colors if "vertexColors" is anything else face colors or 0 / null / false
+
+						} else if ( m.parameters[ pp ] )   {
+
+							m.parameters[ pp ] = THREE.VertexColors;
+
+						}
+
 					}
 
 				}
 
+				if ( m.parameters.opacity !== undefined && m.parameters.opacity < 1.0 ) {
+					
+					m.parameters.transparent = true;
+
+				}
+				
 				material = new THREE[ m.type ]( m.parameters );
 				result.materials[ dm ] = material;
 
@@ -475,7 +643,7 @@ THREE.SceneLoader.prototype = {
 
 			// synchronous callback
 
-			callback_sync( result );
+			scope.callbackSync( result );
 
 		};
 

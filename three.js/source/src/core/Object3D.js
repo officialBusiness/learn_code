@@ -33,6 +33,8 @@ THREE.Object3D = function() {
 	this.visible = true;
 
 	this._vector = new THREE.Vector3();
+	
+	this.name = "";
 
 };
 
@@ -68,7 +70,7 @@ THREE.Object3D.prototype = {
 
 		// TODO: Add hierarchy support.
 
-		this.matrix.lookAt( this.position, vector, this.up );
+		this.matrix.lookAt( vector, this.position, this.up );
 
 		if ( this.rotationAutoUpdate ) {
 
@@ -95,13 +97,13 @@ THREE.Object3D.prototype = {
 
 			var scene = this;
 
-			while ( scene instanceof THREE.Scene === false && scene !== undefined ) {
+			while ( scene.parent !== undefined ) {
 
 				scene = scene.parent;
 
 			}
 
-			if ( scene !== undefined )  {
+			if ( scene !== undefined && scene instanceof THREE.Scene )  {
 
 				scene.addChildRecurse( child );
 
@@ -122,6 +124,38 @@ THREE.Object3D.prototype = {
 
 		}
 
+	},
+	
+	getChildByName: function ( name, doRecurse ) {
+		
+		var c, cl, child, recurseResult;
+		
+		for( c = 0, cl = this.children.length; c < cl; c++ ) {
+			
+			child = this.children[ c ];
+			
+			if( child.name === name ) {
+				
+				return child;
+				
+			}
+			
+			if( doRecurse ) {
+				
+				recurseResult = child.getChildByName( name, doRecurse );
+				
+				if( recurseResult !== undefined ) {
+					
+					return recurseResult;
+					
+				}
+				
+			}
+			
+		}
+		
+		return undefined;
+		
 	},
 
 	updateMatrix: function () {
@@ -185,4 +219,4 @@ THREE.Object3D.prototype = {
 
 	}
 
-}
+};
