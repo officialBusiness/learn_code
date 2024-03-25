@@ -200,6 +200,8 @@
 
 			var	light = new THREE.DirectionalLight( 0xffffff );
 			light.position.set( 0, 0, 1 );
+			light.castShadow = true;
+
 			scene.addChild( light );
 
 			var cube = new THREE.Cube( 1, 1, 1 );
