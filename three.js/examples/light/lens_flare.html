@@ -17,13 +17,10 @@
 		<script type="text/javascript" src="../../source/src/core/Matrix4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Quaternion.js"></script>
 
-		<script type="text/javascript" src="../../source/src/animation/Animation.js"></script>
-		<script type="text/javascript" src="../../source/src/animation/AnimationHandler.js"></script>
-		<script type="text/javascript" src="../../source/src/animation/AnimationMorphTarget.js"></script>
-
 		<script type="text/javascript" src="../../source/src/cameras/Camera.js"></script>
 
 		<script type="text/javascript" src="../../source/src/core/Color.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Edge.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face3.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Geometry.js"></script>
@@ -34,6 +31,10 @@
 		<script type="text/javascript" src="../../source/src/core/UV.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Vector2.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Vertex.js"></script>
+
+		<script type="text/javascript" src="../../source/src/extras/animation/Animation.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/animation/AnimationHandler.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/animation/AnimationMorphTarget.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/cameras/PathCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/QuakeCamera.js"></script>
@@ -51,8 +52,12 @@
 		<script type="text/javascript" src="../../source/src/extras/io/BinaryLoader.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/io/JSONLoader.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/io/LoaderOld.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/io/SceneLoader.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
+
+		<script type="text/javascript" src="../../source/src/extras/physics/Collisions.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/physics/CollisionUtils.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/GeometryUtils.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/ImageUtils.js"></script>
@@ -83,8 +88,6 @@
 
 		<script type="text/javascript" src="../../source/src/materials/Texture.js"></script>
 
-		<script type="text/javascript" src="../../source/src/materials/Uniforms.js"></script>
-
 		<script type="text/javascript" src="../../source/src/objects/Bone.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Line.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/LOD.js"></script>
@@ -95,6 +98,7 @@
 		<script type="text/javascript" src="../../source/src/objects/ShadowVolume.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/SkinnedMesh.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Sound.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/Sprite.js"></script>
 
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableFace3.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/renderables/RenderableFace4.js"></script>
@@ -145,12 +149,12 @@
 
 			camera.position.z = 10;
 
-			var plane = new Plane(4, 4, 4, 4);
+			var plane = new THREE.Plane(4, 4, 4, 4);
 
 			var mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0x000000,
-					envMap: ImageUtils.loadTextureCube(
+					envMap: THREE.ImageUtils.loadTextureCube(
 						[
 							"px.jpg", "nx.jpg",
 							"py.jpg", "ny.jpg",
@@ -199,7 +203,7 @@
 				THREE.AdditiveBlending
 			);
 
-		lensFlare.add( ImageUtils.loadTexture( "../assets/images/lens_flare/lensflare1.png" ), 256, 0.33, THREE.AdditiveBlending );
+		lensFlare.add( THREE.ImageUtils.loadTexture( "../assets/images/lens_flare/lensflare1.png" ), 256, 0.33, THREE.AdditiveBlending );
 		lensFlare.add( lensFlare.lensFlares[ 1 ].texture, 300, 0.66, THREE.AdditiveBlending );
 
 			scene.addObject(lensFlare);
