@@ -140,17 +140,6 @@ THREE.ShaderChunk = {
 
 	// COLOR MAP (triangles)
 
-	map_pars_fragment: [
-
-	"#ifdef USE_MAP",
-
-		"varying vec2 vUv;",
-		"uniform sampler2D map;",
-
-	"#endif"
-
-	].join("\n"),
-
 	map_pars_vertex: [
 
 	"#ifdef USE_MAP",
@@ -162,11 +151,12 @@ THREE.ShaderChunk = {
 
 	].join("\n"),
 
-	map_fragment: [
+	map_pars_fragment: [
 
 	"#ifdef USE_MAP",
 
-		"gl_FragColor = gl_FragColor * texture2D( map, vUv );",
+		"varying vec2 vUv;",
+		"uniform sampler2D map;",
 
 	"#endif"
 
@@ -177,6 +167,16 @@ THREE.ShaderChunk = {
 	"#ifdef USE_MAP",
 
 		"vUv = uv * offsetRepeat.zw + offsetRepeat.xy;",
+
+	"#endif"
+
+	].join("\n"),
+
+	map_fragment: [
+
+	"#ifdef USE_MAP",
+
+		"gl_FragColor = gl_FragColor * texture2D( map, vUv );",
 
 	"#endif"
 
@@ -629,88 +629,92 @@ THREE.UniformsLib = {
 THREE.ShaderLib = {
 
 	'lensFlareVertexTexture': {
-		
+
 		vertexShader: [
 
-			"uniform 	vec3 	screenPosition;",
-			"uniform	vec2	scale;",
-			"uniform	float	rotation;",
-			"uniform    int     renderType;",
+			"uniform vec3 screenPosition;",
+			"uniform vec2 scale;",
+			"uniform float rotation;",
+			"uniform int renderType;",
 
-			"uniform	sampler2D	occlusionMap;",
+			"uniform sampler2D occlusionMap;",
 
-			"attribute 	vec2 	position;",
-			"attribute  vec2	UV;",
-			"varying	vec2	vUV;",
-			"varying	float	vVisibility;",
-	
-			"void main(void)",
-			"{",
+			"attribute vec2 position;",
+			"attribute vec2 UV;",
+			"varying vec2 vUV;",
+			"varying float vVisibility;",
+
+			"void main() {",
+
 				"vUV = UV;",
 
 				"vec2 pos = position;",
-				
+
 				"if( renderType == 2 ) {",
 
-					"vec4 visibility = texture2D( occlusionMap, vec2( 0.1, 0.1 )) +",
-									  "texture2D( occlusionMap, vec2( 0.5, 0.1 )) +",
-									  "texture2D( occlusionMap, vec2( 0.9, 0.1 )) +",
-									  "texture2D( occlusionMap, vec2( 0.9, 0.5 )) +",
-									  "texture2D( occlusionMap, vec2( 0.9, 0.9 )) +",
-									  "texture2D( occlusionMap, vec2( 0.5, 0.9 )) +",
-									  "texture2D( occlusionMap, vec2( 0.1, 0.9 )) +",
-									  "texture2D( occlusionMap, vec2( 0.1, 0.5 )) +",
-									  "texture2D( occlusionMap, vec2( 0.5, 0.5 ));",
+					"vec4 visibility = texture2D( occlusionMap, vec2( 0.1, 0.1 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.5, 0.1 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.9, 0.1 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.9, 0.5 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.9, 0.9 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.5, 0.9 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.1, 0.9 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.1, 0.5 ) ) +",
+									  "texture2D( occlusionMap, vec2( 0.5, 0.5 ) );",
 
 					"vVisibility = (       visibility.r / 9.0 ) *",
-					              "( 1.0 - visibility.g / 9.0 ) *",
-					              "(       visibility.b / 9.0 ) *", 
-					              "( 1.0 - visibility.a / 9.0 );",
+								  "( 1.0 - visibility.g / 9.0 ) *",
+								  "(       visibility.b / 9.0 ) *", 
+								  "( 1.0 - visibility.a / 9.0 );",
 
 					"pos.x = cos( rotation ) * position.x - sin( rotation ) * position.y;",
 					"pos.y = sin( rotation ) * position.x + cos( rotation ) * position.y;",
+
 				"}",
-				
-				"gl_Position = vec4(( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );",
+
+				"gl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );",
+
 			"}"
 
 		].join( "\n" ),
-		
+
 		fragmentShader: [
-		
+
 			"#ifdef GL_ES",
 				"precision highp float;",
-			"#endif",		
+			"#endif",
 
-			"uniform	sampler2D	map;",
-			"uniform	float		opacity;",
-			"uniform    int         renderType;",
-			
-			"varying	vec2		vUV;",
-			"varying	float		vVisibility;",
-	
-			"void main( void )",
-			"{",
+			"uniform sampler2D map;",
+			"uniform float opacity;",
+			"uniform int renderType;",
+
+			"varying vec2 vUV;",
+			"varying float vVisibility;",
+
+			"void main() {",
+
 				// pink square
-			
+
 				"if( renderType == 0 ) {",
-							
+
 					"gl_FragColor = vec4( 1.0, 0.0, 1.0, 0.0 );",
-				
+
 				// restore
-				
+
 				"} else if( renderType == 1 ) {",
 
 					"gl_FragColor = texture2D( map, vUV );",
-				
+
 				// flare
-				
+
 				"} else {",
-				
+
 					"vec4 color = texture2D( map, vUV );",
 					"color.a *= opacity * vVisibility;",
 					"gl_FragColor = color;",
+
 				"}",
+
 			"}"
 		].join( "\n" )
 
@@ -718,148 +722,156 @@ THREE.ShaderLib = {
 
 
 	'lensFlare': {
-		
+
 		vertexShader: [
 
-			"uniform 	vec3 	screenPosition;",
-			"uniform	vec2	scale;",
-			"uniform	float	rotation;",
-			"uniform    int     renderType;",
+			"uniform vec3 screenPosition;",
+			"uniform vec2 scale;",
+			"uniform float rotation;",
+			"uniform int renderType;",
 
-			"attribute 	vec2 	position;",
-			"attribute  vec2	UV;",
+			"attribute vec2 position;",
+			"attribute vec2 UV;",
 
-			"varying	vec2	vUV;",
-	
-			"void main(void)",
-			"{",
+			"varying vec2 vUV;",
+
+			"void main() {",
+
 				"vUV = UV;",
 
 				"vec2 pos = position;",
-				
+
 				"if( renderType == 2 ) {",
 
 					"pos.x = cos( rotation ) * position.x - sin( rotation ) * position.y;",
 					"pos.y = sin( rotation ) * position.x + cos( rotation ) * position.y;",
+
 				"}",
-				
-				"gl_Position = vec4(( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );",
+
+				"gl_Position = vec4( ( pos * scale + screenPosition.xy ).xy, screenPosition.z, 1.0 );",
+
 			"}"
 
 		].join( "\n" ),
-		
+
 		fragmentShader: [
-		
+
 			"#ifdef GL_ES",
 				"precision highp float;",
-			"#endif",		
+			"#endif",
 
-			"uniform	sampler2D	map;",
-			"uniform	sampler2D	occlusionMap;",
-			"uniform	float		opacity;",
-			"uniform    int         renderType;",
-			
-			"varying	vec2		vUV;",
-	
-			"void main( void )",
-			"{",
+			"uniform sampler2D map;",
+			"uniform sampler2D occlusionMap;",
+			"uniform float opacity;",
+			"uniform int renderType;",
+
+			"varying vec2 vUV;",
+
+			"void main() {",
+
 				// pink square
-			
+
 				"if( renderType == 0 ) {",
-							
+
 					"gl_FragColor = vec4( texture2D( map, vUV ).rgb, 0.0 );",
-				
+
 				// restore
-				
+
 				"} else if( renderType == 1 ) {",
 
 					"gl_FragColor = texture2D( map, vUV );",
-				
+
 				// flare
-				
+
 				"} else {",
 
-					"float visibility = texture2D( occlusionMap, vec2( 0.5, 0.1 )).a +",
-								  	   "texture2D( occlusionMap, vec2( 0.9, 0.5 )).a +",
-									   "texture2D( occlusionMap, vec2( 0.5, 0.9 )).a +",
-									   "texture2D( occlusionMap, vec2( 0.1, 0.5 )).a;",
-					
-	                "visibility = ( 1.0 - visibility / 4.0 );",
+					"float visibility = texture2D( occlusionMap, vec2( 0.5, 0.1 ) ).a +",
+									   "texture2D( occlusionMap, vec2( 0.9, 0.5 ) ).a +",
+									   "texture2D( occlusionMap, vec2( 0.5, 0.9 ) ).a +",
+									   "texture2D( occlusionMap, vec2( 0.1, 0.5 ) ).a;",
+
+					"visibility = ( 1.0 - visibility / 4.0 );",
 
 					"vec4 color = texture2D( map, vUV );",
 					"color.a *= opacity * visibility;",
 					"gl_FragColor = color;",
+
 				"}",
+
 			"}"
+
 		].join( "\n" )
 
 	},
 
 	'sprite': {
-		
+
 		vertexShader: [
-			"uniform	int		useScreenCoordinates;",
-			"uniform    int     affectedByDistance;",
-			"uniform	vec3	screenPosition;",
-			"uniform 	mat4 	modelViewMatrix;",
-			"uniform 	mat4 	projectionMatrix;",
-			"uniform    float   rotation;",
-			"uniform    vec2    scale;",
-			"uniform    vec2    alignment;",
-			"uniform    vec2    uvOffset;",
-			"uniform	vec2    uvScale;",
 
-			"attribute 	vec2 	position;",
-			"attribute  vec2	uv;",
+			"uniform int useScreenCoordinates;",
+			"uniform int affectedByDistance;",
+			"uniform vec3 screenPosition;",
+			"uniform mat4 modelViewMatrix;",
+			"uniform mat4 projectionMatrix;",
+			"uniform float rotation;",
+			"uniform vec2 scale;",
+			"uniform vec2 alignment;",
+			"uniform vec2 uvOffset;",
+			"uniform vec2 uvScale;",
 
-			"varying	vec2	vUV;",
-	
-			"void main(void)",
-			"{",
+			"attribute vec2 position;",
+			"attribute vec2 uv;",
+
+			"varying vec2 vUV;",
+
+			"void main() {",
+
 				"vUV = uvOffset + uv * uvScale;",
 
 				"vec2 alignedPosition = position + alignment;",
-			
+
 				"vec2 rotatedPosition;",
 				"rotatedPosition.x = ( cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y ) * scale.x;",
 				"rotatedPosition.y = ( sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y ) * scale.y;",
 
 				"vec4 finalPosition;",
-				
+
 				"if( useScreenCoordinates != 0 ) {",
-				
+
 					"finalPosition = vec4( screenPosition.xy + rotatedPosition, screenPosition.z, 1.0 );",
-				
+
 				"} else {",
-				
+
 					"finalPosition = projectionMatrix * modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );",
 					"finalPosition.xy += rotatedPosition * ( affectedByDistance == 1 ? 1.0 : finalPosition.z );",
 
 				"}",
 
 				"gl_Position = finalPosition;",
+
 			"}"
 
 		].join( "\n" ),
-		
+
 		fragmentShader: [
-		
+
 			"#ifdef GL_ES",
 				"precision highp float;",
-			"#endif",		
+			"#endif",
 
-			"uniform	sampler2D	map;",
-			"uniform	float		opacity;",
-			
-			"varying	vec2		vUV;",
-	
-			"void main( void )",
-			"{",
+			"uniform sampler2D map;",
+			"uniform float opacity;",
+
+			"varying vec2 vUV;",
+
+			"void main() {",
+
 				"vec4 color = texture2D( map, vUV );",
 				"color.a *= opacity;",
 				"gl_FragColor = color;",
-//				"gl_FragColor = vec4( 1.0, 0.0, 1.0, 1.0 );",
+
 			"}"
+
 		].join( "\n" )
 
 	},
@@ -873,9 +885,10 @@ THREE.ShaderLib = {
 			"uniform 	mat4 	projectionMatrix;",
 			"attribute 	vec3 	position;",
 
-			"void main(void)",
-			"{",
+			"void main() {",
+
 				"gl_Position = projectionMatrix * vec4( position, 1.0 );",
+
 			"}"
 
 		].join( "\n" ),
@@ -884,13 +897,14 @@ THREE.ShaderLib = {
 
 			"#ifdef GL_ES",
 				"precision highp float;",
-			"#endif",		
+			"#endif",
 
 			"uniform 	float 	darkness;",
 
-			"void main( void )",
-			"{",
+			"void main() {",
+
 				"gl_FragColor = vec4( 0, 0, 0, darkness );",
+
 			"}"
 
 		].join( "\n" )
@@ -910,9 +924,10 @@ THREE.ShaderLib = {
 
 				"vec4 pos      = objectMatrix * vec4( position, 1.0 );",
 				"vec3 norm     = mat3( objectMatrix[0].xyz, objectMatrix[1].xyz, objectMatrix[2].xyz ) * normal;",
-				"vec4 extruded = vec4( directionalLightDirection * 5000.0 * step( 0.0, dot( directionalLightDirection, norm )), 0.0 );",
+				"vec4 extruded = vec4( directionalLightDirection * 5000.0 * step( 0.0, dot( directionalLightDirection, norm ) ), 0.0 );",
 
 				"gl_Position   = projectionMatrix * viewMatrix * ( pos + extruded );",
+
 			"}"
 
 		].join( "\n" ),
@@ -926,6 +941,7 @@ THREE.ShaderLib = {
 			"}"
 
 		].join( "\n" )
+
 	},
 
 

@@ -13,9 +13,15 @@ THREE.Object3D = function() {
 
 	this.position = new THREE.Vector3();
 	this.rotation = new THREE.Vector3();
+	this.eulerOrder = 'XYZ';
 	this.scale = new THREE.Vector3( 1, 1, 1 );
 
 	this.dynamic = false; // when true it retains arrays so they can be updated with __dirty*
+	
+	this.doubleSided = false;
+	this.flipSided = false;
+
+	this.renderDepth = null;
 
 	this.rotationAutoUpdate = true;
 
@@ -35,7 +41,7 @@ THREE.Object3D = function() {
 	this.visible = true;
 
 	this._vector = new THREE.Vector3();
-	
+
 	this.name = "";
 
 };
@@ -127,37 +133,37 @@ THREE.Object3D.prototype = {
 		}
 
 	},
-	
+
 	getChildByName: function ( name, doRecurse ) {
-		
+
 		var c, cl, child, recurseResult;
-		
-		for( c = 0, cl = this.children.length; c < cl; c++ ) {
-			
+
+		for ( c = 0, cl = this.children.length; c < cl; c++ ) {
+
 			child = this.children[ c ];
-			
-			if( child.name === name ) {
-				
+
+			if ( child.name === name ) {
+
 				return child;
-				
+
 			}
-			
-			if( doRecurse ) {
-				
+
+			if ( doRecurse ) {
+
 				recurseResult = child.getChildByName( name, doRecurse );
-				
-				if( recurseResult !== undefined ) {
-					
+
+				if ( recurseResult !== undefined ) {
+
 					return recurseResult;
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		return undefined;
-		
+
 	},
 
 	updateMatrix: function () {
@@ -170,7 +176,7 @@ THREE.Object3D.prototype = {
 
 		} else {
 
-			this.matrix.setRotationFromEuler( this.rotation );
+			this.matrix.setRotationFromEuler( this.rotation, this.eulerOrder );
 
 		}
 

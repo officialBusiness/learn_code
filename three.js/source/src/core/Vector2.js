@@ -2,6 +2,7 @@
  * @author mr.doob / http://mrdoob.com/
  * @author philogb / http://blog.thejit.org/
  * @author egraether / http://egraether.com/
+ * @author zz85 / http://www.lab4games.net/zz85/blog
  */
 
 THREE.Vector2 = function ( x, y ) {
@@ -134,6 +135,20 @@ THREE.Vector2.prototype = {
 		return this.divideScalar( this.length() );
 
 	},
+	
+	distanceTo : function ( v ) {
+
+		return Math.sqrt( this.distanceToSquared( v ) );
+
+	},
+
+	distanceToSquared : function ( v ) {
+
+		var dx = this.x - v.x, dy = this.y - v.y;
+		return dx * dx + dy * dy;
+
+	},
+
 
 	setLength : function ( l ) {
 
@@ -142,12 +157,20 @@ THREE.Vector2.prototype = {
 	},
 
 	// deprecated: same as normalize
+
 	unit : function () {
 
 		return this.normalize();
 
-		// this.multiplyScalar( 1 / this.length() );
-		// return this;
+	},
+	
+	// danger, works only on numbers which are exactly the same
+	// (which may be not what is expected thanks to floating point precision)
+	// (should be probably using some tiny epsilon instead of equality)
+	
+	equals : function( v ) {
+
+		return ( ( v.x == this.x ) && ( v.y == this.y ) );
 
 	}
 
