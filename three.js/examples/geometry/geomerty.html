@@ -25,11 +25,13 @@
 		<script type="text/javascript" src="../../source/src/cameras/OrthographicCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/cameras/PerspectiveCamera.js"></script>
 
+		<script type="text/javascript" src="../../source/src/core/Clock.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Color.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Edge.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face3.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Geometry.js"></script>
+		<script type="text/javascript" src="../../source/src/core/Math.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Projector.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Quaternion.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Ray.js"></script>
@@ -86,9 +88,6 @@
 		<script type="text/javascript" src="../../source/src/extras/objects/Axes.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
 
-		<script type="text/javascript" src="../../source/src/extras/physics/Collisions.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/physics/CollisionUtils.js"></script>
-
 		<script type="text/javascript" src="../../source/src/extras/renderers/AnaglyphWebGLRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/renderers/CrosseyedWebGLRenderer.js"></script>
 
@@ -122,6 +121,7 @@
 		<script type="text/javascript" src="../../source/src/objects/Line.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/LOD.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Mesh.js"></script>
+		<script type="text/javascript" src="../../source/src/objects/MorphAnimMesh.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Particle.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/ParticleSystem.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Ribbon.js"></script>
@@ -137,7 +137,6 @@
 
 		<script type="text/javascript" src="../../source/src/renderers/CanvasRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/DOMRenderer.js"></script>
-		<script type="text/javascript" src="../../source/src/renderers/Projector.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/SVGRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/renderers/WebGLRenderTarget.js"></script>
@@ -179,8 +178,9 @@
 			camera.near = 1;
 			camera.far = 10000;
 
-
 			camera.position.z = 500;
+
+			scene.add(camera);
 
 			var plane = new THREE.Geometry();
 
