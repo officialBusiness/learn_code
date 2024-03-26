@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>camera</title>
+		<title>perspective_camera</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -22,7 +22,8 @@
 		<script type="text/javascript" src="../../source/src/textures/DataTexture.js"></script>
 
 		<script type="text/javascript" src="../../source/src/cameras/Camera.js"></script>
-		<script type="text/javascript" src="../../source/src/cameras/OrthoCamera.js"></script>
+		<script type="text/javascript" src="../../source/src/cameras/OrthographicCamera.js"></script>
+		<script type="text/javascript" src="../../source/src/cameras/PerspectiveCamera.js"></script>
 
 		<script type="text/javascript" src="../../source/src/core/Color.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Edge.js"></script>
@@ -41,12 +42,19 @@
 		<script type="text/javascript" src="../../source/src/extras/animation/AnimationHandler.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/animation/AnimationMorphTarget.js"></script>
 
+		<script type="text/javascript" src="../../source/src/extras/cameras/CombinedCamera.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/cameras/CubeCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/FirstPersonCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/FlyCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/PathCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/QuakeCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/RollCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/TrackballCamera.js"></script>
+
+		<script type="text/javascript" src="../../source/src/extras/controls/FirstPersonControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/FlyControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/PathControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/RollControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/TrackballControls.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/core/Curve.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/CurvePath.js"></script>
@@ -59,6 +67,7 @@
 		<script type="text/javascript" src="../../source/src/extras/geometries/ExtrudeGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/IcosahedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/LatheGeometry.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/OctahedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/PlaneGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/SphereGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/TextGeometry.js"></script>
@@ -72,8 +81,10 @@
 		<script type="text/javascript" src="../../source/src/extras/loaders/SceneLoader.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/loaders/UTF8Loader.js"></script>
 
+		<script type="text/javascript" src="../../source/src/extras/modifiers/SubdivisionModifier.js"></script>
+
+		<script type="text/javascript" src="../../source/src/extras/objects/Axes.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/objects/Trident.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/physics/Collisions.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/physics/CollisionUtils.js"></script>
@@ -105,6 +116,7 @@
 		<script type="text/javascript" src="../../source/src/materials/ParticleBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleCanvasMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleDOMMaterial.js"></script>
+		<script type="text/javascript" src="../../source/src/materials/ShaderMaterial.js"></script>
 
 		<script type="text/javascript" src="../../source/src/objects/Bone.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Line.js"></script>
@@ -160,7 +172,7 @@
 			document.body.appendChild( webglRenderer.domElement );
 
 
-			var camera = new THREE.Camera(
+			var camera = new THREE.PerspectiveCamera(
 				75, document.body.clientWidth / document.body.clientHeight,
 				1, 100000
 			);
@@ -193,10 +205,10 @@
 			mesh.scale.x = mesh.scale.y = mesh.scale.z = 2;
 			mesh.updateMatrix();
 
-			scene.addChild(mesh);
+			scene.add(mesh);
 
 			var ambient = new THREE.AmbientLight( 0x80ffff );
-			scene.addLight( ambient );
+			scene.add( ambient );
 
 			var stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -208,9 +220,7 @@
 
 				const gui = new lil.GUI();
 
-
 				gui.add(camera, 'matrixAutoUpdate');
-				gui.add(camera, 'useTarget');
 
 				const updateMatrix = ()=>{
 					camera.updateMatrix();
@@ -218,18 +228,17 @@
 
 				const matrixFolder = gui.addFolder('matrix');
 
-				matrixFolder.add(camera.position, 'x').name('position.x').onChange(updateMatrix);
-				matrixFolder.add(camera.position, 'y').name('position.y').onChange(updateMatrix);
-				matrixFolder.add(camera.position, 'z').name('position.z').onChange(updateMatrix);
+				matrixFolder.add(camera.position, 'x').name('position.x');
+				matrixFolder.add(camera.position, 'y').name('position.y');
+				matrixFolder.add(camera.position, 'z').name('position.z');
 
-				matrixFolder.add(camera.target.position, 'x').name('target.x').onChange(updateMatrix);
-				matrixFolder.add(camera.target.position, 'y').name('target.y').onChange(updateMatrix);
-				matrixFolder.add(camera.target.position, 'z').name('target.z').onChange(updateMatrix);
+				matrixFolder.add(camera.rotation, 'x').name('rotation.x');
+				matrixFolder.add(camera.rotation, 'y').name('rotation.y');
+				matrixFolder.add(camera.rotation, 'z').name('rotation.z');
 
-				matrixFolder.add(camera.up, 'x', -1, 1).name('up.x').onChange(updateMatrix);
-				matrixFolder.add(camera.up, 'y', -1, 1).name('up.y').onChange(updateMatrix);
-				matrixFolder.add(camera.up, 'z', -1, 1).name('up.z').onChange(updateMatrix);
-
+				matrixFolder.add(camera.scale, 'x').name('scale.x');
+				matrixFolder.add(camera.scale, 'y').name('scale.y');
+				matrixFolder.add(camera.scale, 'z').name('scale.z');
 
 				const updateProjectionMatrix = ()=>{
 					camera.updateProjectionMatrix()

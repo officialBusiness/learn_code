@@ -22,7 +22,8 @@
 		<script type="text/javascript" src="../../source/src/textures/DataTexture.js"></script>
 
 		<script type="text/javascript" src="../../source/src/cameras/Camera.js"></script>
-		<script type="text/javascript" src="../../source/src/cameras/OrthoCamera.js"></script>
+		<script type="text/javascript" src="../../source/src/cameras/OrthographicCamera.js"></script>
+		<script type="text/javascript" src="../../source/src/cameras/PerspectiveCamera.js"></script>
 
 		<script type="text/javascript" src="../../source/src/core/Color.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Edge.js"></script>
@@ -41,12 +42,19 @@
 		<script type="text/javascript" src="../../source/src/extras/animation/AnimationHandler.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/animation/AnimationMorphTarget.js"></script>
 
+		<script type="text/javascript" src="../../source/src/extras/cameras/CombinedCamera.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/cameras/CubeCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/FirstPersonCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/FlyCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/PathCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/QuakeCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/RollCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/TrackballCamera.js"></script>
+
+		<script type="text/javascript" src="../../source/src/extras/controls/FirstPersonControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/FlyControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/PathControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/RollControls.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/controls/TrackballControls.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/core/Curve.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/CurvePath.js"></script>
@@ -59,6 +67,7 @@
 		<script type="text/javascript" src="../../source/src/extras/geometries/ExtrudeGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/IcosahedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/LatheGeometry.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/OctahedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/PlaneGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/SphereGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/TextGeometry.js"></script>
@@ -72,8 +81,10 @@
 		<script type="text/javascript" src="../../source/src/extras/loaders/SceneLoader.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/loaders/UTF8Loader.js"></script>
 
+		<script type="text/javascript" src="../../source/src/extras/modifiers/SubdivisionModifier.js"></script>
+
+		<script type="text/javascript" src="../../source/src/extras/objects/Axes.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/objects/Trident.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/physics/Collisions.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/physics/CollisionUtils.js"></script>
@@ -105,6 +116,7 @@
 		<script type="text/javascript" src="../../source/src/materials/ParticleBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleCanvasMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleDOMMaterial.js"></script>
+		<script type="text/javascript" src="../../source/src/materials/ShaderMaterial.js"></script>
 
 		<script type="text/javascript" src="../../source/src/objects/Bone.js"></script>
 		<script type="text/javascript" src="../../source/src/objects/Line.js"></script>
@@ -160,7 +172,7 @@
 			document.body.appendChild( webglRenderer.domElement );
 
 
-			var camera = new THREE.Camera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
+			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
 			camera.fov = 75;
 			camera.aspect = document.body.clientWidth / document.body.clientHeight;
 			camera.near = 0.1;
@@ -223,7 +235,7 @@
 				return texture;
 			}
 
-			var meshShaderMaterial = new THREE.MeshShaderMaterial({
+			var meshShaderMaterial = new THREE.ShaderMaterial({
 				uniforms: {
 					map: {
 						type: "t",
@@ -255,7 +267,7 @@
 			})
 			var mesh = new THREE.Mesh( plane, meshShaderMaterial );
 
-			scene.addObject(mesh);
+			scene.add(mesh);
 
 			var stats = new Stats();
 			stats.domElement.style.position = 'absolute';
