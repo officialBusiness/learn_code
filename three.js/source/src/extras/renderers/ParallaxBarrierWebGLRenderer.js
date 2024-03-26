@@ -6,7 +6,7 @@
 
 if ( THREE.WebGLRenderer ) {
 
-	THREE.AnaglyphWebGLRenderer = function ( parameters ) {
+	THREE.ParallaxBarrierWebGLRenderer = function ( parameters ) {
 
 		THREE.WebGLRenderer.call( this, parameters );
 
@@ -62,15 +62,17 @@ if ( THREE.WebGLRenderer ) {
 
 				"void main() {",
 
-					"vec4 colorL, colorR;",
 					"vec2 uv = vUv;",
 
-					"colorL = texture2D( mapLeft, uv );",
-					"colorR = texture2D( mapRight, uv );",
+					"if ( ( mod(gl_FragCoord.x, 2.0) ) > 1.00 ) {",
 
-					// http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
+						"gl_FragColor = texture2D( mapLeft, uv );",
 
-					"gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;",
+					"} else {",
+
+						"gl_FragColor = texture2D( mapRight, uv );",
+
+					"}",
 
 				"}"
 
