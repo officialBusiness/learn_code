@@ -5,7 +5,7 @@
 
 THREE.ImageUtils = {
 
-	crossOrigin: '',
+	crossOrigin: 'anonymous',
 
 	loadTexture: function ( path, mapping, callback ) {
 
@@ -36,7 +36,7 @@ THREE.ImageUtils = {
 
 			};
 
-			images[ i ].crossOrigin = '';
+			images[ i ].crossOrigin = this.crossOrigin;
 			images[ i ].src = array[ i ];
 
 		}
@@ -145,6 +145,30 @@ THREE.ImageUtils = {
 		context.putImageData( imageData, 0, 0 );
 
 		return canvas;
+
+	},
+
+	generateDataTexture: function ( width, height, color ) {
+
+		var size = width * height;
+		var data = new Uint8Array( 3 * size );
+
+		var r = Math.floor( color.r * 255 );
+		var g = Math.floor( color.g * 255 );
+		var b = Math.floor( color.b * 255 );
+
+		for ( var i = 0; i < size; i ++ ) {
+
+			data[ i * 3 ] 	  = r;
+			data[ i * 3 + 1 ] = g;
+			data[ i * 3 + 2 ] = b;
+
+		}
+
+		var texture = new THREE.DataTexture( data, width, height, THREE.RGBFormat );
+		texture.needsUpdate = true;
+
+		return texture;
 
 	}
 

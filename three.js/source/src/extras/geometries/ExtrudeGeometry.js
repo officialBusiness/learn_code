@@ -629,13 +629,15 @@ THREE.ExtrudeGeometry.prototype.addShape = function( shape, options ) {
 					var u2 = ( scope.vertices[ d ].position.z + bevelThickness ) / ztol;
 
 					//console.log(vy1, vy2);
-
+					/*
 					scope.faceVertexUvs[ 0 ].push( [
 						new THREE.UV( u1, v1 ),
 						new THREE.UV( u2, v1 ),
 						new THREE.UV( u2, v2 ),
 						new THREE.UV( u1, v2 )
 					] );
+					*/
+
 				}
 
 
@@ -658,33 +660,26 @@ THREE.ExtrudeGeometry.prototype.addShape = function( shape, options ) {
 		b += shapesOffset;
 		c += shapesOffset;
 
+												   // normal, color, material
 		scope.faces.push( new THREE.Face3( a, b, c, null, null, material ) );
-		//normal, color, materials
 
-		if ( material !== undefined ) {
+		var ax = scope.vertices[ a ].position.x,
+			ay = scope.vertices[ a ].position.y,
 
-			var mx = shapebb.minX, my = shapebb.minY;
+			bx = scope.vertices[ b ].position.x,
+			by = scope.vertices[ b ].position.y,
 
-			var uy = shapebb.maxY; // - shapebb.minY;
-			var ux = shapebb.maxX; // - shapebb.minX;
+			cx = scope.vertices[ c ].position.x,
+			cy = scope.vertices[ c ].position.y;
 
-			var ax = scope.vertices[ a ].position.x - mx,
-				ay = scope.vertices[ a ].position.y - my,
+		scope.faceVertexUvs[ 0 ].push( [
 
-				bx = scope.vertices[ b ].position.x - mx,
-				by = scope.vertices[ b ].position.y - my,
+			new THREE.UV( ax, 1 - ay ),
+			new THREE.UV( bx, 1 - by ),
+			new THREE.UV( cx, 1 - cy )
 
-				cx = scope.vertices[ c ].position.x - mx,
-				cy = scope.vertices[ c ].position.y - my;
+		] );
 
-			scope.faceVertexUvs[ 0 ].push( [
-
-				new THREE.UV( ax / ux, ay / uy ),
-				new THREE.UV( bx / ux, by / uy ),
-				new THREE.UV( cx / ux, cy / uy )
-
-			] );
-		}
 
 	}
 
@@ -696,6 +691,46 @@ THREE.ExtrudeGeometry.prototype.addShape = function( shape, options ) {
 		d += shapesOffset;
 
  		scope.faces.push( new THREE.Face4( a, b, c, d, null, null, extrudeMaterial ) );
+
+		var ax = scope.vertices[ a ].position.x,
+			ay = scope.vertices[ a ].position.y,
+			az = scope.vertices[ a ].position.z,
+
+			bx = scope.vertices[ b ].position.x,
+			by = scope.vertices[ b ].position.y,
+			bz = scope.vertices[ b ].position.z,
+
+			cx = scope.vertices[ c ].position.x,
+			cy = scope.vertices[ c ].position.y,
+			cz = scope.vertices[ c ].position.z,
+
+			dx = scope.vertices[ d ].position.x,
+			dy = scope.vertices[ d ].position.y,
+			dz = scope.vertices[ d ].position.z;
+
+		if ( Math.abs( ay - by ) < 0.01 ) {
+
+			scope.faceVertexUvs[ 0 ].push( [
+
+				new THREE.UV( ax, az ),
+				new THREE.UV( bx, bz ),
+				new THREE.UV( cx, cz ),
+				new THREE.UV( dx, dz )
+
+			] );
+
+		} else {
+
+			scope.faceVertexUvs[ 0 ].push( [
+
+				new THREE.UV( ay, az ),
+				new THREE.UV( by, bz ),
+				new THREE.UV( cy, cz ),
+				new THREE.UV( dy, dz )
+
+			] );
+
+		}
 
 	}
 

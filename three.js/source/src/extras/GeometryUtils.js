@@ -30,7 +30,6 @@ THREE.GeometryUtils = {
 
 		}
 
-
 		if ( object2 instanceof THREE.Mesh ) {
 
 			object2.matrixAutoUpdate && object2.updateMatrix();
@@ -47,7 +46,7 @@ THREE.GeometryUtils = {
 
 			var vertex = vertices2[ i ];
 
-			var vertexCopy = new THREE.Vertex( vertex.position.clone() );
+			var vertexCopy = vertex.clone();
 
 			if ( matrix ) matrix.multiplyVector3( vertexCopy.position );
 
@@ -164,9 +163,8 @@ THREE.GeometryUtils = {
 		for ( i = 0, il = vertices.length; i < il; i ++ ) {
 
 			var vertex = vertices[ i ];
-			var vertexCopy = new THREE.Vertex( vertex.position.clone() );
 
-			cloneGeo.vertices.push( vertexCopy );
+			cloneGeo.vertices.push( vertex.clone() );
 
 		}
 
@@ -174,43 +172,9 @@ THREE.GeometryUtils = {
 
 		for ( i = 0, il = faces.length; i < il; i ++ ) {
 
-			var face = faces[ i ], faceCopy, normal, color,
-			faceVertexNormals = face.vertexNormals,
-			faceVertexColors = face.vertexColors;
+			var face = faces[ i ];
 
-			if ( face instanceof THREE.Face3 ) {
-
-				faceCopy = new THREE.Face3( face.a, face.b, face.c );
-
-			} else if ( face instanceof THREE.Face4 ) {
-
-				faceCopy = new THREE.Face4( face.a, face.b, face.c, face.d );
-
-			}
-
-			faceCopy.normal.copy( face.normal );
-
-			for ( var j = 0, jl = faceVertexNormals.length; j < jl; j ++ ) {
-
-				normal = faceVertexNormals[ j ];
-				faceCopy.vertexNormals.push( normal.clone() );
-
-			}
-
-			faceCopy.color.copy( face.color );
-
-			for ( var j = 0, jl = faceVertexColors.length; j < jl; j ++ ) {
-
-				color = faceVertexColors[ j ];
-				faceCopy.vertexColors.push( color.clone() );
-
-			}
-
-			faceCopy.materialIndex = face.materialIndex;
-
-			faceCopy.centroid.copy( face.centroid );
-
-			cloneGeo.faces.push( faceCopy );
+			cloneGeo.faces.push( face.clone() );
 
 		}
 
@@ -513,6 +477,405 @@ THREE.GeometryUtils = {
 
 				if( uvs[ j ].u !== 1.0 ) uvs[ j ].u = uvs[ j ].u - Math.floor( uvs[ j ].u );
 				if( uvs[ j ].v !== 1.0 ) uvs[ j ].v = uvs[ j ].v - Math.floor( uvs[ j ].v );
+
+			}
+
+		}
+
+	},
+
+	triangulateQuads: function ( geometry ) {
+
+		for ( var i = geometry.faces.length - 1; i >= 0; i -- ) {
+
+			var face = geometry.faces[ i ];
+
+			if ( face instanceof THREE.Face4 ) {
+
+				var a = face.a;
+				var b = face.b;
+				var c = face.c;
+				var d = face.d;
+
+				var triA = face.clone();
+				var triB = face.clone();
+
+				triA.a = a;
+				triA.b = b;
+				triA.c = d;
+
+				triB.a = b;
+				triB.b = c;
+				triB.c = d;
+
+				geometry.faces.splice( i, 1, triA, triB );
+
+				for ( var j = 0; j < geometry.faceVertexUvs.length; j ++ ) {
+
+					if ( geometry.faceVertexUvs[ j ].length ) {
+
+						var faceVertexUvs = geometry.faceVertexUvs[ j ][ i ];
+
+						var uvA = faceVertexUvs[ 0 ];
+						var uvB = faceVertexUvs[ 1 ];
+						var uvC = faceVertexUvs[ 2 ];
+						var uvD = faceVertexUvs[ 3 ];
+
+						var uvsTriA = [ uvA.clone(), uvB.clone(), uvD.clone() ];
+						var uvsTriB = [ uvB.clone(), uvC.clone(), uvD.clone() ];
+
+						geometry.faceVertexUvs[ j ].splice( i, 1, uvsTriA, uvsTriB );
+
+					}
+
+				}
+
+				for ( var j = 0; j < geometry.faceUvs.length; j ++ ) {
+
+					if ( geometry.faceUvs[ j ].length ) {
+
+						var faceUv = geometry.faceUvs[ j ][ i ];
+
+						geometry.faceUvs[ j ].splice( i, 1, faceUv, faceUv );
+
+					}
+
+				}
+
+			}
+
+		}
+
+		geometry.computeCentroids();
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
+
+		if ( geometry.hasTangents ) geometry.computeTangents();
+
+	},
+
+	// Make all faces use unique vertices
+	// so that each face can be separated from others
+
+	explode: function( geometry ) {
+
+		var vertices = [];
+
+		for ( var i = 0, il = geometry.faces.length; i < il; i ++ ) {
+
+			var n = vertices.length;
+
+			var face = geometry.faces[ i ];
+
+			if ( face instanceof THREE.Face4 ) {
+
+				var a = face.a;
+				var b = face.b;
+				var c = face.c;
+				var d = face.d;
+
+				var va = geometry.vertices[ a ];
+				var vb = geometry.vertices[ b ];
+				var vc = geometry.vertices[ c ];
+				var vd = geometry.vertices[ d ];
+
+				vertices.push( va.clone() );
+				vertices.push( vb.clone() );
+				vertices.push( vc.clone() );
+				vertices.push( vd.clone() );
+
+				face.a = n;
+				face.b = n + 1;
+				face.c = n + 2;
+				face.d = n + 3;
+
+			} else {
+
+				var a = face.a;
+				var b = face.b;
+				var c = face.c;
+
+				var va = geometry.vertices[ a ];
+				var vb = geometry.vertices[ b ];
+				var vc = geometry.vertices[ c ];
+
+				vertices.push( va.clone() );
+				vertices.push( vb.clone() );
+				vertices.push( vc.clone() );
+
+				face.a = n;
+				face.b = n + 1;
+				face.c = n + 2;
+
+			}
+
+		}
+
+		geometry.vertices = vertices;
+
+	},
+
+	// Break faces with edges longer than maxEdgeLength
+	// - not recursive
+
+	tessellate: function ( geometry, maxEdgeLength ) {
+
+		var i, face,
+		a, b, c, d,
+		va, vb, vc, vd,
+		dab, dbc, dac, dcd, dad,
+		m, m1, m2,
+		vm, vm1, vm2,
+		triA, triB,
+		quadA, quadB,
+		edge;
+
+		for ( i = geometry.faces.length - 1; i >= 0; i -- ) {
+
+			face = geometry.faces[ i ];
+
+			if ( face instanceof THREE.Face3 ) {
+
+				a = face.a;
+				b = face.b;
+				c = face.c;
+
+				va = geometry.vertices[ a ];
+				vb = geometry.vertices[ b ];
+				vc = geometry.vertices[ c ];
+
+				dab = va.position.distanceTo( vb.position );
+				dbc = vb.position.distanceTo( vc.position );
+				dac = va.position.distanceTo( vc.position );
+
+				if ( dab > maxEdgeLength || dbc > maxEdgeLength || dac > maxEdgeLength ) {
+
+					m = geometry.vertices.length;
+
+					triA = face.clone();
+					triB = face.clone();
+
+					if ( dab >= dbc && dab >= dac ) {
+
+						vm = va.clone();
+						vm.position.lerpSelf( vb.position, 0.5 );
+
+						triA.a = a;
+						triA.b = m;
+						triA.c = c;
+
+						triB.a = m;
+						triB.b = b;
+						triB.c = c;
+
+						edge = 0;
+
+					} else if ( dbc >= dab && dbc >= dac ) {
+
+						vm = vb.clone();
+						vm.position.lerpSelf( vc.position, 0.5 );
+
+						triA.a = a;
+						triA.b = b;
+						triA.c = m;
+
+						triB.a = m;
+						triB.b = c;
+						triB.c = a;
+
+						edge = 1;
+
+					} else {
+
+						vm = va.clone();
+						vm.position.lerpSelf( vc.position, 0.5 );
+
+						triA.a = a;
+						triA.b = b;
+						triA.c = m;
+
+						triB.a = m;
+						triB.b = b;
+						triB.c = c;
+
+						edge = 2;
+
+					}
+
+					geometry.faces.splice( i, 1, triA, triB );
+					geometry.vertices.push( vm );
+
+					var faceVertexUvs, uvA, uvB, uvC, uvM, uvsTriA, uvsTriB;
+
+					for ( var j = 0; j < geometry.faceVertexUvs.length; j ++ ) {
+
+						if ( geometry.faceVertexUvs[ j ].length ) {
+
+							faceVertexUvs = geometry.faceVertexUvs[ j ][ i ];
+
+							uvA = faceVertexUvs[ 0 ];
+							uvB = faceVertexUvs[ 1 ];
+							uvC = faceVertexUvs[ 2 ];
+
+							// AB
+
+							if ( edge === 0 ) {
+
+								uvM = uvA.clone();
+								uvM.lerpSelf( uvB, 0.5 );
+
+								uvsTriA = [ uvA.clone(), uvM.clone(), uvC.clone() ];
+								uvsTriB = [ uvM.clone(), uvB.clone(), uvC.clone() ];
+
+							// BC
+
+							} else if ( edge === 1 ) {
+
+								uvM = uvB.clone();
+								uvM.lerpSelf( uvC, 0.5 );
+
+								uvsTriA = [ uvA.clone(), uvB.clone(), uvM.clone() ];
+								uvsTriB = [ uvM.clone(), uvC.clone(), uvA.clone() ];
+
+							// AC
+
+							} else {
+
+								uvM = uvA.clone();
+								uvM.lerpSelf( uvC, 0.5 );
+
+								uvsTriA = [ uvA.clone(), uvB.clone(), uvM.clone() ];
+								uvsTriB = [ uvM.clone(), uvB.clone(), uvC.clone() ];
+
+							}
+
+							geometry.faceVertexUvs[ j ].splice( i, 1, uvsTriA, uvsTriB );
+
+						}
+
+					}
+
+				}
+
+			} else {
+
+				a = face.a;
+				b = face.b;
+				c = face.c;
+				d = face.d;
+
+				va = geometry.vertices[ a ];
+				vb = geometry.vertices[ b ];
+				vc = geometry.vertices[ c ];
+				vd = geometry.vertices[ d ];
+
+				dab = va.position.distanceTo( vb.position );
+				dbc = vb.position.distanceTo( vc.position );
+				dcd = vc.position.distanceTo( vd.position );
+				dad = va.position.distanceTo( vd.position );
+
+				if ( dab > maxEdgeLength || dbc > maxEdgeLength || dcd > maxEdgeLength || dad > maxEdgeLength ) {
+
+					m1 = geometry.vertices.length;
+					m2 = geometry.vertices.length + 1;
+
+					quadA = face.clone();
+					quadB = face.clone();
+
+					if ( ( dab >= dbc && dab >= dcd && dab >= dad ) || ( dcd >= dbc && dcd >= dab && dcd >= dad ) ) {
+
+						vm1 = va.clone();
+						vm1.position.lerpSelf( vb.position, 0.5 );
+
+						vm2 = vc.clone();
+						vm2.position.lerpSelf( vd.position, 0.5 );
+
+						quadA.a = a;
+						quadA.b = m1;
+						quadA.c = m2;
+						quadA.d = d;
+
+						quadB.a = m1;
+						quadB.b = b;
+						quadB.c = c;
+						quadB.d = m2;
+
+						edge = 0;
+
+					} else {
+
+						vm1 = vb.clone();
+						vm1.position.lerpSelf( vc.position, 0.5 );
+
+						vm2 = vd.clone();
+						vm2.position.lerpSelf( va.position, 0.5 );
+
+						quadA.a = a;
+						quadA.b = b;
+						quadA.c = m1;
+						quadA.d = m2;
+
+						quadB.a = m2;
+						quadB.b = m1;
+						quadB.c = c;
+						quadB.d = d;
+
+						edge = 1;
+
+					}
+
+					geometry.faces.splice( i, 1, quadA, quadB );
+					geometry.vertices.push( vm1 );
+					geometry.vertices.push( vm2 );
+
+					var faceVertexUvs, uvA, uvB, uvC, uvD, uvM1, uvM2, uvsQuadA, uvsQuadB;
+
+					for ( var j = 0; j < geometry.faceVertexUvs.length; j ++ ) {
+
+						if ( geometry.faceVertexUvs[ j ].length ) {
+
+							faceVertexUvs = geometry.faceVertexUvs[ j ][ i ];
+
+							uvA = faceVertexUvs[ 0 ];
+							uvB = faceVertexUvs[ 1 ];
+							uvC = faceVertexUvs[ 2 ];
+							uvD = faceVertexUvs[ 3 ];
+
+							// AB + CD
+
+							if ( edge === 0 ) {
+
+								uvM1 = uvA.clone();
+								uvM1.lerpSelf( uvB, 0.5 );
+
+								uvM2 = uvC.clone();
+								uvM2.lerpSelf( uvD, 0.5 );
+
+								uvsQuadA = [ uvA.clone(), uvM1.clone(), uvM2.clone(), uvD.clone() ];
+								uvsQuadB = [ uvM1.clone(), uvB.clone(), uvC.clone(), uvM2.clone() ];
+
+							// BC + AD
+
+							} else {
+
+								uvM1 = uvB.clone();
+								uvM1.lerpSelf( uvC, 0.5 );
+
+								uvM2 = uvD.clone();
+								uvM2.lerpSelf( uvA, 0.5 );
+
+								uvsQuadA = [ uvA.clone(), uvB.clone(), uvM1.clone(), uvM2.clone() ];
+								uvsQuadB = [ uvM2.clone(), uvM1.clone(), uvC.clone(), uvD.clone() ];
+
+							}
+
+							geometry.faceVertexUvs[ j ].splice( i, 1, uvsQuadA, uvsQuadB );
+
+						}
+
+					}
+
+				}
 
 			}
 

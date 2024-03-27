@@ -20,7 +20,6 @@ THREE.Matrix4 = function ( n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33
 
 	);
 
-	this.flat = new Array( 16 );
 	this.m33 = new THREE.Matrix3();
 
 };
@@ -70,11 +69,11 @@ THREE.Matrix4.prototype = {
 
 	},
 
-	lookAt: function ( eye, center, up ) {
+	lookAt: function ( eye, target, up ) {
 
 		var x = THREE.Matrix4.__v1, y = THREE.Matrix4.__v2, z = THREE.Matrix4.__v3;
 
-		z.sub( eye, center ).normalize();
+		z.sub( eye, target ).normalize();
 
 		if ( z.length() === 0 ) {
 
@@ -91,7 +90,7 @@ THREE.Matrix4.prototype = {
 
 		}
 
-		y.cross( z, x ).normalize();
+		y.cross( z, x );
 
 
 		this.n11 = x.x; this.n12 = y.x; this.n13 = z.x;
@@ -291,17 +290,6 @@ THREE.Matrix4.prototype = {
 		m.n41 = this.n41; m.n42 = this.n42; m.n43 = this.n43; m.n44 = this.n44;
 
 		return m;
-
-	},
-
-	flatten: function () {
-
-		this.flat[ 0 ] = this.n11; this.flat[ 1 ] = this.n21; this.flat[ 2 ] = this.n31; this.flat[ 3 ] = this.n41;
-		this.flat[ 4 ] = this.n12; this.flat[ 5 ] = this.n22; this.flat[ 6 ] = this.n32; this.flat[ 7 ] = this.n42;
-		this.flat[ 8 ]  = this.n13; this.flat[ 9 ]  = this.n23; this.flat[ 10 ] = this.n33; this.flat[ 11 ] = this.n43;
-		this.flat[ 12 ] = this.n14; this.flat[ 13 ] = this.n24; this.flat[ 14 ] = this.n34; this.flat[ 15 ] = this.n44;
-
-		return this.flat;
 
 	},
 
@@ -770,7 +758,8 @@ THREE.Matrix4.prototype = {
 
 	rotateByAxis: function ( axis, angle ) {
 
-  		// optimize by checking axis
+		// optimize by checking axis
+
 		if ( axis.x === 1 && axis.y === 0 && axis.z === 0 ) {
 
 			return this.rotateX( angle );
@@ -797,8 +786,8 @@ THREE.Matrix4.prototype = {
 		var xx = x * x,
 			yy = y * y,
 			zz = z * z,
-			c = Math.cos(angle),
-			s = Math.sin(angle),
+			c = Math.cos( angle ),
+			s = Math.sin( angle ),
 			oneMinusCosine = 1 - c,
 			xy = x * y * oneMinusCosine,
 			xz = x * z * oneMinusCosine,
@@ -863,8 +852,8 @@ THREE.Matrix4.prototype = {
 			m23 = this.n23,
 			m33 = this.n33,
 			m43 = this.n43,
-			c = Math.cos(angle),
-			s = Math.sin(angle);
+			c = Math.cos( angle ),
+			s = Math.sin( angle );
 
 		this.n12 = c * m12 + s * m13;
 		this.n22 = c * m22 + s * m23;

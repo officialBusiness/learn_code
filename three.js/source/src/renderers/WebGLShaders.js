@@ -74,7 +74,16 @@ THREE.ShaderChunk = {
 
 		"#ifdef USE_ENVMAP",
 
-			"vec4 cubeColor = textureCube( envMap, vec3( flipEnvMap * vReflect.x, vReflect.yz ) );",
+			"#ifdef DOUBLE_SIDED",
+
+				"float flipNormal = ( -1.0 + 2.0 * float( gl_FrontFacing ) );",
+				"vec4 cubeColor = textureCube( envMap, flipNormal * vec3( flipEnvMap * vReflect.x, vReflect.yz ) );",
+
+			"#else",
+
+				"vec4 cubeColor = textureCube( envMap, vec3( flipEnvMap * vReflect.x, vReflect.yz ) );",
+
+			"#endif",
 
 			"#ifdef GAMMA_INPUT",
 
@@ -285,7 +294,15 @@ THREE.ShaderChunk = {
 
 	lights_lambert_vertex: [
 
-		"vLightWeighting = vec3( 0.0 );",
+		"vLightFront = vec3( 0.0 );",
+
+		"#ifdef DOUBLE_SIDED",
+
+			"vLightBack = vec3( 0.0 );",
+
+		"#endif",
+
+		"transformedNormal = normalize( transformedNormal );",
 
 		"#if MAX_DIR_LIGHTS > 0",
 
@@ -294,20 +311,41 @@ THREE.ShaderChunk = {
 			"vec4 lDirection = viewMatrix * vec4( directionalLightDirection[ i ], 0.0 );",
 			"vec3 dirVector = normalize( lDirection.xyz );",
 
-			"#ifdef WRAP_AROUND",
+			"float dotProduct = dot( transformedNormal, dirVector );",
+			"vec3 directionalLightWeighting = vec3( max( dotProduct, 0.0 ) );",
 
-				"float directionalLightWeightingFull = max( dot( transformedNormal, dirVector ), 0.0 );",
-				"float directionalLightWeightingHalf = max( 0.5 * dot( transformedNormal, dirVector ) + 0.5, 0.0 );",
+			"#ifdef DOUBLE_SIDED",
 
-				"vec3 directionalLightWeighting = mix( vec3( directionalLightWeightingFull ), vec3( directionalLightWeightingHalf ), wrapRGB );",
+				"vec3 directionalLightWeightingBack = vec3( max( -dotProduct, 0.0 ) );",
 
-			"#else",
+				"#ifdef WRAP_AROUND",
 
-				"float directionalLightWeighting = max( dot( transformedNormal, dirVector ), 0.0 );",
+					"vec3 directionalLightWeightingHalfBack = vec3( max( -0.5 * dotProduct + 0.5, 0.0 ) );",
+
+				"#endif",
 
 			"#endif",
 
-			"vLightWeighting += directionalLightColor[ i ] * directionalLightWeighting;",
+			"#ifdef WRAP_AROUND",
+
+				"vec3 directionalLightWeightingHalf = vec3( max( 0.5 * dotProduct + 0.5, 0.0 ) );",
+				"directionalLightWeighting = mix( directionalLightWeighting, directionalLightWeightingHalf, wrapRGB );",
+
+				"#ifdef DOUBLE_SIDED",
+
+					"directionalLightWeightingBack = mix( directionalLightWeightingBack, directionalLightWeightingHalfBack, wrapRGB );",
+
+				"#endif",
+
+			"#endif",
+
+			"vLightFront += directionalLightColor[ i ] * directionalLightWeighting;",
+
+			"#ifdef DOUBLE_SIDED",
+
+				"vLightBack += directionalLightColor[ i ] * directionalLightWeightingBack;",
+
+			"#endif",
 
 		"}",
 
@@ -325,27 +363,54 @@ THREE.ShaderChunk = {
 					"lDistance = 1.0 - min( ( length( lVector ) / pointLightDistance[ i ] ), 1.0 );",
 
 				"lVector = normalize( lVector );",
+				"float dotProduct = dot( transformedNormal, lVector );",
 
-				"#ifdef WRAP_AROUND",
+				"vec3 pointLightWeighting = vec3( max( dotProduct, 0.0 ) );",
 
-					"float pointLightWeightingFull = max( dot( transformedNormal, lVector ), 0.0 );",
-					"float pointLightWeightingHalf = max( 0.5 * dot( transformedNormal, lVector ) + 0.5, 0.0 );",
+				"#ifdef DOUBLE_SIDED",
 
-					"vec3 pointLightWeighting = mix( vec3 ( pointLightWeightingFull ), vec3( pointLightWeightingHalf ), wrapRGB );",
+					"vec3 pointLightWeightingBack = vec3( max( -dotProduct, 0.0 ) );",
 
-				"#else",
+					"#ifdef WRAP_AROUND",
 
-					"float pointLightWeighting = max( dot( transformedNormal, lVector ), 0.0 );",
+						"vec3 pointLightWeightingHalfBack = vec3( max( -0.5 * dotProduct + 0.5, 0.0 ) );",
+
+					"#endif",
 
 				"#endif",
 
-				"vLightWeighting += pointLightColor[ i ] * pointLightWeighting * lDistance;",
+				"#ifdef WRAP_AROUND",
+
+					"vec3 pointLightWeightingHalf = vec3( max( 0.5 * dotProduct + 0.5, 0.0 ) );",
+					"pointLightWeighting = mix( pointLightWeighting, pointLightWeightingHalf, wrapRGB );",
+
+					"#ifdef DOUBLE_SIDED",
+
+						"pointLightWeightingBack = mix( pointLightWeightingBack, pointLightWeightingHalfBack, wrapRGB );",
+
+					"#endif",
+
+				"#endif",
+
+				"vLightFront += pointLightColor[ i ] * pointLightWeighting * lDistance;",
+
+				"#ifdef DOUBLE_SIDED",
+
+					"vLightBack += pointLightColor[ i ] * pointLightWeightingBack * lDistance;",
+
+				"#endif",
 
 			"}",
 
 		"#endif",
 
-		"vLightWeighting = vLightWeighting * diffuse + ambient * ambientLightColor;",
+		"vLightFront = vLightFront * diffuse + ambient * ambientLightColor;",
+
+		"#ifdef DOUBLE_SIDED",
+
+			"vLightBack = vLightBack * diffuse + ambient * ambientLightColor;",
+
+		"#endif",
 
 	].join("\n"),
 
@@ -434,6 +499,12 @@ THREE.ShaderChunk = {
 		"vec3 normal = normalize( vNormal );",
 		"vec3 viewPosition = normalize( vViewPosition );",
 
+		"#ifdef DOUBLE_SIDED",
+
+			"normal = normal * ( -1.0 + 2.0 * float( gl_FrontFacing ) );",
+
+		"#endif",
+
 		"#if MAX_POINT_LIGHTS > 0",
 
 			"vec3 pointDiffuse  = vec3( 0.0 );",
@@ -461,16 +532,18 @@ THREE.ShaderChunk = {
 
 				// diffuse
 
+				"float dotProduct = dot( normal, lVector );",
+
 				"#ifdef WRAP_AROUND",
 
-					"float pointDiffuseWeightFull = max( dot( normal, lVector ), 0.0 );",
-					"float pointDiffuseWeightHalf = max( 0.5 * dot( normal, lVector ) + 0.5, 0.0 );",
+					"float pointDiffuseWeightFull = max( dotProduct, 0.0 );",
+					"float pointDiffuseWeightHalf = max( 0.5 * dotProduct + 0.5, 0.0 );",
 
 					"vec3 pointDiffuseWeight = mix( vec3 ( pointDiffuseWeightFull ), vec3( pointDiffuseWeightHalf ), wrapRGB );",
 
 				"#else",
 
-					"float pointDiffuseWeight = max( dot( normal, lVector ), 0.0 );",
+					"float pointDiffuseWeight = max( dotProduct, 0.0 );",
 
 				"#endif",
 
@@ -509,16 +582,18 @@ THREE.ShaderChunk = {
 
 				// diffuse
 
+				"float dotProduct = dot( normal, dirVector );",
+
 				"#ifdef WRAP_AROUND",
 
-					"float dirDiffuseWeightFull = max( dot( normal, dirVector ), 0.0 );",
-					"float dirDiffuseWeightHalf = max( 0.5 * dot( normal, dirVector ) + 0.5, 0.0 );",
+					"float dirDiffuseWeightFull = max( dotProduct, 0.0 );",
+					"float dirDiffuseWeightHalf = max( 0.5 * dotProduct + 0.5, 0.0 );",
 
 					"vec3 dirDiffuseWeight = mix( vec3( dirDiffuseWeightFull ), vec3( dirDiffuseWeightHalf ), wrapRGB );",
 
 				"#else",
 
-					"float dirDiffuseWeight = max( dot( normal, dirVector ), 0.0 );",
+					"float dirDiffuseWeight = max( dotProduct, 0.0 );",
 
 				"#endif",
 
@@ -669,10 +744,7 @@ THREE.ShaderChunk = {
 			"gl_Position  = ( boneGlobalMatrices[ int( skinIndex.x ) ] * skinVertexA ) * skinWeight.x;",
 			"gl_Position += ( boneGlobalMatrices[ int( skinIndex.y ) ] * skinVertexB ) * skinWeight.y;",
 
-			// this doesn't work, no idea why
-			//"gl_Position  = projectionMatrix * cameraInverseMatrix * objectMatrix * gl_Position;",
-
-			"gl_Position  = projectionMatrix * viewMatrix * objectMatrix * gl_Position;",
+			"gl_Position  = projectionMatrix * modelViewMatrix * gl_Position;",
 
 		"#endif"
 
@@ -684,7 +756,15 @@ THREE.ShaderChunk = {
 
 		"#ifdef USE_MORPHTARGETS",
 
+			"#ifndef USE_MORPHNORMALS",
+
 			"uniform float morphTargetInfluences[ 8 ];",
+
+			"#else",
+
+			"uniform float morphTargetInfluences[ 4 ];",
+
+			"#endif",
 
 		"#endif"
 
@@ -694,15 +774,21 @@ THREE.ShaderChunk = {
 
 		"#ifdef USE_MORPHTARGETS",
 
-			"vec3 morphed = vec3( 0.0, 0.0, 0.0 );",
+			"vec3 morphed = vec3( 0.0 );",
 			"morphed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];",
 			"morphed += ( morphTarget1 - position ) * morphTargetInfluences[ 1 ];",
 			"morphed += ( morphTarget2 - position ) * morphTargetInfluences[ 2 ];",
 			"morphed += ( morphTarget3 - position ) * morphTargetInfluences[ 3 ];",
+
+			"#ifndef USE_MORPHNORMALS",
+
 			"morphed += ( morphTarget4 - position ) * morphTargetInfluences[ 4 ];",
 			"morphed += ( morphTarget5 - position ) * morphTargetInfluences[ 5 ];",
 			"morphed += ( morphTarget6 - position ) * morphTargetInfluences[ 6 ];",
 			"morphed += ( morphTarget7 - position ) * morphTargetInfluences[ 7 ];",
+
+			"#endif",
+
 			"morphed += position;",
 
 			"gl_Position = projectionMatrix * modelViewMatrix * vec4( morphed, 1.0 );",
@@ -719,6 +805,29 @@ THREE.ShaderChunk = {
 			"gl_Position = projectionMatrix * mvPosition;",
 
 		"#endif",
+		"#endif"
+
+	].join("\n"),
+
+	morphnormal_vertex: [
+
+		"#ifdef USE_MORPHNORMALS",
+
+			"vec3 morphedNormal = vec3( 0.0 );",
+
+			"morphedNormal +=  ( morphNormal0 - normal ) * morphTargetInfluences[ 0 ];",
+			"morphedNormal +=  ( morphNormal1 - normal ) * morphTargetInfluences[ 1 ];",
+			"morphedNormal +=  ( morphNormal2 - normal ) * morphTargetInfluences[ 2 ];",
+			"morphedNormal +=  ( morphNormal3 - normal ) * morphTargetInfluences[ 3 ];",
+
+			"morphedNormal += normal;",
+
+			"vec3 transformedNormal = normalMatrix * morphedNormal;",
+
+		"#else",
+
+			"vec3 transformedNormal = normalMatrix * normal;",
+
 		"#endif"
 
 	].join("\n"),
@@ -757,123 +866,158 @@ THREE.ShaderChunk = {
 
 		"#ifdef USE_SHADOWMAP",
 
-			"vec3 shadowColor = vec3( 1.0 );",
+			"#ifdef SHADOWMAP_DEBUG",
+
+				"vec3 frustumColors[3];",
+				"frustumColors[0] = vec3( 1.0, 0.5, 0.0 );",
+				"frustumColors[1] = vec3( 0.0, 1.0, 0.8 );",
+				"frustumColors[2] = vec3( 0.0, 0.5, 1.0 );",
+
+			"#endif",
+
+			"#ifdef SHADOWMAP_CASCADE",
+
+				"int inFrustumCount = 0;",
+
+			"#endif",
+
 			"float fDepth;",
+			"vec3 shadowColor = vec3( 1.0 );",
 
 			"for( int i = 0; i < MAX_SHADOWS; i ++ ) {",
 
 				"vec3 shadowCoord = vShadowCoord[ i ].xyz / vShadowCoord[ i ].w;",
 
+				// "if ( something && something )" 		 breaks ATI OpenGL shader compiler
+				// "if ( all( something, something ) )"  using this instead
+
+				"bvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );",
+				"bool inFrustum = all( inFrustumVec );",
+
+				// don't shadow pixels outside of light frustum
+				// use just first frustum (for cascades)
 				// don't shadow pixels behind far plane of light frustum
 
-				"if ( shadowCoord.z <= 1.0 ) {",
+				"#ifdef SHADOWMAP_CASCADE",
+
+					"inFrustumCount += int( inFrustum );",
+					"bvec3 frustumTestVec = bvec3( inFrustum, inFrustumCount == 1, shadowCoord.z <= 1.0 );",
+
+				"#else",
+
+					"bvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );",
+
+				"#endif",
+
+				"bool frustumTest = all( frustumTestVec );",
+
+				"if ( frustumTest ) {",
 
 					"shadowCoord.z += shadowBias[ i ];",
 
-					// using "if ( all )" for ATI OpenGL shader compiler
-					// "if ( something && something )" breaks it
+					"#ifdef SHADOWMAP_SOFT",
 
-					// don't shadow pixels outside of light frustum
+						// Percentage-close filtering
+						// (9 pixel kernel)
+						// http://fabiensanglard.net/shadowmappingPCF/
 
-					"bvec4 shadowTest = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );",
+						"float shadow = 0.0;",
 
-					"if ( all( shadowTest ) ) {",
+						/*
+						// nested loops breaks shader compiler / validator on some ATI cards when using OpenGL
+						// must enroll loop manually
 
-						"#ifdef SHADOWMAP_SOFT",
+						"for ( float y = -1.25; y <= 1.25; y += 1.25 )",
+							"for ( float x = -1.25; x <= 1.25; x += 1.25 ) {",
 
-							// Percentage-close filtering
-							// (9 pixel kernel)
-							// http://fabiensanglard.net/shadowmappingPCF/
+								"vec4 rgbaDepth = texture2D( shadowMap[ i ], vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy );",
 
-							"float shadow = 0.0;",
+								// doesn't seem to produce any noticeable visual difference compared to simple "texture2D" lookup
+								//"vec4 rgbaDepth = texture2DProj( shadowMap[ i ], vec4( vShadowCoord[ i ].w * ( vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy ), 0.05, vShadowCoord[ i ].w ) );",
 
-							/*
-							// this breaks shader compiler / validator on some ATI cards when using OpenGL
-							// must enroll loop manually
+								"float fDepth = unpackDepth( rgbaDepth );",
 
-							"for ( float y = -1.25; y <= 1.25; y += 1.25 )",
-								"for ( float x = -1.25; x <= 1.25; x += 1.25 ) {",
+								"if ( fDepth < shadowCoord.z )",
+									"shadow += 1.0;",
 
-									"vec4 rgbaDepth = texture2D( shadowMap[ i ], vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy );",
+						"}",
 
-									// doesn't seem to produce any noticeable visual difference compared to simple "texture2D" lookup
-									//"vec4 rgbaDepth = texture2DProj( shadowMap[ i ], vec4( vShadowCoord[ i ].w * ( vec2( x * xPixelOffset, y * yPixelOffset ) + shadowCoord.xy ), 0.05, vShadowCoord[ i ].w ) );",
+						"shadow /= 9.0;",
 
-									"float fDepth = unpackDepth( rgbaDepth );",
+						*/
 
-									"if ( fDepth < shadowCoord.z )",
-										"shadow += 1.0;",
+						"const float shadowDelta = 1.0 / 9.0;",
 
-							"}",
+						"float xPixelOffset = 1.0 / shadowMapSize[ i ].x;",
+						"float yPixelOffset = 1.0 / shadowMapSize[ i ].y;",
 
-							"shadow /= 9.0;",
+						"float dx0 = -1.25 * xPixelOffset;",
+						"float dy0 = -1.25 * yPixelOffset;",
+						"float dx1 = 1.25 * xPixelOffset;",
+						"float dy1 = 1.25 * yPixelOffset;",
 
-							*/
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy0 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"const float shadowDelta = 1.0 / 9.0;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"float xPixelOffset = 1.0 / shadowMapSize[ i ].x;",
-							"float yPixelOffset = 1.0 / shadowMapSize[ i ].y;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy0 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"float dx0 = -1.25 * xPixelOffset;",
-							"float dy0 = -1.25 * yPixelOffset;",
-							"float dx1 = 1.25 * xPixelOffset;",
-							"float dy1 = 1.25 * yPixelOffset;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy0 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy0 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy0 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy1 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, 0.0 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy1 ) ) );",
+						"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, 0.0 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"shadowColor = shadowColor * vec3( ( 1.0 - shadowDarkness[ i ] * shadow ) );",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx0, dy1 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+					"#else",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( 0.0, dy1 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"vec4 rgbaDepth = texture2D( shadowMap[ i ], shadowCoord.xy );",
+						"float fDepth = unpackDepth( rgbaDepth );",
 
-							"fDepth = unpackDepth( texture2D( shadowMap[ i ], shadowCoord.xy + vec2( dx1, dy1 ) ) );",
-							"if ( fDepth < shadowCoord.z ) shadow += shadowDelta;",
+						"if ( fDepth < shadowCoord.z )",
 
-							"shadowColor = shadowColor * vec3( ( 1.0 - shadowDarkness[ i ] * shadow ) );",
+							// spot with multiple shadows is darker
 
-						"#else",
+							"shadowColor = shadowColor * vec3( 1.0 - shadowDarkness[ i ] );",
 
-							"vec4 rgbaDepth = texture2D( shadowMap[ i ], shadowCoord.xy );",
-							"float fDepth = unpackDepth( rgbaDepth );",
+							// spot with multiple shadows has the same color as single shadow spot
 
-							"if ( fDepth < shadowCoord.z )",
+							//"shadowColor = min( shadowColor, vec3( shadowDarkness[ i ] ) );",
 
-								// spot with multiple shadows is darker
-
-								"shadowColor = shadowColor * vec3( 1.0 - shadowDarkness[ i ] );",
-
-								// spot with multiple shadows has the same color as single shadow spot
-
-								//"shadowColor = min( shadowColor, vec3( shadowDarkness[ i ] ) );",
-
-						"#endif",
-
-					"}",
+					"#endif",
 
 				"}",
 
 
-				// uncomment to see light frustum boundaries
-				//"if ( !( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) )",
-				//	"gl_FragColor.xyz =  gl_FragColor.xyz * vec3( 1.0, 0.0, 0.0 );",
+				"#ifdef SHADOWMAP_DEBUG",
+
+					"#ifdef SHADOWMAP_CASCADE",
+
+						"if ( inFrustum && inFrustumCount == 1 ) gl_FragColor.xyz *= frustumColors[ i ];",
+
+					"#else",
+
+						"if ( inFrustum ) gl_FragColor.xyz *= frustumColors[ i ];",
+
+					"#endif",
+
+				"#endif",
 
 			"}",
 
@@ -1250,7 +1394,13 @@ THREE.ShaderLib = {
 
 		vertexShader: [
 
-			"varying vec3 vLightWeighting;",
+			"varying vec3 vLightFront;",
+
+			"#ifdef DOUBLE_SIDED",
+
+				"varying vec3 vLightBack;",
+
+			"#endif",
 
 			THREE.ShaderChunk[ "map_pars_vertex" ],
 			THREE.ShaderChunk[ "lightmap_pars_vertex" ],
@@ -1270,7 +1420,7 @@ THREE.ShaderLib = {
 				THREE.ShaderChunk[ "envmap_vertex" ],
 				THREE.ShaderChunk[ "color_vertex" ],
 
-				"vec3 transformedNormal = normalize( normalMatrix * normal );",
+				THREE.ShaderChunk[ "morphnormal_vertex" ],
 
 				THREE.ShaderChunk[ "lights_lambert_vertex" ],
 				THREE.ShaderChunk[ "skinning_vertex" ],
@@ -1287,7 +1437,13 @@ THREE.ShaderLib = {
 
 			"uniform float opacity;",
 
-			"varying vec3 vLightWeighting;",
+			"varying vec3 vLightFront;",
+
+			"#ifdef DOUBLE_SIDED",
+
+				"varying vec3 vLightBack;",
+
+			"#endif",
 
 			THREE.ShaderChunk[ "color_pars_fragment" ],
 			THREE.ShaderChunk[ "map_pars_fragment" ],
@@ -1303,7 +1459,21 @@ THREE.ShaderLib = {
 				THREE.ShaderChunk[ "map_fragment" ],
 				THREE.ShaderChunk[ "alphatest_fragment" ],
 
-				"gl_FragColor.xyz = gl_FragColor.xyz * vLightWeighting;",
+				"#ifdef DOUBLE_SIDED",
+
+					//"float isFront = float( gl_FrontFacing );",
+					//"gl_FragColor.xyz *= isFront * vLightFront + ( 1.0 - isFront ) * vLightBack;",
+
+					"if ( gl_FrontFacing )",
+						"gl_FragColor.xyz *= vLightFront;",
+					"else",
+						"gl_FragColor.xyz *= vLightBack;",
+
+				"#else",
+
+					"gl_FragColor.xyz *= vLightFront;",
+
+				"#endif",
 
 				THREE.ShaderChunk[ "lightmap_fragment" ],
 				THREE.ShaderChunk[ "color_fragment" ],
@@ -1369,7 +1539,8 @@ THREE.ShaderLib = {
 
 				"vViewPosition = -mvPosition.xyz;",
 
-				"vec3 transformedNormal = normalMatrix * normal;",
+				THREE.ShaderChunk[ "morphnormal_vertex" ],
+
 				"vNormal = transformedNormal;",
 
 				THREE.ShaderChunk[ "lights_phong_vertex" ],

@@ -103,7 +103,6 @@ THREE.Vector2.prototype = {
 
 	},
 
-
 	negate: function() {
 
 		return this.multiplyScalar( -1 );
@@ -147,16 +146,30 @@ THREE.Vector2.prototype = {
 
 	},
 
-
 	setLength: function ( l ) {
 
 		return this.normalize().multiplyScalar( l );
 
 	},
 
+	lerpSelf: function ( v, alpha ) {
+
+		this.x += ( v.x - this.x ) * alpha;
+		this.y += ( v.y - this.y ) * alpha;
+
+		return this;
+
+	},
+
 	equals: function( v ) {
 
 		return ( ( v.x === this.x ) && ( v.y === this.y ) );
+
+	},
+
+	isZero: function () {
+
+		return ( this.lengthSq() < 0.0001 /* almostZero */ );
 
 	}
 

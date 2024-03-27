@@ -37,7 +37,7 @@ THREE.MeshLambertMaterial = function ( parameters ) {
 	parameters = parameters || {};
 
 	this.color = parameters.color !== undefined ? new THREE.Color( parameters.color ) : new THREE.Color( 0xffffff );
-	this.ambient = parameters.ambient !== undefined ? new THREE.Color( parameters.ambient ) : new THREE.Color( 0x050505 );
+	this.ambient = parameters.ambient !== undefined ? new THREE.Color( parameters.ambient ) : new THREE.Color( 0xffffff );
 
 	this.wrapAround = parameters.wrapAround !== undefined ? parameters.wrapAround: false;
 	this.wrapRGB = new THREE.Vector3( 1, 1, 1 );
@@ -64,6 +64,7 @@ THREE.MeshLambertMaterial = function ( parameters ) {
 
 	this.skinning = parameters.skinning !== undefined ? parameters.skinning : false;
 	this.morphTargets = parameters.morphTargets !== undefined ? parameters.morphTargets : false;
+	this.morphNormals = parameters.morphNormals !== undefined ? parameters.morphNormals : false;
 
 };
 

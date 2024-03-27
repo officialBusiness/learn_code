@@ -17,61 +17,53 @@ THREE.JSONLoader.prototype.load = function ( url, callback, texturePath ) {
 
 	var worker, scope = this;
 
-	if ( url instanceof Object ) {
-
-		console.warn( 'DEPRECATED: JSONLoader( parameters ) is now JSONLoader( url, callback, texturePath ).' );
-
-		var parameters = url;
-
-		url = parameters.model;
-		callback = parameters.callback;
-		texturePath = parameters.texture_path;
-
-	}
-
-	texturePath = texturePath ? texturePath : this.extractUrlbase( url );
+	texturePath = texturePath ? texturePath : this.extractUrlBase( url );
 
 	this.onLoadStart();
 	this.loadAjaxJSON( this, url, callback, texturePath );
 
 };
 
-THREE.JSONLoader.prototype.loadAjaxJSON = function( context, url, callback, texturePath, callbackProgress ) {
+THREE.JSONLoader.prototype.loadAjaxJSON = function ( context, url, callback, texturePath, callbackProgress ) {
 
 	var xhr = new XMLHttpRequest();
 
 	var length = 0;
 
-	xhr.onreadystatechange = function() {
+	xhr.onreadystatechange = function () {
 
-		if ( xhr.readyState == 4 ) {
+		if ( xhr.readyState === xhr.DONE ) {
 
-			if ( xhr.status == 200 || xhr.status == 0 ) {
+			if ( xhr.status === 200 || xhr.status === 0 ) {
 
-				try {
+				if ( xhr.responseText ) {
 
-					var jsonObject = JSON.parse( xhr.responseText );
+					var json = JSON.parse( xhr.responseText );
+					context.createModel( json, callback, texturePath );
 
-				} catch ( error ) {
+				} else {
 
-					console.warn( "DEPRECATED: [" + url + "] seems to be using old model format" );
+					console.warn( "THREE.JSONLoader: [" + url + "] seems to be unreachable or file there is empty" );
 
 				}
 
-				context.createModel( jsonObject, callback, texturePath );
+				// in context of more complex asset initialization
+				// do not block on single failed file
+				// maybe should go even one more level up
+
 				context.onLoadComplete();
 
 			} else {
 
-				console.error( "Couldn't load [" + url + "] [" + xhr.status + "]" );
+				console.error( "THREE.JSONLoader: Couldn't load [" + url + "] [" + xhr.status + "]" );
 
 			}
 
-		} else if ( xhr.readyState == 3 ) {
+		} else if ( xhr.readyState === xhr.LOADING ) {
 
 			if ( callbackProgress ) {
 
-				if ( length == 0 ) {
+				if ( length === 0 ) {
 
 					length = xhr.getResponseHeader( "Content-Length" );
 
@@ -81,7 +73,7 @@ THREE.JSONLoader.prototype.loadAjaxJSON = function( context, url, callback, text
 
 			}
 
-		} else if ( xhr.readyState == 2 ) {
+		} else if ( xhr.readyState === xhr.HEADERS_RECEIVED ) {
 
 			length = xhr.getResponseHeader( "Content-Length" );
 
@@ -96,13 +88,13 @@ THREE.JSONLoader.prototype.loadAjaxJSON = function( context, url, callback, text
 
 };
 
-THREE.JSONLoader.prototype.createModel = function ( json, callback, texture_path ) {
+THREE.JSONLoader.prototype.createModel = function ( json, callback, texturePath ) {
 
 	var scope = this,
 	geometry = new THREE.Geometry(),
 	scale = ( json.scale !== undefined ) ? 1.0 / json.scale : 1.0;
 
-	this.initMaterials( geometry, json.materials, texture_path );
+	this.initMaterials( geometry, json.materials, texturePath );
 
 	parseModel( scale );
 
@@ -117,18 +109,11 @@ THREE.JSONLoader.prototype.createModel = function ( json, callback, texture_path
 
 	function parseModel( scale ) {
 
-		if ( json.metadata === undefined || json.metadata.formatVersion === undefined || json.metadata.formatVersion !== 3 ) {
-
-			console.error( 'Deprecated file format.' );
-			return;
-
-		}
-
 		function isBitSet( value, position ) {
 
 			return value & ( 1 << position );
 
-		};
+		}
 
 		var i, j, fi,
 
@@ -386,7 +371,7 @@ THREE.JSONLoader.prototype.createModel = function ( json, callback, texture_path
 
 			var i, l, v, vl, x, y, z, dstVertices, srcVertices;
 
-			for ( i = 0, l = json.morphTargets.length; i < l; i++ ) {
+			for ( i = 0, l = json.morphTargets.length; i < l; i ++ ) {
 
 				geometry.morphTargets[ i ] = {};
 				geometry.morphTargets[ i ].name = json.morphTargets[ i ].name;
@@ -394,7 +379,6 @@ THREE.JSONLoader.prototype.createModel = function ( json, callback, texture_path
 
 				dstVertices = geometry.morphTargets[ i ].vertices;
 				srcVertices = json.morphTargets [ i ].vertices;
-
 
 				for( v = 0, vl = srcVertices.length; v < vl; v += 3 ) {
 

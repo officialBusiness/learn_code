@@ -21,35 +21,18 @@ THREE.SceneLoader.prototype.load = function( url, callbackFinished ) {
 
 	var xhr = new XMLHttpRequest();
 
-	xhr.onreadystatechange = function() {
+	xhr.onreadystatechange = function () {
 
 		if ( xhr.readyState == 4 ) {
 
 			if ( xhr.status == 200 || xhr.status == 0 ) {
 
-				try {
-
-					var json = JSON.parse( xhr.responseText );
-
-					if ( json.metadata === undefined || json.metadata.formatVersion === undefined || json.metadata.formatVersion !== 3 ) {
-
-						console.error( 'Deprecated file format.' );
-						return;
-
-					}
-
-					context.createScene( json, callbackFinished, url );
-
-				} catch ( error ) {
-
-					console.error( error );
-					console.warn( "DEPRECATED: [" + url + "] seems to be using old model format" );
-
-				}
+				var json = JSON.parse( xhr.responseText );
+				context.createScene( json, callbackFinished, url );
 
 			} else {
 
-				console.error( "Couldn't load [" + url + "] [" + xhr.status + "]" );
+				console.error( "THREE.SceneLoader: Couldn't load [" + url + "] [" + xhr.status + "]" );
 
 			}
 
@@ -68,13 +51,13 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 
 	var scope = this;
 
-	var urlBase = THREE.Loader.prototype.extractUrlbase( url );
+	var urlBase = THREE.Loader.prototype.extractUrlBase( url );
 
 	var dg, dm, dd, dl, dc, df, dt,
 		g, o, m, l, d, p, r, q, s, c, t, f, tt, pp, u,
 		geometry, material, camera, fog,
 		texture, images,
-		materials, light,
+		light,
 		data, binLoader, jsonLoader,
 		counter_models, counter_textures,
 		total_models, total_textures,
@@ -102,29 +85,6 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 		empties: {}
 
 	};
-
-	// find out if there are some colliders
-
-	var hasColliders = false;
-
-	for( dd in data.objects ) {
-
-		o = data.objects[ dd ];
-
-		if ( o.meshCollider )  {
-
-			hasColliders = true;
-			break;
-
-		}
-
-	}
-
-	if ( hasColliders ) {
-
-		result.scene.collisions = new THREE.CollisionSystem();
-
-	}
 
 	if ( data.transform ) {
 
@@ -183,13 +143,8 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 						// not anymore support for multiple materials
 						// shouldn't really be array
 
-						for( i = 0; i < o.materials.length; i ++ ) {
-
-							materials = result.materials[ o.materials[ i ] ];
-
-							hasNormals = materials instanceof THREE.ShaderMaterial;
-
-						}
+						material = result.materials[ o.materials[ 0 ] ];
+						hasNormals = material instanceof THREE.ShaderMaterial;
 
 						if ( hasNormals ) {
 
@@ -206,22 +161,22 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 
 						q = 0;
 
-						if ( materials.length == 0 ) {
+						if ( o.materials.length == 0 ) {
 
-							materials = new THREE.MeshFaceMaterial();
+							material = new THREE.MeshFaceMaterial();
 
 						}
 
 						// dirty hack to handle meshes with multiple materials
 						// just use face materials defined in model
 
-						if ( materials.length > 1 ) {
+						if ( o.materials.length > 1 ) {
 
-							materials = new THREE.MeshFaceMaterial();
+							material = new THREE.MeshFaceMaterial();
 
 						}
 
-						object = new THREE.Mesh( geometry, materials );
+						object = new THREE.Mesh( geometry, material );
 						object.name = dd;
 						object.position.set( p[0], p[1], p[2] );
 
@@ -242,13 +197,6 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 						result.scene.add( object );
 
 						result.objects[ dd ] = object;
-
-						if ( o.meshCollider ) {
-
-							var meshCollider = THREE.CollisionUtils.MeshColliderWBox( object );
-							result.scene.collisions.colliders.push( meshCollider );
-
-						}
 
 						if ( o.castsShadow ) {
 
@@ -414,7 +362,7 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 			camera = new THREE.OrthographicCamera( c.left, c.right, c.top, c.bottom, c.near, c.far );
 
 		}
-		
+
 		p = c.position;
 		t = c.target;
 		u = c.up;
@@ -422,7 +370,7 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 		camera.position.set( p[0], p[1], p[2] );
 		camera.target = new THREE.Vector3( t[0], t[1], t[2] );
 		if ( u ) camera.up.set( u[0], u[1], u[2] );
-		
+
 		result.cameras[ dc ] = camera;
 
 	}
@@ -562,7 +510,7 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 
 		} else if ( g.type == "icosahedron" ) {
 
-			geometry = new THREE.IcosahedronGeometry( g.subdivisions );
+			geometry = new THREE.IcosahedronGeometry( g.radius, g.subdivisions );
 			result.geometries[ dg ] = geometry;
 
 		} else if ( g.type == "bin_mesh" ) {
@@ -577,6 +525,9 @@ THREE.SceneLoader.prototype.createScene = function ( json, callbackFinished, url
 
 			var modelJson = data.embeds[ g.id ],
 				texture_path = "";
+			
+			// Pass metadata along to jsonLoader so it knows the format version.
+			modelJson.metadata = data.metadata;
 
 			if ( modelJson ) {
 

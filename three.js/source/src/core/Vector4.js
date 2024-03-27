@@ -36,6 +36,8 @@ THREE.Vector4.prototype = {
 		this.z = v.z;
 		this.w = ( v.w !== undefined ) ? v.w : 1;
 
+		return this;
+
 	},
 
 	clone: function () {
@@ -158,7 +160,6 @@ THREE.Vector4.prototype = {
 		return this.normalize().multiplyScalar( l );
 
 	},
-
 
 	lerpSelf: function ( v, alpha ) {
 
