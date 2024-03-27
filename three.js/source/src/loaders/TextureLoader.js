@@ -2,7 +2,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-THREE.ImageLoader = function () {
+THREE.TextureLoader = function () {
 
 	THREE.EventTarget.call( this );
 
@@ -10,26 +10,29 @@ THREE.ImageLoader = function () {
 
 };
 
-THREE.ImageLoader.prototype = {
+THREE.TextureLoader.prototype = {
 
-	constructor: THREE.ImageLoader,
+	constructor: THREE.TextureLoader,
 
-	load: function ( url, image ) {
+	load: function ( url ) {
 
 		var scope = this;
 
-		if ( image === undefined ) image = new Image();
-
+		var image = new Image();
+		
 		image.addEventListener( 'load', function () {
 
-			scope.dispatchEvent( { type: 'load', content: image } );
+			var texture = new THREE.Texture( image );
+			texture.needsUpdate = true;
+
+			scope.dispatchEvent( { type: 'load', content: texture } );
 
 		}, false );
 
 		image.addEventListener( 'error', function () {
-
+		
 			scope.dispatchEvent( { type: 'error', message: 'Couldn\'t load URL [' + url + ']' } );
-
+		
 		}, false );
 
 		if ( scope.crossOrigin ) image.crossOrigin = scope.crossOrigin;
