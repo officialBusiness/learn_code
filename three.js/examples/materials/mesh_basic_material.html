@@ -27,7 +27,6 @@
 
 		<script type="text/javascript" src="../../source/src/core/Clock.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Color.js"></script>
-		<script type="text/javascript" src="../../source/src/core/Edge.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face3.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Face4.js"></script>
 		<script type="text/javascript" src="../../source/src/core/Frustum.js"></script>
@@ -48,11 +47,6 @@
 
 		<script type="text/javascript" src="../../source/src/extras/cameras/CombinedCamera.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/cameras/CubeCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/FirstPersonCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/FlyCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/PathCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/RollCamera.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/cameras/TrackballCamera.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/controls/FirstPersonControls.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/controls/FlyControls.js"></script>
@@ -63,6 +57,8 @@
 		<script type="text/javascript" src="../../source/src/extras/core/BufferGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/Curve.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/CurvePath.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/core/EventTarget.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/core/Gyroscope.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/Path.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/Shape.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/core/TextPath.js"></script>
@@ -74,7 +70,9 @@
 		<script type="text/javascript" src="../../source/src/extras/geometries/LatheGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/OctahedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/PlaneGeometry.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/PolyhedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/SphereGeometry.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/geometries/TetrahedronGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/TextGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/TorusGeometry.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/geometries/TorusKnotGeometry.js"></script>
@@ -94,9 +92,9 @@
 		<script type="text/javascript" src="../../source/src/extras/objects/LensFlare.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/objects/MarchingCubes.js"></script>
 
-		<script type="text/javascript" src="../../source/src/extras/plugins/LensFlarePlugin.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/plugins/ShadowMapPlugin.js"></script>
-		<script type="text/javascript" src="../../source/src/extras/plugins/SpritePlugin.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/renderers/plugins/LensFlarePlugin.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/renderers/plugins/ShadowMapPlugin.js"></script>
+		<script type="text/javascript" src="../../source/src/extras/renderers/plugins/SpritePlugin.js"></script>
 
 		<script type="text/javascript" src="../../source/src/extras/renderers/AnaglyphWebGLRenderer.js"></script>
 		<script type="text/javascript" src="../../source/src/extras/renderers/CrosseyedWebGLRenderer.js"></script>
@@ -125,7 +123,6 @@
 		<script type="text/javascript" src="../../source/src/materials/MeshLambertMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshNormalMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/MeshPhongMaterial.js"></script>
-		<script type="text/javascript" src="../../source/src/materials/MeshShaderMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleBasicMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleCanvasMaterial.js"></script>
 		<script type="text/javascript" src="../../source/src/materials/ParticleDOMMaterial.js"></script>
@@ -279,7 +276,9 @@
 
 				const gui = new lil.GUI();
 
-				initMeshBasicMaterial(gui, meshBasicMaterial, 'meshBasicMaterial')
+				initMeshBasicMaterial(gui, meshBasicMaterial, 'meshBasicMaterial');
+
+				initTexture(gui, meshBasicMaterial.map, 'map').close();
 			}
 
 
@@ -320,6 +319,40 @@
 
 				materialFolder.add(material, 'skinning');
 				materialFolder.add(material, 'morphTargets');
+			}
+
+			// webglRenderer.gammaInput = true;
+
+			function initTexture(gui, texture, name){
+
+				const mapFolder = gui.addFolder(name);
+
+				// mapFolder.add(webglRenderer, 'gammaInput');
+
+				mapFolder.add(texture.offset, 'x', -2, 2).name('offset.x');
+				mapFolder.add(texture.offset, 'y', -2, 2).name('offset.y');
+
+				mapFolder.add(texture.repeat, 'x', -2, 2).name('repeat.x');
+				mapFolder.add(texture.repeat, 'y', -2, 2).name('repeat.y');
+
+				mapFolder.add(texture, 'wrapS', {
+					RepeatWrapping: THREE.RepeatWrapping,
+					ClampToEdgeWrapping: THREE.ClampToEdgeWrapping,
+					MirroredRepeatWrapping: THREE.MirroredRepeatWrapping,
+				});;
+				mapFolder.add(texture, 'wrapT', {
+					RepeatWrapping: THREE.RepeatWrapping,
+					ClampToEdgeWrapping: THREE.ClampToEdgeWrapping,
+					MirroredRepeatWrapping: THREE.MirroredRepeatWrapping,
+				});
+
+				texture._update = function(){
+					this.needsUpdate = true;
+				}
+
+				mapFolder.add(texture, '_update')
+
+				return mapFolder;
 			}
 
 			loop();
