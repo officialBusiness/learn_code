@@ -109,7 +109,7 @@ THREE.CTMLoader.prototype.load = function( url, callback, useWorker, useBuffers,
 
 				if ( useWorker ) {
 
-					var worker = new Worker( "js/ctm/CTMWorker.js" );
+					var worker = new Worker( "js/loaders/ctm/CTMWorker.js" );
 
 					worker.onmessage = function( event ) {
 
@@ -763,7 +763,7 @@ THREE.CTMLoader.prototype.createModelClassic = function ( file, callback ) {
 
 	function vertex ( scope, x, y, z ) {
 
-		scope.vertices.push( new THREE.Vertex( new THREE.Vector3( x, y, z ) ) );
+		scope.vertices.push( new THREE.Vector3( x, y, z ) );
 
 	};
 
