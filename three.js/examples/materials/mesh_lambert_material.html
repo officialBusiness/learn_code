@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../icon.png">
-		<title>skinned_mesh</title>
+		<title>mesh_lambert_material</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
@@ -178,25 +178,26 @@
 			});
 			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-
 			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
 			webglRenderer.domElement.id = 'renderCanvas';
 
 			document.body.appendChild( webglRenderer.domElement );
 
-
 			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
 			camera.fov = 75;
 			camera.aspect = document.body.clientWidth / document.body.clientHeight;
-			camera.near = 0.1;
-			camera.far = 1000
+			camera.near = 1;
+			camera.far = 10000;
 
-			camera.position.z = 50;
-			camera.position.x = 50;
+			camera.position.z = 500;
 
 			scene.add(camera);
 
+			var shpere = new THREE.SphereGeometry(
+				100,
+				8, 8
+			);
 
 			function nearest_pow2(n) {
 				var l = Math.log(n) / Math.LN2;
@@ -226,14 +227,22 @@
 				return texture;
 			}
 
+			var meshLambertMaterial = new THREE.MeshLambertMaterial({
 
-			var sprite = new THREE.Sprite( {
-				// map: addTexture('../assets/images/logo1.jpg'),
-				map: THREE.ImageUtils.loadTexture('../assets/images/logo1.jpg'),
-				useScreenCoordinates: true
-			} );
 
-			scene.add( sprite );
+			});
+
+			var mesh = new THREE.Mesh( shpere, meshLambertMaterial );
+
+			scene.add(mesh);
+
+			var pointLight = new THREE.PointLight(
+				0xffff00, 1, 0
+			);
+
+			pointLight.position.set(0, 500, 500);
+
+			scene.add(pointLight);
 
 			var stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -246,30 +255,42 @@
 
 				const gui = new lil.GUI();
 
-				initSprite(gui, sprite, 'sprite');
+				initMeshBasicMaterial(gui, meshLambertMaterial, 'meshLambertMaterial');
+
+				initLight(gui, pointLight, 'pointLight');
 			}
 
-			function initSprite(gui, sprite, name){
 
-				const spriteFolder = gui.addFolder(name);
+			function initMeshBasicMaterial(gui, material, name){
 
-				spriteFolder.add(sprite, 'useScreenCoordinates')
+				const materialFolder = gui.addFolder(name);
 
-				spriteFolder.add(sprite.position, 'x', -1000, 1000).name('position.x');
-				spriteFolder.add(sprite.position, 'y', -1000, 1000).name('position.y');
-				spriteFolder.add(sprite.position, 'z', -1000, 1000).name('position.z');
+				materialFolder.addColor(material, 'color');
 
-				spriteFolder.add(sprite.alignment, 'x', -2, 2).name('alignment.x');
-				spriteFolder.add(sprite.alignment, 'y', -2, 2).name('alignment.y');
+				materialFolder.add(material, 'wrapAround');
+				materialFolder.add(material.wrapRGB, 'x', 0, 1);
+				materialFolder.add(material.wrapRGB, 'y', 0, 1);
+				materialFolder.add(material.wrapRGB, 'z', 0, 1);
 
-				spriteFolder.add(sprite, 'affectedByDistance');
+			}
 
-				spriteFolder.add(sprite, 'rotation', -Math.PI, Math.PI)
+			function initLight(gui, pointLight, name){
+
+				const pointLightFolder = gui.addFolder(name);
+
+				pointLightFolder.addColor(pointLight, 'color');
+
+				pointLightFolder.add(pointLight.position, 'x', -1000, 1000);
+				pointLightFolder.add(pointLight.position, 'y', -1000, 1000);
+				pointLightFolder.add(pointLight.position, 'z', -1000, 1000);
+
 			}
 
 			loop();
 			function loop() {
 
+				// mesh.rotation.y += 0.001;
+				// mesh.updateMatrix();
 
 				webglRenderer.render( scene, camera );
 
