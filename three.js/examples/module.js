@@ -1,11 +1,15 @@
 
 // src
 
-// must
+// must pre
 
 import "../source/src/textures/Texture.js";
 
+import "../source/src/core/Vector2.js";
+
 import "../source/src/core/Vector3.js";
+
+import "../source/src/core/Vector4.js";
 
 import "../source/src/core/Matrix4.js";
 
@@ -18,6 +22,10 @@ import "../source/src/objects/Line.js";
 import "../source/src/core/Math.js";
 
 import "../source/src/extras/GeometryUtils.js";
+
+import "../source/src/core/Color.js";
+
+import "../source/src/renderers/WebGLShaders.js";
 
 // start
 
@@ -62,6 +70,7 @@ import "../source/src/extras/core/Gyroscope.js";
 import "../source/src/extras/core/Path.js";
 import "../source/src/extras/core/Shape.js";
 
+import "../source/src/extras/geometries/AsteriskGeometry.js";
 import "../source/src/extras/geometries/CircleGeometry.js";
 import "../source/src/extras/geometries/ConvexGeometry.js";
 import "../source/src/extras/geometries/CubeGeometry.js";
@@ -84,6 +93,10 @@ import "../source/src/extras/geometries/TubeGeometry.js";
 import "../source/src/extras/helpers/ArrowHelper.js";
 import "../source/src/extras/helpers/AxisHelper.js";
 import "../source/src/extras/helpers/CameraHelper.js";
+import "../source/src/extras/helpers/DirectionalLightHelper.js";
+import "../source/src/extras/helpers/HemisphereLightHelper.js";
+import "../source/src/extras/helpers/PointLightHelper.js";
+import "../source/src/extras/helpers/SpotLightHelper.js";
 
 import "../source/src/extras/modifiers/SubdivisionModifier.js";
 
@@ -115,7 +128,6 @@ import "../source/src/lights/SpotLight.js";
 
 import "../source/src/loaders/Loader.js";
 import "../source/src/loaders/BinaryLoader.js";
-import "../source/src/loaders/GeometryLoader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingMonitor.js";
@@ -124,6 +136,7 @@ import "../source/src/loaders/TextureLoader.js";
 
 import "../source/src/materials/Material.js";
 import "../source/src/materials/LineBasicMaterial.js";
+import "../source/src/materials/LineDashedMaterial.js";
 import "../source/src/materials/MeshBasicMaterial.js";
 import "../source/src/materials/MeshDepthMaterial.js";
 import "../source/src/materials/MeshFaceMaterial.js";
