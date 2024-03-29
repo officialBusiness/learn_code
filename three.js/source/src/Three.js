@@ -3,7 +3,7 @@
  * @author Larry Battle / http://bateru.com/news
  */
 
-var THREE = THREE || { REVISION: '53' };
+var THREE = THREE || { REVISION: '54' };
 
 self.console = self.console || {
 
@@ -81,6 +81,21 @@ String.prototype.trim = String.prototype.trim || function () {
 
 }() );
 
+// GL STATE CONSTANTS
+
+THREE.CullFaceNone = 0;
+THREE.CullFaceBack = 1;
+THREE.CullFaceFront = 2;
+THREE.CullFaceFrontBack = 3;
+
+THREE.FrontFaceDirectionCW = 0;
+THREE.FrontFaceDirectionCCW = 1;
+
+// SHADOWING TYPES
+
+THREE.BasicShadowMap = 0;
+THREE.PCFShadowMap = 1;
+THREE.PCFSoftShadowMap = 2;
 
 // MATERIAL CONSTANTS
 

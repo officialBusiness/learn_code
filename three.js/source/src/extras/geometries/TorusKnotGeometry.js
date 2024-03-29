@@ -9,14 +9,14 @@ THREE.TorusKnotGeometry = function ( radius, tube, radialSegments, tubularSegmen
 
 	var scope = this;
 
-	this.radius = radius || 200;
+	this.radius = radius || 100;
 	this.tube = tube || 40;
 	this.radialSegments = radialSegments || 64;
 	this.tubularSegments = tubularSegments || 8;
 	this.p = p || 2;
 	this.q = q || 3;
 	this.heightScale = heightScale || 1;
-	this.grid = new Array(this.radialSegments);
+	this.grid = new Array( this.radialSegments );
 
 	var tang = new THREE.Vector3();
 	var n = new THREE.Vector3();
@@ -67,10 +67,10 @@ THREE.TorusKnotGeometry = function ( radius, tube, radialSegments, tubularSegmen
 			var c = this.grid[ ip ][ jp ];
 			var d = this.grid[ i ][ jp ];
 
-			var uva = new THREE.UV( i / this.radialSegments, j / this.tubularSegments );
-			var uvb = new THREE.UV( ( i + 1 ) / this.radialSegments, j / this.tubularSegments );
-			var uvc = new THREE.UV( ( i + 1 ) / this.radialSegments, ( j + 1 ) / this.tubularSegments );
-			var uvd = new THREE.UV( i / this.radialSegments, ( j + 1 ) / this.tubularSegments );
+			var uva = new THREE.Vector2( i / this.radialSegments, j / this.tubularSegments );
+			var uvb = new THREE.Vector2( ( i + 1 ) / this.radialSegments, j / this.tubularSegments );
+			var uvc = new THREE.Vector2( ( i + 1 ) / this.radialSegments, ( j + 1 ) / this.tubularSegments );
+			var uvd = new THREE.Vector2( i / this.radialSegments, ( j + 1 ) / this.tubularSegments );
 
 			this.faces.push( new THREE.Face4( a, b, c, d ) );
 			this.faceVertexUvs[ 0 ].push( [ uva,uvb,uvc, uvd ] );
