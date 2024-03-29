@@ -45,7 +45,7 @@
 				new THREE.Vector3(-200, 200,  0 ),
 				new THREE.Vector3( 200, 200,  0 ),
 				new THREE.Vector3(-200,-200,  0 ),
-				new THREE.Vector3( 200,-200, -1 )
+				new THREE.Vector3( 200,-200,  0 )
 			);
 
 			plane.faces.push(
@@ -61,7 +61,7 @@
 						new THREE.UV(1, 0 )
 					]
 				]
-			]
+			];
 			plane.computeCentroids();
 			plane.computeFaceNormals();
 

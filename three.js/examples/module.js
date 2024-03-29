@@ -5,13 +5,15 @@
 
 import "../source/src/textures/Texture.js";
 
-import "../source/src/core/Vector2.js";
+import "../source/src/math/Vector2.js";
 
-import "../source/src/core/Vector3.js";
+import "../source/src/math/Vector3.js";
 
-import "../source/src/core/Vector4.js";
+import "../source/src/math/Vector4.js";
 
-import "../source/src/core/Matrix4.js";
+import "../source/src/math/Matrix3.js";
+
+import "../source/src/math/Matrix4.js";
 
 import "../source/src/core/Object3D.js";
 
@@ -19,13 +21,23 @@ import "../source/src/objects/Mesh.js";
 
 import "../source/src/objects/Line.js";
 
-import "../source/src/core/Math.js";
+import "../source/src/math/Math.js";
 
 import "../source/src/extras/GeometryUtils.js";
 
-import "../source/src/core/Color.js";
+import "../source/src/math/Color.js";
 
 import "../source/src/renderers/WebGLShaders.js";
+
+import "../source/src/math/Sphere.js";
+
+import "../source/src/math/Ray.js";
+
+import "../source/src/math/Plane.js";
+
+import "../source/src/math/Quaternion.js";
+
+import "../source/src/math/Frustum.js";
 
 // start
 
@@ -35,26 +47,13 @@ import "../source/src/cameras/PerspectiveCamera.js";
 
 import "../source/src/core/BufferGeometry.js";
 import "../source/src/core/Clock.js";
-import "../source/src/core/Color.js";
-import "../source/src/core/EventTarget.js";
+import "../source/src/core/EventDispatcher.js";
 import "../source/src/core/Face3.js";
 import "../source/src/core/Face4.js";
-import "../source/src/core/Frustum.js";
 import "../source/src/core/Geometry.js";
-import "../source/src/core/Math.js";
-import "../source/src/core/Matrix3.js";
-import "../source/src/core/Matrix4.js";
 import "../source/src/core/Object3D.js";
 import "../source/src/core/Projector.js";
-import "../source/src/core/Quaternion.js";
-import "../source/src/core/Ray.js";
-import "../source/src/core/Rectangle.js";
-import "../source/src/core/Spline.js";
-import "../source/src/core/UV.js";
-import "../source/src/core/Vector2.js";
-import "../source/src/core/Vector3.js";
-import "../source/src/core/Vector4.js";
-import "../source/src/core/Vertex.js";
+import "../source/src/core/Raycaster.js";
 
 import "../source/src/extras/animation/Animation.js";
 import "../source/src/extras/animation/AnimationHandler.js";
@@ -98,8 +97,6 @@ import "../source/src/extras/helpers/HemisphereLightHelper.js";
 import "../source/src/extras/helpers/PointLightHelper.js";
 import "../source/src/extras/helpers/SpotLightHelper.js";
 
-import "../source/src/extras/modifiers/SubdivisionModifier.js";
-
 import "../source/src/extras/objects/ImmediateRenderObject.js";
 import "../source/src/extras/objects/LensFlare.js";
 import "../source/src/extras/objects/MorphBlendMesh.js";
@@ -120,6 +117,7 @@ import "../source/src/extras/SceneUtils.js";
 import "../source/src/extras/ShaderUtils.js";
 
 import "../source/src/lights/Light.js";
+import "../source/src/lights/AreaLight.js";
 import "../source/src/lights/AmbientLight.js";
 import "../source/src/lights/DirectionalLight.js";
 import "../source/src/lights/HemisphereLight.js";
@@ -147,6 +145,26 @@ import "../source/src/materials/ParticleBasicMaterial.js";
 import "../source/src/materials/ParticleCanvasMaterial.js";
 import "../source/src/materials/ParticleDOMMaterial.js";
 import "../source/src/materials/ShaderMaterial.js";
+import "../source/src/materials/SpriteMaterial.js";
+
+import "../source/src/math/Box2.js";
+import "../source/src/math/Box3.js";
+import "../source/src/math/Color.js";
+import "../source/src/math/Frustum.js";
+import "../source/src/math/Math.js";
+import "../source/src/math/Matrix3.js";
+import "../source/src/math/Matrix4.js";
+import "../source/src/math/Plane.js";
+import "../source/src/math/Quaternion.js";
+import "../source/src/math/Ray.js";
+import "../source/src/math/Sphere.js";
+import "../source/src/math/Spline.js";
+import "../source/src/math/Triangle.js";
+import "../source/src/math/UV.js";
+import "../source/src/math/Vector2.js";
+import "../source/src/math/Vector3.js";
+import "../source/src/math/Vector4.js";
+import "../source/src/math/Vertex.js";
 
 import "../source/src/objects/Bone.js";
 import "../source/src/objects/Line.js";

@@ -89,13 +89,14 @@
 			}
 
 
-			var sprite = new THREE.Sprite( {
+			var sprite = new THREE.Sprite( new THREE.SpriteMaterial({
 				// map: addTexture('../../assets/images/logo1.jpg'),
 				map: THREE.ImageUtils.loadTexture('../../assets/images/logo1.jpg'),
 				useScreenCoordinates: false,
 				scaleByViewport: false,
-			} );
+			}) );
 
+			sprite.rotation3d = new THREE.Vector3(0, 0, 0);
 
 			scene.add( sprite );
 
@@ -115,27 +116,42 @@
 
 			function initSprite(gui, sprite, name){
 
-				const spriteFolder = gui.addFolder(name);
+				const
+					spriteFolder = gui.addFolder('sprite'),
 
-				spriteFolder.add(sprite, 'useScreenCoordinates')
+					materialFolder = gui.addFolder('material');
 
 				spriteFolder.add(sprite.position, 'x', -1000, 1000).name('position.x');
 				spriteFolder.add(sprite.position, 'y', -1000, 1000).name('position.y');
 				spriteFolder.add(sprite.position, 'z', -1000, 1000).name('position.z');
 
-				spriteFolder.add(sprite.alignment, 'x', -2, 2).name('alignment.x');
-				spriteFolder.add(sprite.alignment, 'y', -2, 2).name('alignment.y');
+				spriteFolder.add(sprite, 'rotation', -Math.PI, Math.PI);
 
-				spriteFolder.add(sprite.uvOffset, 'x', -2, 2).name('uvOffset.x');
-				spriteFolder.add(sprite.uvOffset, 'y', -2, 2).name('uvOffset.y');
+				spriteFolder.add(sprite.scale, 'x', -2, 2).name('scale.x');
+				spriteFolder.add(sprite.scale, 'y', -2, 2).name('scale.y');
 
-				spriteFolder.add(sprite, 'scaleByViewport');
 
-				spriteFolder.add(sprite, 'affectedByDistance');
+				materialFolder.add(sprite.material, 'useScreenCoordinates');
+				materialFolder.add(sprite.material, 'sizeAttenuation');
+				materialFolder.add(sprite.material, 'scaleByViewport');
 
-				spriteFolder.add(sprite, 'rotation', -Math.PI, Math.PI)
+				materialFolder.add(sprite.material.uvScale, 'x').name('uvScale.x');
+				materialFolder.add(sprite.material.uvScale, 'y').name('uvScale.y');
 
-				spriteFolder.add(sprite, 'mergeWith3D');
+				materialFolder.add(sprite.material.uvOffset, 'x').name('uvOffset.x');
+				materialFolder.add(sprite.material.uvOffset, 'y').name('uvOffset.y');
+
+				materialFolder.add(sprite.material.alignment, 'x').name('alignment.x');
+				materialFolder.add(sprite.material.alignment, 'y').name('alignment.y');
+
+				materialFolder.add(sprite.material, 'opacity', 0, 1);
+				materialFolder.addColor(sprite.material, 'color');
+
+				materialFolder.add(sprite.material, 'depthTest');
+
+				materialFolder.add(sprite.material, 'depthWrite');
+
+				materialFolder.add(sprite.material, 'alphaTest');
 			}
 
 			loop();
