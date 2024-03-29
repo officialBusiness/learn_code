@@ -1,4 +1,8 @@
 
+// src
+
+// must
+
 import "../source/src/textures/Texture.js";
 
 import "../source/src/core/Vector3.js";
@@ -10,6 +14,12 @@ import "../source/src/core/Object3D.js";
 import "../source/src/objects/Mesh.js";
 
 import "../source/src/objects/Line.js";
+
+import "../source/src/core/Math.js";
+
+import "../source/src/extras/GeometryUtils.js";
+
+// start
 
 import "../source/src/cameras/Camera.js";
 import "../source/src/cameras/OrthographicCamera.js";
@@ -45,13 +55,6 @@ import "../source/src/extras/animation/KeyFrameAnimation.js";
 
 import "../source/src/extras/cameras/CombinedCamera.js";
 import "../source/src/extras/cameras/CubeCamera.js";
-
-import "../source/src/extras/controls/FirstPersonControls.js";
-import "../source/src/extras/controls/FlyControls.js";
-import "../source/src/extras/controls/OrbitControls.js";
-import "../source/src/extras/controls/PathControls.js";
-import "../source/src/extras/controls/RollControls.js";
-import "../source/src/extras/controls/TrackballControls.js";
 
 import "../source/src/extras/core/Curve.js";
 import "../source/src/extras/core/CurvePath.js";
@@ -165,4 +168,42 @@ import "../source/src/textures/DataTexture.js";
 import "../source/src/textures/Texture.js";
 
 import "../libs/lil-gui/lil-gui.umd.min.js";
+
+// source/examples/jsm
+
+import '../source/examples/js/controls/FirstPersonControls.js';
+import '../source/examples/js/controls/FlyControls.js';
+import '../source/examples/js/controls/OrbitControls.js';
+import '../source/examples/js/controls/PathControls.js';
+import '../source/examples/js/controls/PointerLockControls.js';
+import '../source/examples/js/controls/FlyControls.js';
+import '../source/examples/js/controls/FirstPersonControls.js';
+import '../source/examples/js/controls/RollControls.js';
+import '../source/examples/js/controls/TrackballControls.js';
+
+import '../source/examples/js/effects/AnaglyphEffect.js';
+import '../source/examples/js/effects/AsciiEffect.js';
+import '../source/examples/js/effects/CrosseyedEffect.js';
+import '../source/examples/js/effects/ParallaxBarrierEffect.js';
+
+import '../source/examples/js/postprocessing/BloomPass.js';
+import '../source/examples/js/postprocessing/DotScreenPass.js';
+import '../source/examples/js/postprocessing/EffectComposer.js';
+import '../source/examples/js/postprocessing/FilmPass.js';
+import '../source/examples/js/postprocessing/MaskPass.js';
+import '../source/examples/js/postprocessing/RenderPass.js';
+import '../source/examples/js/postprocessing/SavePass.js';
+import '../source/examples/js/postprocessing/ShaderPass.js';
+import '../source/examples/js/postprocessing/TexturePass.js';
+
+import '../source/examples/js/renderers/CSS3DRenderer.js';
+import '../source/examples/js/renderers/DOMRenderer.js';
+import '../source/examples/js/renderers/SoftwareRenderer.js';
+import '../source/examples/js/renderers/SoftwareRenderer2.js';
+import '../source/examples/js/renderers/SoftwareRenderer3.js';
+
+
+import '../source/examples/js/shaders/CopyShader.js';
+
+
 

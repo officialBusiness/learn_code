@@ -10,7 +10,7 @@
 
 		<script type="text/javascript" src="../../../source/src/Three.js"></script>
 
-		<script type="text/javascript" src="../../../source/examples/js/Stats.js"></script>
+		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
 	</head>
 	<!--
 
@@ -33,11 +33,7 @@
 			document.body.appendChild( webglRenderer.domElement );
 
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100000 );
-			camera.fov = 75;
-			camera.aspect = document.body.clientWidth / document.body.clientHeight;
-			camera.near = 0.1;
-			camera.far = 2;
+			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 2 );
 
 			camera.position.z = 2;
 

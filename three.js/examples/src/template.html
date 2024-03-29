@@ -10,7 +10,7 @@
 
 		<script type="text/javascript" src="../../source/src/Three.js"></script>
 
-		<script type="text/javascript" src="../../source/examples/js/Stats.js"></script>
+		<script type="text/javascript" src="../../source/examples/js/libs/stats.min.js"></script>
 
 	</head>
 	<!--
@@ -34,7 +34,7 @@
 			document.body.appendChild( render.domElement );
 
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 10000 );
+			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 1000 );
 
 			camera.position.z = 100;
 			// camera.rotation.x = -Math.PI / 2;
