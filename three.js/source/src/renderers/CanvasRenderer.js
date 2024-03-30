@@ -450,64 +450,35 @@ THREE.CanvasRenderer = function ( parameters ) {
 		setOpacity( material.opacity );
 		setBlending( material.blending );
 
-		var width, height, scaleX, scaleY,
-		bitmap, bitmapWidth, bitmapHeight;
+		var scaleX = element.scale.x * _canvasWidthHalf;
+		var scaleY = element.scale.y * _canvasHeightHalf;
+
+		_elemBox.min.set( v1.x - ( scaleX * 0.5 ), v1.y - ( scaleY * 0.5 ) );
+		_elemBox.max.set( v1.x + ( scaleX * 0.5 ), v1.y + ( scaleY * 0.5 ) );
+
+		if ( _clipBox.isIntersectionBox( _elemBox ) === false ) {
+
+			_elemBox.makeEmpty();
+			return;
+
+		}
 
 		if ( material instanceof THREE.SpriteMaterial ||
 			 material instanceof THREE.ParticleSystemMaterial ) { // Backwards compatibility
 
-			if ( material.map.image !== undefined ) {
+			if ( material.map !== null ) {
 
-				bitmap = material.map.image;
-				bitmapWidth = bitmap.width >> 1;
-				bitmapHeight = bitmap.height >> 1;
-
-				scaleX = element.scale.x * _canvasWidthHalf;
-				scaleY = element.scale.y * _canvasHeightHalf;
-
-				width = scaleX * bitmapWidth;
-				height = scaleY * bitmapHeight;
-
-				// TODO: Rotations break this...
-
-				_elemBox.min.set( v1.x - width, v1.y - height );
-				_elemBox.max.set( v1.x + width, v1.y + height );
-
-				if ( _clipBox.isIntersectionBox( _elemBox ) === false ) {
-
-					_elemBox.makeEmpty();
-					return;
-
-				}
+				var bitmap = material.map.image;
 
 				_context.save();
 				_context.translate( v1.x, v1.y );
-				_context.rotate( - element.rotation );
+				_context.rotate( - material.rotation );
 				_context.scale( scaleX, - scaleY );
 
-				_context.translate( - bitmapWidth, - bitmapHeight );
-				_context.drawImage( bitmap, 0, 0 );
+				_context.drawImage( bitmap, 0, 0, bitmap.width, bitmap.height, - 0.5, - 0.5, 1, 1 );
 				_context.restore();
 
 			} else {
-
-				scaleX = element.object.scale.x;
-				scaleY = element.object.scale.y;
-
-				// TODO: Be able to disable this
-
-				scaleX *= element.scale.x * _canvasWidthHalf;
-				scaleY *= element.scale.y * _canvasHeightHalf;
-
-				_elemBox.min.set( v1.x - scaleX, v1.y - scaleY );
-				_elemBox.max.set( v1.x + scaleX, v1.y + scaleY );
-
-				if ( _clipBox.isIntersectionBox( _elemBox ) === false ) {
-
-					_elemBox.makeEmpty();
-					return;
-
-				}
 
 				setFillStyle( material.color.getStyle() );
 
@@ -515,35 +486,12 @@ THREE.CanvasRenderer = function ( parameters ) {
 				_context.translate( v1.x, v1.y );
 				_context.rotate( - element.rotation );
 				_context.scale( scaleX, scaleY );
-				_context.fillRect( -1, -1, 2, 2 );
+				_context.fillRect( - 0.5, - 0.5, 1, 1 );
 				_context.restore();
 
 			}
 
-			/* DEBUG
-			setStrokeStyle( 'rgb(255,255,0)' );
-			_context.beginPath();
-			_context.moveTo( v1.x - 10, v1.y );
-			_context.lineTo( v1.x + 10, v1.y );
-			_context.moveTo( v1.x, v1.y - 10 );
-			_context.lineTo( v1.x, v1.y + 10 );
-			_context.stroke();
-			*/
-
 		} else if ( material instanceof THREE.SpriteCanvasMaterial ) {
-
-			width = element.scale.x * _canvasWidthHalf;
-			height = element.scale.y * _canvasHeightHalf;
-
-			_elemBox.min.set( v1.x - width, v1.y - height );
-			_elemBox.max.set( v1.x + width, v1.y + height );
-
-			if ( _clipBox.isIntersectionBox( _elemBox ) === false ) {
-
-				_elemBox.makeEmpty();
-				return;
-
-			}
 
 			setStrokeStyle( material.color.getStyle() );
 			setFillStyle( material.color.getStyle() );
@@ -551,13 +499,23 @@ THREE.CanvasRenderer = function ( parameters ) {
 			_context.save();
 			_context.translate( v1.x, v1.y );
 			_context.rotate( - element.rotation );
-			_context.scale( width, height );
+			_context.scale( scaleX, scaleY );
 
 			material.program( _context );
 
 			_context.restore();
 
 		}
+
+		/* DEBUG
+		setStrokeStyle( 'rgb(255,255,0)' );
+		_context.beginPath();
+		_context.moveTo( v1.x - 10, v1.y );
+		_context.lineTo( v1.x + 10, v1.y );
+		_context.moveTo( v1.x, v1.y - 10 );
+		_context.lineTo( v1.x, v1.y + 10 );
+		_context.stroke();
+		*/
 
 	}
 
@@ -660,7 +618,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 			}
 
-			if ( material.wireframe === false && material.shading == THREE.SmoothShading && element.vertexNormalsLength == 3 ) {
+			if ( material.wireframe === false && material.shading === THREE.SmoothShading && element.vertexNormalsLength === 3 ) {
 
 				_color1.copy( _ambientLight );
 				_color2.copy( _ambientLight );
@@ -723,7 +681,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 					patternPath( _v1x, _v1y, _v2x, _v2y, _v3x, _v3y, _uv1x, _uv1y, _uv2x, _uv2y, _uv3x, _uv3y, material.envMap );
 
-				}/* else if ( material.envMap.mapping == THREE.SphericalRefractionMapping ) {
+				}/* else if ( material.envMap.mapping === THREE.SphericalRefractionMapping ) {
 
 
 
@@ -764,7 +722,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 			var normal;
 
-			if ( material.shading == THREE.FlatShading ) {
+			if ( material.shading === THREE.FlatShading ) {
 
 				normal = element.normalModelView;
 
@@ -774,7 +732,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 					? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
 					: fillPath( _color );
 
-			} else if ( material.shading == THREE.SmoothShading ) {
+			} else if ( material.shading === THREE.SmoothShading ) {
 
 				normal = element.vertexNormalsModelView[ uv1 ];
 				_color1.setRGB( normal.x, normal.y, normal.z ).multiplyScalar( 0.5 ).addScalar( 0.5 );
@@ -831,12 +789,12 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 	function patternPath( x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2, texture ) {
 
-		if ( texture instanceof THREE.DataTexture || texture.image === undefined || texture.image.width == 0 ) return;
+		if ( texture instanceof THREE.DataTexture || texture.image === undefined || texture.image.width === 0 ) return;
 
 		if ( texture.needsUpdate === true ) {
 
-			var repeatX = texture.wrapS == THREE.RepeatWrapping;
-			var repeatY = texture.wrapT == THREE.RepeatWrapping;
+			var repeatX = texture.wrapS === THREE.RepeatWrapping;
+			var repeatY = texture.wrapT === THREE.RepeatWrapping;
 
 			_patterns[ texture.id ] = _context.createPattern(
 				texture.image, repeatX === true && repeatY === true
