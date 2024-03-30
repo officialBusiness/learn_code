@@ -73,7 +73,6 @@ import "../source/src/extras/core/Gyroscope.js";
 import "../source/src/extras/core/Path.js";
 import "../source/src/extras/core/Shape.js";
 
-import "../source/src/extras/geometries/AsteriskGeometry.js";
 import "../source/src/extras/geometries/CircleGeometry.js";
 import "../source/src/extras/geometries/ConvexGeometry.js";
 import "../source/src/extras/geometries/CubeGeometry.js";
@@ -194,7 +193,7 @@ import "../source/src/renderers/webgl/LowLevelRenderer.js";
 import "../source/src/renderers/webgl/ShaderBuilder.js";
 
 import "../source/src/renderers/CanvasRenderer.js";
-// import "../source/src/renderers/WebGLRenderer.js";
+import "../source/src/renderers/WebGLRenderer.js";
 import "../source/src/renderers/WebGLRenderer2.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
 import "../source/src/renderers/WebGLRenderTargetCube.js";
@@ -219,12 +218,12 @@ import '../source/examples/js/controls/PathControls.js';
 import '../source/examples/js/controls/PointerLockControls.js';
 import '../source/examples/js/controls/FlyControls.js';
 import '../source/examples/js/controls/FirstPersonControls.js';
-import '../source/examples/js/controls/RollControls.js';
 import '../source/examples/js/controls/TrackballControls.js';
 
 import '../source/examples/js/effects/AnaglyphEffect.js';
 import '../source/examples/js/effects/AsciiEffect.js';
 import '../source/examples/js/effects/CrosseyedEffect.js';
+import '../source/examples/js/effects/OculusRiftEffect.js';
 import '../source/examples/js/effects/ParallaxBarrierEffect.js';
 
 import '../source/examples/js/postprocessing/BloomPass.js';
@@ -239,7 +238,8 @@ import '../source/examples/js/postprocessing/TexturePass.js';
 
 import '../source/examples/js/renderers/CSS3DRenderer.js';
 import '../source/examples/js/renderers/SoftwareRenderer.js';
-
+import '../source/examples/js/renderers/SVGRenderer.js';
+import '../source/examples/js/renderers/WebGLDeferredRenderer.js';
 
 import '../source/examples/js/shaders/CopyShader.js';
 
