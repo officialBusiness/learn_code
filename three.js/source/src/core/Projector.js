@@ -4,7 +4,7 @@
  * @author julianwa / https://github.com/julianwa
  */
 
-THREE.Projector = function() {
+THREE.Projector = function () {
 
 	var _object, _objectCount, _objectPool = [], _objectPoolLength = 0,
 	_vertex, _vertexCount, _vertexPool = [], _vertexPoolLength = 0,
@@ -37,9 +37,7 @@ THREE.Projector = function() {
 	_frustum = new THREE.Frustum(),
 
 	_clippedVertex1PositionScreen = new THREE.Vector4(),
-	_clippedVertex2PositionScreen = new THREE.Vector4(),
-
-	_face3VertexNormals;
+	_clippedVertex2PositionScreen = new THREE.Vector4();
 
 	this.projectVector = function ( vector, camera ) {
 
@@ -110,7 +108,7 @@ THREE.Projector = function() {
 
 						} else {
 
-							_vector3.copy( object.matrixWorld.getPosition() );
+							_vector3.getPositionFromMatrix( object.matrixWorld );
 							_vector3.applyProjection( _viewProjectionMatrix );
 							_object.z = _vector3.z;
 
@@ -133,7 +131,7 @@ THREE.Projector = function() {
 
 					} else {
 
-						_vector3.copy( object.matrixWorld.getPosition() );
+						_vector3.getPositionFromMatrix( object.matrixWorld );
 						_vector3.applyProjection( _viewProjectionMatrix );
 						_object.z = _vector3.z;
 
@@ -152,7 +150,7 @@ THREE.Projector = function() {
 
 					} else {
 
-						_vector3.copy( object.matrixWorld.getPosition() );
+						_vector3.getPositionFromMatrix( object.matrixWorld );
 						_vector3.applyProjection( _viewProjectionMatrix );
 						_object.z = _vector3.z;
 
@@ -180,8 +178,7 @@ THREE.Projector = function() {
 
 		var visible = false,
 		o, ol, v, vl, f, fl, n, nl, c, cl, u, ul, object,
-		geometry, vertices, vertex, vertexPositionScreen,
-		faces, face, faceVertexNormals, faceVertexUvs, uvs,
+		geometry, vertices, faces, face, faceVertexNormals, faceVertexUvs, uvs,
 		v1, v2, v3, v4, isFaceMaterial, objectMaterials;
 
 		_face3Count = 0;

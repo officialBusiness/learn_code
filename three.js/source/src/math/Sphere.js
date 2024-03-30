@@ -10,9 +10,7 @@ THREE.Sphere = function ( center, radius ) {
 
 };
 
-THREE.Sphere.prototype = {
-
-	constructor: THREE.Sphere,
+THREE.extend( THREE.Sphere.prototype, {
 
 	set: function ( center, radius ) {
 
@@ -104,7 +102,7 @@ THREE.Sphere.prototype = {
 
 	},
 
-	transform: function ( matrix ) {
+	applyMatrix4: function ( matrix ) {
 
 		this.center.applyMatrix4( matrix );
 		this.radius = this.radius * matrix.getMaxScaleOnAxis();
@@ -133,4 +131,4 @@ THREE.Sphere.prototype = {
 
 	}
 
-};
+} );

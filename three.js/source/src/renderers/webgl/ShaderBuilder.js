@@ -1,12 +1,16 @@
 
-THREE.WebGLRenderer2.ShaderBuilder = function(renderer,info){
+THREE.WebGLRenderer.ShaderBuilder = function ( renderer, info ) {
+
 	this.renderer = renderer;
 	this.info = info;
 	this.programs = [],
 	this.programs_counter = 0;
-}
 
-THREE.WebGLRenderer2.ShaderBuilder.prototype.buildProgram = function ( shaderID, fragmentShader, vertexShader, uniforms, attributes, defines, parameters ) {
+};
+
+THREE.extend( THREE.WebGLRenderer.ShaderBuilder.prototype, {
+
+	buildProgram: function ( shaderID, fragmentShader, vertexShader, uniforms, attributes, defines, parameters ) {
 
 		var renderer = this.renderer;
 		var p, pl, d, program, code;
@@ -228,10 +232,9 @@ THREE.WebGLRenderer2.ShaderBuilder.prototype.buildProgram = function ( shaderID,
 			""
 
 		].join("\n");
-		
 
 		program = renderer.compileShader(prefix_vertex + vertexShader, prefix_fragment + fragmentShader);
-		
+
 		//console.log( prefix_fragment + fragmentShader );
 		//console.log( prefix_vertex + vertexShader );
 
@@ -304,103 +307,106 @@ THREE.WebGLRenderer2.ShaderBuilder.prototype.buildProgram = function ( shaderID,
 
 		return program;
 
-	};
-	
-THREE.WebGLRenderer2.ShaderBuilder.prototype.generateDefines = function( defines ) {
+	},
 
-	var value, chunk, chunks = [];
+	generateDefines: function ( defines ) {
 
-	for ( var d in defines ) {
+		var value, chunk, chunks = [];
 
-		value = defines[ d ];
-		if ( value === false ) continue;
+		for ( var d in defines ) {
 
-		chunk = "#define " + d + " " + value;
-		chunks.push( chunk );
+			value = defines[ d ];
+			if ( value === false ) continue;
 
-	}
-
-	return chunks.join( "\n" );
-
-};
-
-	// Shader parameters cache
-
-THREE.WebGLRenderer2.ShaderBuilder.prototype.cacheUniformLocations = function( program, identifiers ) {
-
-	var i, l, id, renderer = this.renderer;
-
-	for( i = 0, l = identifiers.length; i < l; i ++ ) {
-
-		id = identifiers[ i ];
-		program.uniforms[ id ] = renderer.getUniformLocation( program, id );
-
-	}
-
-};
-
-THREE.WebGLRenderer2.ShaderBuilder.prototype.cacheAttributeLocations = function( program, identifiers ) {
-
-	var i, l, id, renderer = this.renderer;
-
-	for( i = 0, l = identifiers.length; i < l; i ++ ) {
-
-		id = identifiers[ i ];
-		program.attributes[ id ] = renderer.getAttribLocation( program, id );
-
-	}
-
-};
-
-THREE.WebGLRenderer2.ShaderBuilder.prototype.removeProgram = function( program ) {
-
-	var i, il, programInfo;
-	var deleteProgram = false;
-	var programs = this.programs;
-
-	for ( i = 0, il = programs.length; i < il; i ++ ) {
-
-		programInfo = programs[ i ];
-
-		if ( programInfo.program === program ) {
-
-			programInfo.usedTimes --;
-
-			if ( programInfo.usedTimes === 0 ) {
-
-				deleteProgram = true;
-
-			}
-
-			break;
+			chunk = "#define " + d + " " + value;
+			chunks.push( chunk );
 
 		}
 
-	}
+		return chunks.join( "\n" );
 
-	if ( deleteProgram === true ) {
+	},
 
-		// avoid using array.splice, this is costlier than creating new array from scratch
+	// Shader parameters cache
 
-		var newPrograms = [];
+	cacheUniformLocations: function ( program, identifiers ) {
+
+		var i, l, id, renderer = this.renderer;
+
+		for ( i = 0, l = identifiers.length; i < l; i ++ ) {
+
+			id = identifiers[ i ];
+			program.uniforms[ id ] = renderer.getUniformLocation( program, id );
+
+		}
+
+	},
+
+	cacheAttributeLocations: function ( program, identifiers ) {
+
+		var i, l, id, renderer = this.renderer;
+
+		for( i = 0, l = identifiers.length; i < l; i ++ ) {
+
+			id = identifiers[ i ];
+			program.attributes[ id ] = renderer.getAttribLocation( program, id );
+
+		}
+
+	},
+
+	removeProgram: function ( program ) {
+
+		var i, il, programInfo;
+		var deleteProgram = false;
+		var programs = this.programs;
 
 		for ( i = 0, il = programs.length; i < il; i ++ ) {
 
 			programInfo = programs[ i ];
 
-			if ( programInfo.program !== program ) {
+			if ( programInfo.program === program ) {
 
-				newPrograms.push( programInfo );
+				programInfo.usedTimes --;
+
+				if ( programInfo.usedTimes === 0 ) {
+
+					deleteProgram = true;
+
+				}
+
+				break;
 
 			}
 
 		}
 
-		programs = newPrograms;
+		if ( deleteProgram === true ) {
 
-		this.renderer.deleteProgram( program );
+			// avoid using array.splice, this is costlier than creating new array from scratch
 
-		this.info.memory.programs --;
+			var newPrograms = [];
+
+			for ( i = 0, il = programs.length; i < il; i ++ ) {
+
+				programInfo = programs[ i ];
+
+				if ( programInfo.program !== program ) {
+
+					newPrograms.push( programInfo );
+
+				}
+
+			}
+
+			programs = newPrograms;
+
+			this.renderer.deleteProgram( program );
+
+			this.info.memory.programs --;
+
+		}
 
 	}
-}
+
+} );
