@@ -1,6 +1,7 @@
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author bhouston / http://exocortex.com/
+ * @author stephomi / http://stephaneginier.com/
  */
 
 ( function ( THREE ) {
@@ -8,13 +9,7 @@
 	THREE.Raycaster = function ( origin, direction, near, far ) {
 
 		this.ray = new THREE.Ray( origin, direction );
-
-		// normalized ray.direction required for accurate distance calculations
-		if ( this.ray.direction.lengthSq() > 0 ) {
-
-			this.ray.direction.normalize();
-
-		}
+		// direction is assumed to be normalized (for accurate distance calculations)
 
 		this.near = near || 0;
 		this.far = far || Infinity;
@@ -34,6 +29,10 @@
 		return a.distance - b.distance;
 
 	};
+
+	var vA = new THREE.Vector3();
+	var vB = new THREE.Vector3();
+	var vC = new THREE.Vector3();
 
 	var intersectObject = function ( object, raycaster, intersects ) {
 
@@ -69,17 +68,32 @@
 			var geometry = object.geometry;
 
 			// Checking boundingSphere distance to ray
-			matrixPosition.getPositionFromMatrix( object.matrixWorld );
 
 			if ( geometry.boundingSphere === null ) geometry.computeBoundingSphere();
 
-			sphere.set( matrixPosition, geometry.boundingSphere.radius * object.matrixWorld.getMaxScaleOnAxis() );
+			sphere.copy( geometry.boundingSphere );
+			sphere.applyMatrix4( object.matrixWorld );
 
 			if ( raycaster.ray.isIntersectionSphere( sphere ) === false ) {
 
 				return intersects;
 
 			}
+
+			// Check boundingBox before continuing
+			
+			inverseMatrix.getInverse( object.matrixWorld );  
+			localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
+
+			if ( geometry.boundingBox !== null ) {
+
+				if ( localRay.isIntersectionBox( geometry.boundingBox ) === false )  {
+
+					return intersects;
+
+				}
+
+			} 
 
 			var vertices = geometry.vertices;
 
@@ -90,125 +104,114 @@
 				if ( material === undefined ) return intersects;
 				if ( geometry.dynamic === false ) return intersects;
 
-				var isFaceMaterial = object.material instanceof THREE.MeshFaceMaterial;
-				var objectMaterials = isFaceMaterial === true ? object.material.materials : null;
-
-				var side = object.material.side;
-
 				var a, b, c;
 				var precision = raycaster.precision;
 
-				inverseMatrix.getInverse( object.matrixWorld );
+				if ( geometry.attributes.index !== undefined ) {
 
-				localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
+					var offsets = geometry.offsets;
+					var indices = geometry.attributes.index.array;
+					var positions = geometry.attributes.position.array;
+					var offLength = geometry.offsets.length;
 
-				var fl;
-				var indexed = false;
+					var fl = geometry.attributes.index.array.length / 3;
 
-				if ( geometry.attributes.index ) {
+					for ( var oi = 0; oi < offLength; ++oi ) {
 
-					indexed = true;
-					fl = geometry.attributes.index.numItems / 3;
+						var start = offsets[ oi ].start;
+						var count = offsets[ oi ].count;
+						var index = offsets[ oi ].index;
+
+						for ( var i = start, il = start + count; i < il; i += 3 ) {
+
+							a = index + indices[ i ];
+							b = index + indices[ i + 1 ]; 
+							c = index + indices[ i + 2 ];
+
+							vA.set(
+								positions[ a * 3 ],
+								positions[ a * 3 + 1 ],
+								positions[ a * 3 + 2 ]
+							);
+							vB.set(
+								positions[ b * 3 ],
+								positions[ b * 3 + 1 ],
+								positions[ b * 3 + 2 ]
+							);
+							vC.set(
+								positions[ c * 3 ],
+								positions[ c * 3 + 1 ],
+								positions[ c * 3 + 2 ]
+							);
+
+							var intersectionPoint = localRay.intersectTriangle( vA, vB, vC, material.side !== THREE.DoubleSide );
+
+							if ( intersectionPoint === null ) continue;
+
+							intersectionPoint.applyMatrix4( object.matrixWorld );
+
+							var distance = raycaster.ray.origin.distanceTo( intersectionPoint );
+
+							if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
+
+							intersects.push( {
+
+								distance: distance,
+								point: intersectionPoint,
+								face: null,
+								faceIndex: null,
+								object: object
+
+							} );
+
+						}
+
+					}
 
 				} else {
 
-					fl = geometry.attributes.position.numItems / 9;
+					var offsets = geometry.offsets;
+					var positions = geometry.attributes.position.array;
+					var offLength = geometry.offsets.length;
 
-				}
+					var fl = geometry.attributes.position.array.length;
 
-				var vA = new THREE.Vector3();
-				var vB = new THREE.Vector3();
-				var vC = new THREE.Vector3();
-				var vCB = new THREE.Vector3();
-				var vAB = new THREE.Vector3();
+					for ( var i = 0; i < fl; i += 3 ) {
 
-				for ( var oi = 0; oi < geometry.offsets.length; ++oi ) {
-
-					var start = geometry.offsets[ oi ].start;
-					var count = geometry.offsets[ oi ].count;
-					var index = geometry.offsets[ oi ].index;
-
-					for ( var i = start, il = start + count; i < il; i += 3 ) {
-
-						if ( indexed ) {
-
-							a = index + geometry.attributes.index.array[ i ];
-							b = index + geometry.attributes.index.array[ i + 1 ];
-							c = index + geometry.attributes.index.array[ i + 2 ];
-
-						} else {
-
-							a = index;
-							b = index + 1;
-							c = index + 2;
-
-						}
+						a = i;
+						b = i + 1;
+						c = i + 2;
 
 						vA.set(
-							geometry.attributes.position.array[ a * 3 ],
-							geometry.attributes.position.array[ a * 3 + 1 ],
-							geometry.attributes.position.array[ a * 3 + 2 ]
+							positions[ a * 3 ],
+							positions[ a * 3 + 1 ],
+							positions[ a * 3 + 2 ]
 						);
 						vB.set(
-							geometry.attributes.position.array[ b * 3 ],
-							geometry.attributes.position.array[ b * 3 + 1 ],
-							geometry.attributes.position.array[ b * 3 + 2 ]
+							positions[ b * 3 ],
+							positions[ b * 3 + 1 ],
+							positions[ b * 3 + 2 ]
 						);
 						vC.set(
-							geometry.attributes.position.array[ c * 3 ],
-							geometry.attributes.position.array[ c * 3 + 1 ],
-							geometry.attributes.position.array[ c * 3 + 2 ]
+							positions[ c * 3 ],
+							positions[ c * 3 + 1 ],
+							positions[ c * 3 + 2 ]
 						);
 
-						facePlane.setFromCoplanarPoints( vA, vB, vC );
+						var intersectionPoint = localRay.intersectTriangle( vA, vB, vC, material.side !== THREE.DoubleSide );
 
-						var planeDistance = localRay.distanceToPlane( facePlane );
+						if ( intersectionPoint === null ) continue;
 
-						// bail if the ray is too close to the plane
-						if ( planeDistance < precision ) continue;
+						intersectionPoint.applyMatrix4( object.matrixWorld );
 
-						// bail if the ray is behind the plane
-						if ( planeDistance === null ) continue;
+						var distance = raycaster.ray.origin.distanceTo( intersectionPoint );
 
-						// check if we hit the wrong side of a single sided face
-						side = material.side;
-
-						if ( side !== THREE.DoubleSide ) {
-
-							var planeSign = localRay.direction.dot( facePlane.normal );
-							
-
-							if ( ! ( side === THREE.FrontSide ? planeSign < 0 : planeSign > 0 ) ) {
-
-								continue;
-
-							}
-
-						}
-
-						// this can be done using the planeDistance from localRay because
-						// localRay wasn't normalized, but ray was
-						if ( planeDistance < raycaster.near || planeDistance > raycaster.far ) {
-
-							continue;
-
-						}
-
-						// passing in intersectPoint avoids a copy
-						intersectPoint = localRay.at( planeDistance, intersectPoint );
-
-						if ( THREE.Triangle.containsPoint( intersectPoint, vA, vB, vC ) === false ) {
-
-							continue;
-
-						}
+						if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
 
 						intersects.push( {
 
-							// this works because the original ray was normalized,
-							// and the transformed localRay wasn't
-							distance: planeDistance,
-							point: raycaster.ray.at( planeDistance ),
+							distance: distance,
+							point: intersectionPoint,
 							face: null,
 							faceIndex: null,
 							object: object
@@ -216,6 +219,7 @@
 						} );
 
 					}
+
 				}
 
 			} else if ( geometry instanceof THREE.Geometry ) {
@@ -223,14 +227,8 @@
 				var isFaceMaterial = object.material instanceof THREE.MeshFaceMaterial;
 				var objectMaterials = isFaceMaterial === true ? object.material.materials : null;
 
-				var side = object.material.side;
-
 				var a, b, c, d;
 				var precision = raycaster.precision;
-
-				inverseMatrix.getInverse( object.matrixWorld );
-
-				localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
 
 				for ( var f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
 
@@ -240,78 +238,24 @@
 
 					if ( material === undefined ) continue;
 
-					facePlane.setFromNormalAndCoplanarPoint( face.normal, vertices[face.a] );
+					a = vertices[ face.a ];
+					b = vertices[ face.b ];
+					c = vertices[ face.c ];
+					
+					var intersectionPoint = localRay.intersectTriangle( a, b, c, material.side !== THREE.DoubleSide );
 
-					var planeDistance = localRay.distanceToPlane( facePlane );
+					if ( intersectionPoint === null ) continue;
 
-					// bail if the ray is too close to the plane
-					if ( planeDistance < precision ) continue;
+					intersectionPoint.applyMatrix4( object.matrixWorld );
 
-					// bail if the ray is behind the plane
-					if ( planeDistance === null ) continue;
+					var distance = raycaster.ray.origin.distanceTo( intersectionPoint );
 
-					// check if we hit the wrong side of a single sided face
-					side = material.side;
-					if ( side !== THREE.DoubleSide ) {
-
-						var planeSign = localRay.direction.dot( facePlane.normal );
-
-						if ( ! ( side === THREE.FrontSide ? planeSign < 0 : planeSign > 0 ) ) {
-
-							continue;
-
-						}
-
-					}
-
-					// this can be done using the planeDistance from localRay because localRay
-					// wasn't normalized, but ray was
-					if ( planeDistance < raycaster.near || planeDistance > raycaster.far ) continue;
-
-					// passing in intersectPoint avoids a copy
-					intersectPoint = localRay.at( planeDistance, intersectPoint );
-
-					if ( face instanceof THREE.Face3 ) {
-
-						a = vertices[ face.a ];
-						b = vertices[ face.b ];
-						c = vertices[ face.c ];
-
-						if ( THREE.Triangle.containsPoint( intersectPoint, a, b, c ) === false ) {
-
-							continue;
-
-						}
-
-					} else if ( face instanceof THREE.Face4 ) {
-
-						a = vertices[ face.a ];
-						b = vertices[ face.b ];
-						c = vertices[ face.c ];
-						d = vertices[ face.d ];
-
-						if ( THREE.Triangle.containsPoint( intersectPoint, a, b, d ) === false &&
-						     THREE.Triangle.containsPoint( intersectPoint, b, c, d ) === false ) {
-
-							continue;
-
-						}
-
-					} else {
-
-						// This is added because if we call out of this if/else group when
-						// none of the cases match it will add a point to the intersection
-						// list erroneously.
-						throw Error( "face type not supported" );
-
-					}
+					if ( distance < precision || distance < raycaster.near || distance > raycaster.far ) continue;
 
 					intersects.push( {
 
-						// this works because the original ray was normalized,
-						// and the transformed localRay wasn't
-						distance: planeDistance,
-						point: raycaster.ray.at( planeDistance ),
+						distance: distance,
+						point: intersectionPoint,
 						face: face,
 						faceIndex: f,
 						object: object
@@ -332,8 +276,9 @@
 			if ( geometry.boundingSphere === null ) geometry.computeBoundingSphere();
 
 			// Checking boundingSphere distance to ray
-			matrixPosition.getPositionFromMatrix(object.matrixWorld);
-			sphere.set( matrixPosition, geometry.boundingSphere.radius * object.matrixWorld.getMaxScaleOnAxis() );
+
+			sphere.copy( geometry.boundingSphere );
+			sphere.applyMatrix4( object.matrixWorld );
 			
 			if ( raycaster.ray.isIntersectionSphere( sphere ) === false ) {
 
@@ -343,7 +288,6 @@
 			
 			inverseMatrix.getInverse( object.matrixWorld );
 			localRay.copy( raycaster.ray ).applyMatrix4( inverseMatrix );
-			localRay.direction.normalize(); // for scale matrix
 
 			var vertices = geometry.vertices;
 			var nbVertices = vertices.length;
@@ -355,27 +299,23 @@
 
 				var distSq = localRay.distanceSqToSegment( vertices[ i ], vertices[ i + 1 ], interRay, interSegment );
 
-				if ( distSq <= precisionSq ) {
+				if ( distSq > precisionSq ) continue;
 
-					var distance = localRay.origin.distanceTo( interRay );
+				var distance = localRay.origin.distanceTo( interRay );
 
-					if ( raycaster.near <= distance && distance <= raycaster.far ) {
+				if ( distance < raycaster.near || distance > raycaster.far ) continue;
 
-						intersects.push( {
+				intersects.push( {
 
-							distance: distance,
-							// What do we want? intersection point on the ray or on the segment??
-							// point: raycaster.ray.at( distance ),
-							point: interSegment.clone().applyMatrix4( object.matrixWorld ),
-							face: null,
-							faceIndex: null,
-							object: object
+					distance: distance,
+					// What do we want? intersection point on the ray or on the segment??
+					// point: raycaster.ray.at( distance ),
+					point: interSegment.clone().applyMatrix4( object.matrixWorld ),
+					face: null,
+					faceIndex: null,
+					object: object
 
-						} );
-
-					}
-
-				}
+				} );
 
 			}
 
@@ -402,13 +342,7 @@
 	THREE.Raycaster.prototype.set = function ( origin, direction ) {
 
 		this.ray.set( origin, direction );
-
-		// normalized ray.direction required for accurate distance calculations
-		if ( this.ray.direction.length() > 0 ) {
-
-			this.ray.direction.normalize();
-
-		}
+		// direction is assumed to be normalized (for accurate distance calculations)
 
 	};
 
