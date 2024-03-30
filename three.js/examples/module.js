@@ -31,8 +31,6 @@ import "../source/src/extras/GeometryUtils.js";
 
 import "../source/src/math/Color.js";
 
-import "../source/src/renderers/WebGLShaders.js";
-
 import "../source/src/math/Box3.js";
 
 import "../source/src/math/Sphere.js";
@@ -204,11 +202,16 @@ import "../source/src/renderers/renderables/RenderableObject.js";
 import "../source/src/renderers/renderables/RenderableSprite.js";
 import "../source/src/renderers/renderables/RenderableVertex.js";
 
+import "../source/src/renderers/shaders/UniformsUtils.js";
+import "../source/src/renderers/shaders/UniformsLib.js";
+import "../source/src/renderers/shaders/ShaderChunk.js";
+import "../source/src/renderers/shaders/ShaderLib.js";
+import "../source/src/renderers/shaders/UniformsLib.js";
+
 import "../source/src/renderers/CanvasRenderer.js";
 import "../source/src/renderers/WebGLRenderer.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
 import "../source/src/renderers/WebGLRenderTargetCube.js";
-import "../source/src/renderers/WebGLShaders.js";
 
 import "../source/src/scenes/Fog.js";
 import "../source/src/scenes/FogExp2.js";
