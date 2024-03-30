@@ -113,7 +113,6 @@ import "../source/src/extras/renderers/plugins/SpritePlugin.js";
 import "../source/src/extras/shaders/ShaderFlares.js";
 import "../source/src/extras/shaders/ShaderSprite.js";
 
-import "../source/src/extras/ColorUtils.js";
 import "../source/src/extras/FontUtils.js";
 import "../source/src/extras/GeometryUtils.js";
 import "../source/src/extras/ImageUtils.js";
@@ -195,7 +194,7 @@ import "../source/src/renderers/webgl/LowLevelRenderer.js";
 import "../source/src/renderers/webgl/ShaderBuilder.js";
 
 import "../source/src/renderers/CanvasRenderer.js";
-import "../source/src/renderers/WebGLRenderer.js";
+// import "../source/src/renderers/WebGLRenderer.js";
 import "../source/src/renderers/WebGLRenderer2.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
 import "../source/src/renderers/WebGLRenderTargetCube.js";
