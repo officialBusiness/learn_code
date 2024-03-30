@@ -49,19 +49,25 @@
 			);
 
 			plane.faces.push(
-				new THREE.Face4( 0, 2, 3, 1 )
+				new THREE.Face3( 0, 2, 1 ),
+				new THREE.Face3( 2, 3, 1 )
 			);
 
 			plane.faceVertexUvs = [
 				[
 					[
-						new THREE.Vector2(0, 0 ),
 						new THREE.Vector2(0, 1 ),
+						new THREE.Vector2(0, 0 ),
 						new THREE.Vector2(1, 1 ),
-						new THREE.Vector2(1, 0 )
+					],
+					[
+						new THREE.Vector2(0, 0 ),
+						new THREE.Vector2(1, 0 ),
+						new THREE.Vector2(1, 1 ),
 					]
 				]
 			];
+
 			plane.computeCentroids();
 			plane.computeFaceNormals();
 

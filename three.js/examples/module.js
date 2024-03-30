@@ -33,6 +33,8 @@ import "../source/src/math/Color.js";
 
 import "../source/src/renderers/WebGLShaders.js";
 
+import "../source/src/math/Box3.js";
+
 import "../source/src/math/Sphere.js";
 
 import "../source/src/math/Ray.js";
@@ -40,8 +42,6 @@ import "../source/src/math/Ray.js";
 import "../source/src/math/Plane.js";
 
 import "../source/src/math/Frustum.js";
-
-import "../source/src/math/Box3.js";
 
 import "../source/src/math/Euler.js";
 
@@ -202,20 +202,10 @@ import "../source/src/objects/SkinnedMesh.js";
 import "../source/src/objects/Sprite.js";
 
 import "../source/src/renderers/renderables/RenderableFace3.js";
-import "../source/src/renderers/renderables/RenderableFace4.js";
 import "../source/src/renderers/renderables/RenderableLine.js";
 import "../source/src/renderers/renderables/RenderableObject.js";
 import "../source/src/renderers/renderables/RenderableParticle.js";
 import "../source/src/renderers/renderables/RenderableVertex.js";
-
-// import "../source/src/renderers/webgl/objects/Object3DRenderer.js";
-// import "../source/src/renderers/webgl/objects/LineRenderer.js";
-// import "../source/src/renderers/webgl/objects/MeshRenderer.js";
-// import "../source/src/renderers/webgl/objects/ParticleRenderer.js";
-// import "../source/src/renderers/webgl/objects/RibbonRenderer.js";
-
-// import "../source/src/renderers/webgl/LowLevelRenderer.js";
-// import "../source/src/renderers/webgl/ShaderBuilder.js";
 
 import "../source/src/renderers/CanvasRenderer.js";
 import "../source/src/renderers/WebGLRenderer.js";
