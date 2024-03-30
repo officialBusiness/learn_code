@@ -18,7 +18,11 @@ THREE.CanvasRenderer = function ( parameters ) {
 			? parameters.canvas
 			: document.createElement( 'canvas' ),
 
-	_canvasWidth, _canvasHeight, _canvasWidthHalf, _canvasHeightHalf,
+	_canvasWidth = _canvas.width,
+	_canvasHeight = _canvas.height,
+	_canvasWidthHalf = Math.floor( _canvasWidth / 2 ),
+	_canvasHeightHalf = Math.floor( _canvasHeight / 2 ),
+	
 	_context = _canvas.getContext( '2d' ),
 
 	_clearColor = new THREE.Color( 0x000000 ),
@@ -285,12 +289,12 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 			_elemBox.makeEmpty();
 
-			if ( element instanceof THREE.RenderableParticle ) {
+			if ( element instanceof THREE.RenderableSprite ) {
 
 				_v1 = element;
 				_v1.x *= _canvasWidthHalf; _v1.y *= _canvasHeightHalf;
 
-				renderParticle( _v1, element, material );
+				renderSprite( _v1, element, material );
 
 			} else if ( element instanceof THREE.RenderableLine ) {
 
@@ -383,13 +387,13 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 			} else if ( light instanceof THREE.DirectionalLight ) {
 
-				// for particles
+				// for sprites
 
 				_directionalLights.add( lightColor );
 
 			} else if ( light instanceof THREE.PointLight ) {
 
-				// for particles
+				// for sprites
 
 				_pointLights.add( lightColor );
 
@@ -441,7 +445,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 	}
 
-	function renderParticle( v1, element, material ) {
+	function renderSprite( v1, element, material ) {
 
 		setOpacity( material.opacity );
 		setBlending( material.blending );
@@ -449,38 +453,10 @@ THREE.CanvasRenderer = function ( parameters ) {
 		var width, height, scaleX, scaleY,
 		bitmap, bitmapWidth, bitmapHeight;
 
-		if ( material instanceof THREE.ParticleBasicMaterial ) {
+		if ( material instanceof THREE.SpriteMaterial ||
+			 material instanceof THREE.ParticleSystemMaterial ) { // Backwards compatibility
 
-			if ( material.map === null ) {
-
-				scaleX = element.object.scale.x;
-				scaleY = element.object.scale.y;
-
-				// TODO: Be able to disable this
-
-				scaleX *= element.scale.x * _canvasWidthHalf;
-				scaleY *= element.scale.y * _canvasHeightHalf;
-
-				_elemBox.min.set( v1.x - scaleX, v1.y - scaleY );
-				_elemBox.max.set( v1.x + scaleX, v1.y + scaleY );
-
-				if ( _clipBox.isIntersectionBox( _elemBox ) === false ) {
-
-					_elemBox.makeEmpty();
-					return;
-
-				}
-
-				setFillStyle( material.color.getStyle() );
-
-				_context.save();
-				_context.translate( v1.x, v1.y );
-				_context.rotate( - element.rotation );
-				_context.scale( scaleX, scaleY );
-				_context.fillRect( -1, -1, 2, 2 );
-				_context.restore();
-
-			} else {
+			if ( material.map.image !== undefined ) {
 
 				bitmap = material.map.image;
 				bitmapWidth = bitmap.width >> 1;
@@ -513,6 +489,35 @@ THREE.CanvasRenderer = function ( parameters ) {
 				_context.drawImage( bitmap, 0, 0 );
 				_context.restore();
 
+			} else {
+
+				scaleX = element.object.scale.x;
+				scaleY = element.object.scale.y;
+
+				// TODO: Be able to disable this
+
+				scaleX *= element.scale.x * _canvasWidthHalf;
+				scaleY *= element.scale.y * _canvasHeightHalf;
+
+				_elemBox.min.set( v1.x - scaleX, v1.y - scaleY );
+				_elemBox.max.set( v1.x + scaleX, v1.y + scaleY );
+
+				if ( _clipBox.isIntersectionBox( _elemBox ) === false ) {
+
+					_elemBox.makeEmpty();
+					return;
+
+				}
+
+				setFillStyle( material.color.getStyle() );
+
+				_context.save();
+				_context.translate( v1.x, v1.y );
+				_context.rotate( - element.rotation );
+				_context.scale( scaleX, scaleY );
+				_context.fillRect( -1, -1, 2, 2 );
+				_context.restore();
+
 			}
 
 			/* DEBUG
@@ -525,7 +530,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 			_context.stroke();
 			*/
 
-		} else if ( material instanceof THREE.ParticleCanvasMaterial ) {
+		} else if ( material instanceof THREE.SpriteCanvasMaterial ) {
 
 			width = element.scale.x * _canvasWidthHalf;
 			height = element.scale.y * _canvasHeightHalf;
