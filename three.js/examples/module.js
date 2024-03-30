@@ -3,6 +3,8 @@
 
 // must pre
 
+import "../source/src/core/EventDispatcher.js";
+
 import "../source/src/textures/Texture.js";
 
 import "../source/src/math/Vector2.js";
@@ -94,6 +96,7 @@ import "../source/src/extras/geometries/TubeGeometry.js";
 
 import "../source/src/extras/helpers/ArrowHelper.js";
 import "../source/src/extras/helpers/AxisHelper.js";
+import "../source/src/extras/helpers/BoxHelper.js";
 import "../source/src/extras/helpers/CameraHelper.js";
 import "../source/src/extras/helpers/DirectionalLightHelper.js";
 import "../source/src/extras/helpers/HemisphereLightHelper.js";
@@ -126,6 +129,7 @@ import "../source/src/lights/PointLight.js";
 import "../source/src/lights/SpotLight.js";
 
 import "../source/src/loaders/Loader.js";
+import "../source/src/loaders/GeometryLoader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingMonitor.js";
@@ -194,7 +198,7 @@ import "../source/src/renderers/webgl/ShaderBuilder.js";
 
 import "../source/src/renderers/CanvasRenderer.js";
 import "../source/src/renderers/WebGLRenderer.js";
-import "../source/src/renderers/WebGLRenderer2.js";
+// import "../source/src/renderers/WebGLRenderer2.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
 import "../source/src/renderers/WebGLRenderTargetCube.js";
 import "../source/src/renderers/WebGLShaders.js";
