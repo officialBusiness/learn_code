@@ -22,16 +22,18 @@
 
 			var scene = new THREE.Scene();
 
-			var render = new THREE.WebGLRenderer({
+			var renderer = new THREE.WebGLRenderer2({
 				antialias: true
 			});
-			// var render = new THREE.WebGLRenderer2(true);
+			// var renderer = new THREE.WebGLRenderer2({
+			// 	antialias: true
+			// });
 
-			render.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
-			render.domElement.id = 'renderCanvas';
+			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( render.domElement );
+			document.body.appendChild( renderer.domElement );
 
 
 			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 1000 );
@@ -39,7 +41,7 @@
 			camera.position.z = 100;
 			// camera.rotation.x = -Math.PI / 2;
 
-			scene.add( camera );
+			// scene.add( camera );
 
 			var plane = new THREE.PlaneGeometry(40, 40, 4, 4);
 
@@ -73,7 +75,7 @@
 				mesh.rotation.y += 0.02;
 				mesh.updateMatrix();
 
-				render.render( scene, camera );
+				renderer.render( scene, camera );
 
 				stats.update();
 

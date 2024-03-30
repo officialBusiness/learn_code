@@ -21,7 +21,7 @@
 
 			var scene = new THREE.Scene();
 
-			var webglRenderer = new THREE.WebGLRenderer({
+			var webglRenderer = new THREE.WebGLRenderer2({
 				antialias: true
 			});
 			// var webglRenderer = new THREE.WebGLRenderer2(true);
@@ -56,10 +56,10 @@
 			plane.faceVertexUvs = [
 				[
 					[
-						new THREE.UV(0, 0 ),
-						new THREE.UV(0, 1 ),
-						new THREE.UV(1, 1 ),
-						new THREE.UV(1, 0 )
+						new THREE.Vector2(0, 0 ),
+						new THREE.Vector2(0, 1 ),
+						new THREE.Vector2(1, 1 ),
+						new THREE.Vector2(1, 0 )
 					]
 				]
 			];

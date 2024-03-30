@@ -7,6 +7,8 @@ import "../source/src/textures/Texture.js";
 
 import "../source/src/math/Vector2.js";
 
+import "../source/src/math/Quaternion.js";
+
 import "../source/src/math/Vector3.js";
 
 import "../source/src/math/Vector4.js";
@@ -35,9 +37,11 @@ import "../source/src/math/Ray.js";
 
 import "../source/src/math/Plane.js";
 
-import "../source/src/math/Quaternion.js";
-
 import "../source/src/math/Frustum.js";
+
+import "../source/src/math/Box3.js";
+
+import "../source/src/renderers/WebGLRenderer2.js";
 
 // start
 
@@ -114,7 +118,6 @@ import "../source/src/extras/FontUtils.js";
 import "../source/src/extras/GeometryUtils.js";
 import "../source/src/extras/ImageUtils.js";
 import "../source/src/extras/SceneUtils.js";
-import "../source/src/extras/ShaderUtils.js";
 
 import "../source/src/lights/Light.js";
 import "../source/src/lights/AreaLight.js";
@@ -125,7 +128,6 @@ import "../source/src/lights/PointLight.js";
 import "../source/src/lights/SpotLight.js";
 
 import "../source/src/loaders/Loader.js";
-import "../source/src/loaders/BinaryLoader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingMonitor.js";
@@ -143,7 +145,6 @@ import "../source/src/materials/MeshNormalMaterial.js";
 import "../source/src/materials/MeshPhongMaterial.js";
 import "../source/src/materials/ParticleBasicMaterial.js";
 import "../source/src/materials/ParticleCanvasMaterial.js";
-import "../source/src/materials/ParticleDOMMaterial.js";
 import "../source/src/materials/ShaderMaterial.js";
 import "../source/src/materials/SpriteMaterial.js";
 
@@ -184,8 +185,18 @@ import "../source/src/renderers/renderables/RenderableObject.js";
 import "../source/src/renderers/renderables/RenderableParticle.js";
 import "../source/src/renderers/renderables/RenderableVertex.js";
 
+import "../source/src/renderers/webgl/objects/Object3DRenderer.js";
+import "../source/src/renderers/webgl/objects/LineRenderer.js";
+import "../source/src/renderers/webgl/objects/MeshRenderer.js";
+import "../source/src/renderers/webgl/objects/ParticleRenderer.js";
+import "../source/src/renderers/webgl/objects/RibbonRenderer.js";
+
+import "../source/src/renderers/webgl/LowLevelRenderer.js";
+import "../source/src/renderers/webgl/ShaderBuilder.js";
+
 import "../source/src/renderers/CanvasRenderer.js";
 import "../source/src/renderers/WebGLRenderer.js";
+import "../source/src/renderers/WebGLRenderer2.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
 import "../source/src/renderers/WebGLRenderTargetCube.js";
 import "../source/src/renderers/WebGLShaders.js";
@@ -228,10 +239,7 @@ import '../source/examples/js/postprocessing/ShaderPass.js';
 import '../source/examples/js/postprocessing/TexturePass.js';
 
 import '../source/examples/js/renderers/CSS3DRenderer.js';
-import '../source/examples/js/renderers/DOMRenderer.js';
 import '../source/examples/js/renderers/SoftwareRenderer.js';
-import '../source/examples/js/renderers/SoftwareRenderer2.js';
-import '../source/examples/js/renderers/SoftwareRenderer3.js';
 
 
 import '../source/examples/js/shaders/CopyShader.js';
