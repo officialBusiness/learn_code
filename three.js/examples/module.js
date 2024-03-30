@@ -165,9 +165,9 @@ import "../source/src/materials/MeshFaceMaterial.js";
 import "../source/src/materials/MeshLambertMaterial.js";
 import "../source/src/materials/MeshNormalMaterial.js";
 import "../source/src/materials/MeshPhongMaterial.js";
-import "../source/src/materials/ParticleBasicMaterial.js";
-import "../source/src/materials/ParticleCanvasMaterial.js";
+import "../source/src/materials/ParticleSystemMaterial.js";
 import "../source/src/materials/ShaderMaterial.js";
+import "../source/src/materials/SpriteCanvasMaterial.js";
 import "../source/src/materials/SpriteMaterial.js";
 
 import "../source/src/math/Box2.js";
@@ -195,7 +195,6 @@ import "../source/src/objects/Line.js";
 import "../source/src/objects/LOD.js";
 import "../source/src/objects/Mesh.js";
 import "../source/src/objects/MorphAnimMesh.js";
-import "../source/src/objects/Particle.js";
 import "../source/src/objects/ParticleSystem.js";
 import "../source/src/objects/SkinnedMesh.js";
 import "../source/src/objects/Sprite.js";
@@ -203,7 +202,7 @@ import "../source/src/objects/Sprite.js";
 import "../source/src/renderers/renderables/RenderableFace3.js";
 import "../source/src/renderers/renderables/RenderableLine.js";
 import "../source/src/renderers/renderables/RenderableObject.js";
-import "../source/src/renderers/renderables/RenderableParticle.js";
+import "../source/src/renderers/renderables/RenderableSprite.js";
 import "../source/src/renderers/renderables/RenderableVertex.js";
 
 import "../source/src/renderers/CanvasRenderer.js";

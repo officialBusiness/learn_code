@@ -93,7 +93,6 @@
 				// map: addTexture('../../assets/images/logo1.jpg'),
 				map: THREE.ImageUtils.loadTexture('../../assets/images/logo1.jpg'),
 				useScreenCoordinates: false,
-				scaleByViewport: false,
 			}) );
 
 			sprite.rotation3d = new THREE.Euler(0, 0, 0);
@@ -127,13 +126,12 @@
 
 				spriteFolder.add(sprite, 'rotation', -Math.PI, Math.PI);
 
-				spriteFolder.add(sprite.scale, 'x', -2, 2).name('scale.x');
-				spriteFolder.add(sprite.scale, 'y', -2, 2).name('scale.y');
+				spriteFolder.add(sprite.scale, 'x', -20, 20).name('scale.x');
+				spriteFolder.add(sprite.scale, 'y', -20, 20).name('scale.y');
 
 
 				materialFolder.add(sprite.material, 'useScreenCoordinates');
 				materialFolder.add(sprite.material, 'sizeAttenuation');
-				materialFolder.add(sprite.material, 'scaleByViewport');
 
 				materialFolder.add(sprite.material.uvScale, 'x').name('uvScale.x');
 				materialFolder.add(sprite.material.uvScale, 'y').name('uvScale.y');
