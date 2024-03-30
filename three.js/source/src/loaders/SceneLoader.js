@@ -187,7 +187,7 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 						var reservedTypes = { "type": 1, "url": 1, "material": 1,
 											  "position": 1, "rotation": 1, "scale" : 1,
-											  "visible": 1, "children": 1, "properties": 1,
+											  "visible": 1, "children": 1, "userData": 1,
 											  "skin": 1, "morph": 1, "mirroredLoop": 1, "duration": 1 };
 
 						var loaderParameters = {};
@@ -461,12 +461,12 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 				if ( object ) {
 
-					if ( objJSON.properties !== undefined )  {
+					if ( objJSON.userData !== undefined )  {
 
-						for ( var key in objJSON.properties ) {
+						for ( var key in objJSON.userData ) {
 
-							var value = objJSON.properties[ key ];
-							object.properties[ key ] = value;
+							var value = objJSON.userData[ key ];
+							object.userData[ key ] = value;
 
 						}
 
@@ -569,7 +569,7 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 	function create_callback_geometry( id ) {
 
-		return function( geo, mat ) {
+		return function ( geo, mat ) {
 
 			handle_mesh( geo, mat, id );
 
@@ -585,7 +585,7 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 	function create_callback_hierachy( id, parent, material, obj ) {
 
-		return function( event ) {
+		return function ( event ) {
 
 			var result;
 
@@ -624,7 +624,7 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 	function create_callback_embed( id ) {
 
-		return function( geo, mat ) {
+		return function ( geo, mat ) {
 
 			result.geometries[ id ] = geo;
 			result.face_materials[ id ] = mat;
@@ -682,7 +682,7 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 			}
 
-			ta.object.target.properties.targetInverse = ta.object;
+			ta.object.target.userData.targetInverse = ta.object;
 
 		}
 
@@ -702,7 +702,7 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 
 	var generateTextureCallback = function ( count ) {
 
-		return function() {
+		return function () {
 
 			callbackTexture( count );
 
@@ -842,7 +842,8 @@ THREE.SceneLoader.prototype.parse = function ( json, callbackFinished, url ) {
 			if ( modelJson ) {
 
 				var jsonLoader = this.geometryHandlerMap[ "ascii" ][ "loaderObject" ];
-				jsonLoader.createModel( modelJson, create_callback_embed( geoID ), texture_path );
+				var model = jsonLoader.parse( modelJson, texture_path );
+				create_callback_embed( geoID )( model.geometry, model.materials );
 
 			}
 

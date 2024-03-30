@@ -8,6 +8,7 @@
  * @author mikael emtinger / http://gomo.se/
  * @author timknip / http://www.floorplanner.com/
  * @author bhouston / http://exocortex.com
+ * @author WestLangley / http://github.com/WestLangley
  */
 
 
@@ -25,7 +26,9 @@ THREE.Matrix4 = function ( n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33
 
 };
 
-THREE.extend( THREE.Matrix4.prototype, {
+THREE.Matrix4.prototype = {
+
+	constructor: THREE.Matrix4,
 
 	set: function ( n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44 ) {
 
@@ -372,16 +375,9 @@ THREE.extend( THREE.Matrix4.prototype, {
 
 	rotateAxis: function ( v ) {
 
-		var te = this.elements;
-		var vx = v.x, vy = v.y, vz = v.z;
+		console.warn( 'DEPRECATED: Matrix4\'s .rotateAxis() has been removed. Use Vector3.transformDirection( matrix ) instead.' );
 
-		v.x = vx * te[0] + vy * te[4] + vz * te[8];
-		v.y = vx * te[1] + vy * te[5] + vz * te[9];
-		v.z = vx * te[2] + vy * te[6] + vz * te[10];
-
-		v.normalize();
-
-		return v;
+		v.transformDirection( this );
 
 	},
 
@@ -587,84 +583,6 @@ THREE.extend( THREE.Matrix4.prototype, {
 		return this;
 
 	},
-
-	compose: function() {
-
-		var mRotation = new THREE.Matrix4(),
-			mScale = new THREE.Matrix4();
-		
-		return function ( translation, rotation, scale ) {
-
-			var te = this.elements;
-
-			mRotation.identity();
-			mRotation.setRotationFromQuaternion( rotation );
-
-			mScale.makeScale( scale.x, scale.y, scale.z );
-
-			this.multiplyMatrices( mRotation, mScale );
-
-			te[12] = translation.x;
-			te[13] = translation.y;
-			te[14] = translation.z;
-
-			return this;
-
-		};
-
-	}(),
-
-	decompose: function() {
-
-		var x = new THREE.Vector3(),
-			y = new THREE.Vector3(),
-			z = new THREE.Vector3(),
-			matrix = new THREE.Matrix4();
-
-		return function ( translation, rotation, scale ) {
-
-			var te = this.elements;
-
-			// grab the axis vectors
-			x.set( te[0], te[1], te[2] );
-			y.set( te[4], te[5], te[6] );
-			z.set( te[8], te[9], te[10] );
-
-			translation = ( translation instanceof THREE.Vector3 ) ? translation : new THREE.Vector3();
-			rotation = ( rotation instanceof THREE.Quaternion ) ? rotation : new THREE.Quaternion();
-			scale = ( scale instanceof THREE.Vector3 ) ? scale : new THREE.Vector3();
-
-			scale.x = x.length();
-			scale.y = y.length();
-			scale.z = z.length();
-
-			translation.x = te[12];
-			translation.y = te[13];
-			translation.z = te[14];
-
-			// scale the rotation part
-
-			matrix.copy( this );
-
-			matrix.elements[0] /= scale.x;
-			matrix.elements[1] /= scale.x;
-			matrix.elements[2] /= scale.x;
-
-			matrix.elements[4] /= scale.y;
-			matrix.elements[5] /= scale.y;
-			matrix.elements[6] /= scale.y;
-
-			matrix.elements[8] /= scale.z;
-			matrix.elements[9] /= scale.z;
-			matrix.elements[10] /= scale.z;
-
-			rotation.setFromRotationMatrix( matrix );
-
-			return [ translation, rotation, scale ];
-
-		};
-
-	}(),
 
 	extractPosition: function ( m ) {
 
@@ -1074,5 +992,87 @@ THREE.extend( THREE.Matrix4.prototype, {
 		);
 
 	}
+
+};
+
+THREE.extend( THREE.Matrix4.prototype, {
+
+	compose: function() {
+
+		var mRotation = new THREE.Matrix4();
+		var mScale = new THREE.Matrix4();
+
+		return function ( position, quaternion, scale ) {
+
+			var te = this.elements;
+
+			mRotation.identity();
+			mRotation.setRotationFromQuaternion( quaternion );
+
+			mScale.makeScale( scale.x, scale.y, scale.z );
+
+			this.multiplyMatrices( mRotation, mScale );
+
+			te[12] = position.x;
+			te[13] = position.y;
+			te[14] = position.z;
+
+			return this;
+
+		};
+
+	}(),
+
+	decompose: function() {
+
+		var x = new THREE.Vector3();
+		var y = new THREE.Vector3();
+		var z = new THREE.Vector3();
+		var matrix = new THREE.Matrix4();
+
+		return function ( position, quaternion, scale ) {
+
+			var te = this.elements;
+
+			// grab the axis vectors
+			x.set( te[0], te[1], te[2] );
+			y.set( te[4], te[5], te[6] );
+			z.set( te[8], te[9], te[10] );
+
+			position = ( position instanceof THREE.Vector3 ) ? position : new THREE.Vector3();
+			quaternion = ( quaternion instanceof THREE.Quaternion ) ? quaternion : new THREE.Quaternion();
+			scale = ( scale instanceof THREE.Vector3 ) ? scale : new THREE.Vector3();
+
+			scale.x = x.length();
+			scale.y = y.length();
+			scale.z = z.length();
+
+			position.x = te[12];
+			position.y = te[13];
+			position.z = te[14];
+
+			// scale the rotation part
+
+			matrix.copy( this );
+
+			matrix.elements[0] /= scale.x;
+			matrix.elements[1] /= scale.x;
+			matrix.elements[2] /= scale.x;
+
+			matrix.elements[4] /= scale.y;
+			matrix.elements[5] /= scale.y;
+			matrix.elements[6] /= scale.y;
+
+			matrix.elements[8] /= scale.z;
+			matrix.elements[9] /= scale.z;
+			matrix.elements[10] /= scale.z;
+
+			quaternion.setFromRotationMatrix( matrix );
+
+			return [ position, quaternion, scale ];
+
+		};
+
+	}()
 
 } );
