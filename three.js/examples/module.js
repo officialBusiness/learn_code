@@ -130,7 +130,6 @@ import "../source/src/extras/renderers/plugins/ShadowMapPlugin.js";
 import "../source/src/extras/renderers/plugins/SpritePlugin.js";
 
 import "../source/src/extras/shaders/ShaderFlares.js";
-import "../source/src/extras/shaders/ShaderSprite.js";
 
 import "../source/src/extras/FontUtils.js";
 import "../source/src/extras/GeometryUtils.js";
