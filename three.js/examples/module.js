@@ -43,7 +43,7 @@ import "../source/src/math/Frustum.js";
 
 import "../source/src/math/Box3.js";
 
-import "../source/src/renderers/WebGLRenderer2.js";
+import "../source/src/math/Euler.js";
 
 // start
 
@@ -75,8 +75,19 @@ import "../source/src/extras/core/Gyroscope.js";
 import "../source/src/extras/core/Path.js";
 import "../source/src/extras/core/Shape.js";
 
+import "../source/src/extras/curves/EllipseCurve.js";
+import "../source/src/extras/curves/ArcCurve.js";
+import "../source/src/extras/curves/ClosedSplineCurve3.js";
+import "../source/src/extras/curves/CubicBezierCurve.js";
+import "../source/src/extras/curves/CubicBezierCurve3.js";
+import "../source/src/extras/curves/LineCurve.js";
+import "../source/src/extras/curves/LineCurve3.js";
+import "../source/src/extras/curves/QuadraticBezierCurve.js";
+import "../source/src/extras/curves/QuadraticBezierCurve3.js";
+import "../source/src/extras/curves/SplineCurve.js";
+import "../source/src/extras/curves/SplineCurve3.js";
+
 import "../source/src/extras/geometries/CircleGeometry.js";
-import "../source/src/extras/geometries/ConvexGeometry.js";
 import "../source/src/extras/geometries/CubeGeometry.js";
 import "../source/src/extras/geometries/CylinderGeometry.js";
 import "../source/src/extras/geometries/ExtrudeGeometry.js";
@@ -96,12 +107,18 @@ import "../source/src/extras/geometries/TubeGeometry.js";
 
 import "../source/src/extras/helpers/ArrowHelper.js";
 import "../source/src/extras/helpers/AxisHelper.js";
+import "../source/src/extras/helpers/BoundingBoxHelper.js";
 import "../source/src/extras/helpers/BoxHelper.js";
 import "../source/src/extras/helpers/CameraHelper.js";
 import "../source/src/extras/helpers/DirectionalLightHelper.js";
+import "../source/src/extras/helpers/FaceNormalsHelper.js";
+import "../source/src/extras/helpers/GridHelper.js";
 import "../source/src/extras/helpers/HemisphereLightHelper.js";
 import "../source/src/extras/helpers/PointLightHelper.js";
 import "../source/src/extras/helpers/SpotLightHelper.js";
+import "../source/src/extras/helpers/VertexNormalsHelper.js";
+import "../source/src/extras/helpers/VertexTangentsHelper.js";
+import "../source/src/extras/helpers/WireframeHelper.js";
 
 import "../source/src/extras/objects/ImmediateRenderObject.js";
 import "../source/src/extras/objects/LensFlare.js";
@@ -132,9 +149,12 @@ import "../source/src/loaders/Loader.js";
 import "../source/src/loaders/GeometryLoader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
-import "../source/src/loaders/LoadingMonitor.js";
+import "../source/src/loaders/LoadingManager.js";
+import "../source/src/loaders/MaterialLoader.js";
+import "../source/src/loaders/ObjectLoader.js";
 import "../source/src/loaders/SceneLoader.js";
 import "../source/src/loaders/TextureLoader.js";
+import "../source/src/loaders/XHRLoader.js";
 
 import "../source/src/materials/Material.js";
 import "../source/src/materials/LineBasicMaterial.js";
@@ -153,6 +173,7 @@ import "../source/src/materials/SpriteMaterial.js";
 import "../source/src/math/Box2.js";
 import "../source/src/math/Box3.js";
 import "../source/src/math/Color.js";
+import "../source/src/math/Euler.js";
 import "../source/src/math/Frustum.js";
 import "../source/src/math/Math.js";
 import "../source/src/math/Matrix3.js";
@@ -187,18 +208,17 @@ import "../source/src/renderers/renderables/RenderableObject.js";
 import "../source/src/renderers/renderables/RenderableParticle.js";
 import "../source/src/renderers/renderables/RenderableVertex.js";
 
-import "../source/src/renderers/webgl/objects/Object3DRenderer.js";
-import "../source/src/renderers/webgl/objects/LineRenderer.js";
-import "../source/src/renderers/webgl/objects/MeshRenderer.js";
-import "../source/src/renderers/webgl/objects/ParticleRenderer.js";
-import "../source/src/renderers/webgl/objects/RibbonRenderer.js";
+// import "../source/src/renderers/webgl/objects/Object3DRenderer.js";
+// import "../source/src/renderers/webgl/objects/LineRenderer.js";
+// import "../source/src/renderers/webgl/objects/MeshRenderer.js";
+// import "../source/src/renderers/webgl/objects/ParticleRenderer.js";
+// import "../source/src/renderers/webgl/objects/RibbonRenderer.js";
 
-import "../source/src/renderers/webgl/LowLevelRenderer.js";
-import "../source/src/renderers/webgl/ShaderBuilder.js";
+// import "../source/src/renderers/webgl/LowLevelRenderer.js";
+// import "../source/src/renderers/webgl/ShaderBuilder.js";
 
 import "../source/src/renderers/CanvasRenderer.js";
 import "../source/src/renderers/WebGLRenderer.js";
-// import "../source/src/renderers/WebGLRenderer2.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
 import "../source/src/renderers/WebGLRenderTargetCube.js";
 import "../source/src/renderers/WebGLShaders.js";
@@ -215,14 +235,15 @@ import "../libs/lil-gui/lil-gui.umd.min.js";
 
 // source/examples/jsm
 
+import '../source/examples/js/controls/EditorControls.js';
 import '../source/examples/js/controls/FirstPersonControls.js';
 import '../source/examples/js/controls/FlyControls.js';
 import '../source/examples/js/controls/OrbitControls.js';
 import '../source/examples/js/controls/PathControls.js';
 import '../source/examples/js/controls/PointerLockControls.js';
 import '../source/examples/js/controls/FlyControls.js';
-import '../source/examples/js/controls/FirstPersonControls.js';
 import '../source/examples/js/controls/TrackballControls.js';
+import '../source/examples/js/controls/TransformControls.js';
 
 import '../source/examples/js/effects/AnaglyphEffect.js';
 import '../source/examples/js/effects/AsciiEffect.js';
