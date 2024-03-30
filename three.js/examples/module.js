@@ -197,7 +197,6 @@ import "../source/src/objects/Mesh.js";
 import "../source/src/objects/MorphAnimMesh.js";
 import "../source/src/objects/Particle.js";
 import "../source/src/objects/ParticleSystem.js";
-import "../source/src/objects/Ribbon.js";
 import "../source/src/objects/SkinnedMesh.js";
 import "../source/src/objects/Sprite.js";
 
