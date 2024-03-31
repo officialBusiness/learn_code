@@ -87,20 +87,6 @@
 				new THREE.Vector4(3, 1, 1, 1),
 			);
 
-			plane.skinVerticesA = [
-				new THREE.Vector3(-2, 2,  0 ),
-				new THREE.Vector3( 2, 2,  0 ),
-				new THREE.Vector3(-2,-2,  0 ),
-				new THREE.Vector3( 2,-2,  0 )
-			];
-
-			plane.skinVerticesB = [
-				new THREE.Vector3(1, 1, 1),
-				new THREE.Vector3(1, 1, 1),
-				new THREE.Vector3(1, 1, 1),
-				new THREE.Vector3(1, 1, 1),
-			];
-
 			plane.bones = [
 				{
 					parent: -1,
@@ -128,7 +114,6 @@
 				}
 			]
 
-			plane.computeCentroids();
 			plane.computeFaceNormals();
 
 
@@ -162,10 +147,10 @@
 
 				const gui = new lil.GUI();
 
-				initBone(gui, mesh.bones[0], 'bone1');
-				initBone(gui, mesh.bones[1], 'bone2').close();
-				initBone(gui, mesh.bones[2], 'bone3').close();
-				initBone(gui, mesh.bones[3], 'bone4').close();
+				initBone(gui, mesh.skeleton.bones[0], 'bone1');
+				initBone(gui, mesh.skeleton.bones[1], 'bone2').close();
+				initBone(gui, mesh.skeleton.bones[2], 'bone3').close();
+				initBone(gui, mesh.skeleton.bones[3], 'bone4').close();
 			}
 
 			function boneChange(){
