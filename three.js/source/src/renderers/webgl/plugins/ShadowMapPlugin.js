@@ -2,11 +2,11 @@
  * @author alteredq / http://alteredqualia.com/
  */
 
-THREE.ShadowMapPlugin = function () {
+THREE.ShadowMapPlugin = function ( _renderer, _lights, _webglObjects, _webglObjectsImmediate ) {
 
-	var _gl,
-	_renderer,
-	_depthMaterial, _depthMaterialMorph, _depthMaterialSkin, _depthMaterialMorphSkin,
+	var _gl = _renderer.context;
+
+	var _depthMaterial, _depthMaterialMorph, _depthMaterialSkin, _depthMaterialMorphSkin,
 
 	_frustum = new THREE.Frustum(),
 	_projScreenMatrix = new THREE.Matrix4(),
@@ -18,35 +18,47 @@ THREE.ShadowMapPlugin = function () {
 	
 	_renderList = [];
 
-	this.init = function ( renderer ) {
+	// init
 
-		_gl = renderer.context;
-		_renderer = renderer;
+	var depthShader = THREE.ShaderLib[ "depthRGBA" ];
+	var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
 
-		var depthShader = THREE.ShaderLib[ "depthRGBA" ];
-		var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
+	_depthMaterial = new THREE.ShaderMaterial( {
+		uniforms: depthUniforms,
+		vertexShader: depthShader.vertexShader,
+		fragmentShader: depthShader.fragmentShader
+	 } );
 
-		_depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms } );
-		_depthMaterialMorph = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, morphTargets: true } );
-		_depthMaterialSkin = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, skinning: true } );
-		_depthMaterialMorphSkin = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, morphTargets: true, skinning: true } );
+	_depthMaterialMorph = new THREE.ShaderMaterial( {
+		uniforms: depthUniforms,
+		vertexShader: depthShader.vertexShader,
+		fragmentShader: depthShader.fragmentShader,
+		morphTargets: true
+	} );
 
-		_depthMaterial._shadowPass = true;
-		_depthMaterialMorph._shadowPass = true;
-		_depthMaterialSkin._shadowPass = true;
-		_depthMaterialMorphSkin._shadowPass = true;
+	_depthMaterialSkin = new THREE.ShaderMaterial( {
+		uniforms: depthUniforms,
+		vertexShader: depthShader.vertexShader,
+		fragmentShader: depthShader.fragmentShader,
+		skinning: true
+	} );
 
-	};
+	_depthMaterialMorphSkin = new THREE.ShaderMaterial( {
+		uniforms: depthUniforms,
+		vertexShader: depthShader.vertexShader,
+		fragmentShader: depthShader.fragmentShader,
+		morphTargets: true,
+		skinning: true
+	} );
+
+	_depthMaterial._shadowPass = true;
+	_depthMaterialMorph._shadowPass = true;
+	_depthMaterialSkin._shadowPass = true;
+	_depthMaterialMorphSkin._shadowPass = true;
 
 	this.render = function ( scene, camera ) {
 
-		if ( ! ( _renderer.shadowMapEnabled && _renderer.shadowMapAutoUpdate ) ) return;
-
-		this.update( scene, camera );
-
-	};
-
-	this.update = function ( scene, camera ) {
+		if ( _renderer.shadowMapEnabled === false ) return;
 
 		var i, il, j, jl, n,
 
@@ -83,9 +95,9 @@ THREE.ShadowMapPlugin = function () {
 		// 	- skip lights that are not casting shadows
 		//	- create virtual lights for cascaded shadow maps
 
-		for ( i = 0, il = scene.__lights.length; i < il; i ++ ) {
+		for ( i = 0, il = _lights.length; i < il; i ++ ) {
 
-			light = scene.__lights[ i ];
+			light = _lights[ i ];
 
 			if ( ! light.castShadow ) continue;
 
@@ -185,7 +197,7 @@ THREE.ShadowMapPlugin = function () {
 			if ( light.shadowCameraVisible && ! light.cameraHelper ) {
 
 				light.cameraHelper = new THREE.CameraHelper( light.shadowCamera );
-				light.shadowCamera.add( light.cameraHelper );
+				scene.add( light.cameraHelper );
 
 			}
 
@@ -199,6 +211,8 @@ THREE.ShadowMapPlugin = function () {
 			shadowMatrix = light.shadowMatrix;
 			shadowCamera = light.shadowCamera;
 
+			//
+
 			shadowCamera.position.setFromMatrixPosition( light.matrixWorld );
 			_matrixPosition.setFromMatrixPosition( light.target.matrixWorld );
 			shadowCamera.lookAt( _matrixPosition );
@@ -206,15 +220,19 @@ THREE.ShadowMapPlugin = function () {
 
 			shadowCamera.matrixWorldInverse.getInverse( shadowCamera.matrixWorld );
 
+			//
+
 			if ( light.cameraHelper ) light.cameraHelper.visible = light.shadowCameraVisible;
 			if ( light.shadowCameraVisible ) light.cameraHelper.update();
 
 			// compute shadow matrix
 
-			shadowMatrix.set( 0.5, 0.0, 0.0, 0.5,
-							  0.0, 0.5, 0.0, 0.5,
-							  0.0, 0.0, 0.5, 0.5,
-							  0.0, 0.0, 0.0, 1.0 );
+			shadowMatrix.set(
+				0.5, 0.0, 0.0, 0.5,
+				0.0, 0.5, 0.0, 0.5,
+				0.0, 0.0, 0.5, 0.5,
+				0.0, 0.0, 0.0, 1.0
+			);
 
 			shadowMatrix.multiply( shadowCamera.projectionMatrix );
 			shadowMatrix.multiply( shadowCamera.matrixWorldInverse );
@@ -232,7 +250,8 @@ THREE.ShadowMapPlugin = function () {
 			// set object matrices & frustum culling
 
 			_renderList.length = 0;
-			projectObject(scene,scene,shadowCamera);
+
+			projectObject( scene, scene, shadowCamera );
 
 
 			// render regular objects
@@ -282,11 +301,11 @@ THREE.ShadowMapPlugin = function () {
 
 				if ( buffer instanceof THREE.BufferGeometry ) {
 
-					_renderer.renderBufferDirect( shadowCamera, scene.__lights, fog, material, buffer, object );
+					_renderer.renderBufferDirect( shadowCamera, _lights, fog, material, buffer, object );
 
 				} else {
 
-					_renderer.renderBuffer( shadowCamera, scene.__lights, fog, material, buffer, object );
+					_renderer.renderBuffer( shadowCamera, _lights, fog, material, buffer, object );
 
 				}
 
@@ -294,18 +313,16 @@ THREE.ShadowMapPlugin = function () {
 
 			// set matrices and render immediate objects
 
-			var renderList = scene.__webglObjectsImmediate;
+			for ( j = 0, jl = _webglObjectsImmediate.length; j < jl; j ++ ) {
 
-			for ( j = 0, jl = renderList.length; j < jl; j ++ ) {
-
-				webglObject = renderList[ j ];
+				webglObject = _webglObjectsImmediate[ j ];
 				object = webglObject.object;
 
 				if ( object.visible && object.castShadow ) {
 
 					object._modelViewMatrix.multiplyMatrices( shadowCamera.matrixWorldInverse, object.matrixWorld );
 
-					_renderer.renderImmediateObject( shadowCamera, scene.__lights, fog, _depthMaterial, object );
+					_renderer.renderImmediateObject( shadowCamera, _lights, fog, _depthMaterial, object );
 
 				}
 
@@ -327,33 +344,37 @@ THREE.ShadowMapPlugin = function () {
 
 		}
 
+		_renderer.resetGLState();
+
 	};
-	
-	function projectObject(scene, object,shadowCamera){
-		
+
+	function projectObject( scene, object, shadowCamera ){
+
 		if ( object.visible ) {
-	
-			var webglObjects = scene.__webglObjects[object.id];
-	
-			if (webglObjects && object.castShadow && (object.frustumCulled === false || _frustum.intersectsObject( object ) === true) ) {
-		
-		
-				for (var i = 0, l = webglObjects.length; i < l; i++){
-			
-					var webglObject = webglObjects[i];
-					
+
+			var webglObjects = _webglObjects[ object.id ];
+
+			if ( webglObjects && object.castShadow && (object.frustumCulled === false || _frustum.intersectsObject( object ) === true) ) {
+
+				for ( var i = 0, l = webglObjects.length; i < l; i ++ ) {
+
+					var webglObject = webglObjects[ i ];
+
 					object._modelViewMatrix.multiplyMatrices( shadowCamera.matrixWorldInverse, object.matrixWorld );
-					_renderList.push(webglObject);
-					
+					_renderList.push( webglObject );
+
 				}
+
 			}
-	
-			for(var i = 0, l = object.children.length; i < l; i++) {
-				
-				projectObject(scene, object.children[i],shadowCamera);
+
+			for ( var i = 0, l = object.children.length; i < l; i ++ ) {
+
+				projectObject( scene, object.children[ i ], shadowCamera );
+
 			}
-		
+
 		}
+
 	}
 
 	function createVirtualLight( light, cascade ) {
@@ -459,7 +480,7 @@ THREE.ShadowMapPlugin = function () {
 			var p = pointsWorld[ i ];
 
 			p.copy( pointsFrustum[ i ] );
-			THREE.ShadowMapPlugin.__projector.unprojectVector( p, camera );
+			p.unproject( camera );
 
 			p.applyMatrix4( shadowCamera.matrixWorldInverse );
 
@@ -499,5 +520,3 @@ THREE.ShadowMapPlugin = function () {
 	};
 
 };
-
-THREE.ShadowMapPlugin.__projector = new THREE.Projector();
