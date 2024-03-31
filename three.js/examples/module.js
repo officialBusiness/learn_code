@@ -58,7 +58,6 @@ import "../source/src/core/Face3.js";
 import "../source/src/core/Face4.js";
 import "../source/src/core/Geometry.js";
 import "../source/src/core/Object3D.js";
-import "../source/src/core/Projector.js";
 import "../source/src/core/Raycaster.js";
 
 import "../source/src/extras/animation/Animation.js";
