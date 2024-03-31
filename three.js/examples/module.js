@@ -21,9 +21,7 @@ import "../source/src/math/Matrix4.js";
 
 import "../source/src/core/Object3D.js";
 
-import "../source/src/objects/Mesh.js";
-
-import "../source/src/objects/Line.js";
+import "../source/src/math/Ray.js";
 
 import "../source/src/math/Math.js";
 
@@ -35,17 +33,20 @@ import "../source/src/math/Box3.js";
 
 import "../source/src/math/Sphere.js";
 
-import "../source/src/math/Ray.js";
-
 import "../source/src/math/Plane.js";
 
 import "../source/src/math/Frustum.js";
 
 import "../source/src/math/Euler.js";
 
+import "../source/src/objects/Line.js";
+
+import "../source/src/objects/Mesh.js";
+
 // start
 
 import "../source/src/cameras/Camera.js";
+import "../source/src/cameras/CubeCamera.js";
 import "../source/src/cameras/OrthographicCamera.js";
 import "../source/src/cameras/PerspectiveCamera.js";
 
@@ -64,9 +65,6 @@ import "../source/src/extras/animation/Animation.js";
 import "../source/src/extras/animation/AnimationHandler.js";
 import "../source/src/extras/animation/KeyFrameAnimation.js";
 import "../source/src/extras/animation/MorphAnimation.js";
-
-import "../source/src/extras/cameras/CombinedCamera.js";
-import "../source/src/extras/cameras/CubeCamera.js";
 
 import "../source/src/extras/core/Curve.js";
 import "../source/src/extras/core/CurvePath.js";
@@ -148,13 +146,13 @@ import "../source/src/lights/SpotLight.js";
 
 import "../source/src/loaders/Loader.js";
 import "../source/src/loaders/BufferGeometryLoader.js";
+import "../source/src/loaders/GeometryLoader.js";
 import '../source/src/loaders/Cache.js';
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingManager.js";
 import "../source/src/loaders/MaterialLoader.js";
 import "../source/src/loaders/ObjectLoader.js";
-import "../source/src/loaders/SceneLoader.js";
 import "../source/src/loaders/TextureLoader.js";
 import "../source/src/loaders/XHRLoader.js";
 
@@ -167,7 +165,7 @@ import "../source/src/materials/MeshFaceMaterial.js";
 import "../source/src/materials/MeshLambertMaterial.js";
 import "../source/src/materials/MeshNormalMaterial.js";
 import "../source/src/materials/MeshPhongMaterial.js";
-import "../source/src/materials/ParticleSystemMaterial.js";
+import "../source/src/materials/PointCloudMaterial.js";
 import "../source/src/materials/ShaderMaterial.js";
 import "../source/src/materials/RawShaderMaterial.js";
 import "../source/src/materials/SpriteCanvasMaterial.js";
@@ -191,14 +189,14 @@ import "../source/src/math/Triangle.js";
 import "../source/src/math/Vector2.js";
 import "../source/src/math/Vector3.js";
 import "../source/src/math/Vector4.js";
-import "../source/src/math/Vertex.js";
+// import "../source/src/math/Vertex.js";
 
 import "../source/src/objects/Bone.js";
 import "../source/src/objects/Line.js";
 import "../source/src/objects/LOD.js";
 import "../source/src/objects/Mesh.js";
 import "../source/src/objects/MorphAnimMesh.js";
-import "../source/src/objects/ParticleSystem.js";
+import "../source/src/objects/PointCloud.js";
 import "../source/src/objects/Skeleton.js";
 import "../source/src/objects/SkinnedMesh.js";
 import "../source/src/objects/Sprite.js";
@@ -227,6 +225,7 @@ import "../source/src/scenes/FogExp2.js";
 import "../source/src/scenes/Scene.js";
 
 import "../source/src/textures/CompressedTexture.js";
+import "../source/src/textures/CubeTexture.js";
 import "../source/src/textures/DataTexture.js";
 import "../source/src/textures/Texture.js";
 
@@ -234,36 +233,50 @@ import "../libs/lil-gui/lil-gui.umd.min.js";
 
 // source/examples/jsm
 
-import '../source/examples/js/controls/EditorControls.js';
-import '../source/examples/js/controls/FirstPersonControls.js';
-import '../source/examples/js/controls/FlyControls.js';
+import '../source/examples/js/cameras/CombinedCamera.js';
+
+// import '../source/examples/js/controls/DeviceOrientationControls.js';
+// import '../source/examples/js/controls/EditorControls.js';
+// import '../source/examples/js/controls/FirstPersonControls.js';
+// import '../source/examples/js/controls/FlyControls.js';
+// import '../source/examples/js/controls/OculusControls.js';
 import '../source/examples/js/controls/OrbitControls.js';
-import '../source/examples/js/controls/PathControls.js';
-import '../source/examples/js/controls/PointerLockControls.js';
-import '../source/examples/js/controls/FlyControls.js';
-import '../source/examples/js/controls/TrackballControls.js';
-import '../source/examples/js/controls/TransformControls.js';
+// import '../source/examples/js/controls/PointerLockControls.js';
+// import '../source/examples/js/controls/TrackballControls.js';
+// import '../source/examples/js/controls/TransformControls.js';
+// import '../source/examples/js/controls/VRControl.js';
 
 import '../source/examples/js/effects/AnaglyphEffect.js';
 import '../source/examples/js/effects/AsciiEffect.js';
-import '../source/examples/js/effects/CrosseyedEffect.js';
 import '../source/examples/js/effects/OculusRiftEffect.js';
 import '../source/examples/js/effects/ParallaxBarrierEffect.js';
+import '../source/examples/js/effects/StereoEffect.js';
+import '../source/examples/js/effects/VREffect.js';
+
+import '../source/examples/js/loaders/gltf/glTF-parser.js';
+import '../source/examples/js/loaders/gltf/glTFAnimation.js';
+import '../source/examples/js/loaders/gltf/glTFLoader.js';
+import '../source/examples/js/loaders/gltf/GLTFLoaderUtils.js';
 
 import '../source/examples/js/postprocessing/BloomPass.js';
+import '../source/examples/js/postprocessing/BokehPass.js';
 import '../source/examples/js/postprocessing/DotScreenPass.js';
 import '../source/examples/js/postprocessing/EffectComposer.js';
 import '../source/examples/js/postprocessing/FilmPass.js';
+import '../source/examples/js/postprocessing/GlitchPass.js';
 import '../source/examples/js/postprocessing/MaskPass.js';
 import '../source/examples/js/postprocessing/RenderPass.js';
 import '../source/examples/js/postprocessing/SavePass.js';
 import '../source/examples/js/postprocessing/ShaderPass.js';
 import '../source/examples/js/postprocessing/TexturePass.js';
 
+import '../source/examples/js/renderers/CSS2DRenderer.js';
 import '../source/examples/js/renderers/CSS3DRenderer.js';
+import '../source/examples/js/renderers/RaytracingRenderer.js';
 import '../source/examples/js/renderers/SoftwareRenderer.js';
 import '../source/examples/js/renderers/SVGRenderer.js';
 import '../source/examples/js/renderers/WebGLDeferredRenderer.js';
+import '../source/examples/js/renderers/WebGLRenderer3.js';
 
 import '../source/examples/js/shaders/CopyShader.js';
 

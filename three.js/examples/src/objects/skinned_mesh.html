@@ -17,7 +17,6 @@
 		skinning_vertex 修改
 			"mat4 m = boneGlobalMatrices[ int( skinIndex.x ) ] * skinWeight.x;",
 			"gl_Position  = projectionMatrix * viewMatrix * objectMatrix * m * vec4(position, 1.0);",
-		不修改的话，就是用 skinVerticesA 加 skinVerticesB 代替 position， 好奇怪啊
 	-->
 	<body>
 		<script type="module">
@@ -154,7 +153,7 @@
 			}
 
 			function boneChange(){
-				mesh.pose();
+				// mesh.pose();
 			}
 
 			function initBone(gui, bone, boneName){
