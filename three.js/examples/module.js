@@ -55,13 +55,13 @@ import "../source/src/core/EventDispatcher.js";
 import "../source/src/core/Face3.js";
 import "../source/src/core/Face4.js";
 import "../source/src/core/Geometry.js";
+import "../source/src/core/Geometry2.js";
 import "../source/src/core/Object3D.js";
 import "../source/src/core/Projector.js";
 import "../source/src/core/Raycaster.js";
 
 import "../source/src/extras/animation/Animation.js";
 import "../source/src/extras/animation/AnimationHandler.js";
-import "../source/src/extras/animation/AnimationMorphTarget.js";
 import "../source/src/extras/animation/KeyFrameAnimation.js";
 
 import "../source/src/extras/cameras/CombinedCamera.js";
@@ -85,6 +85,8 @@ import "../source/src/extras/curves/QuadraticBezierCurve3.js";
 import "../source/src/extras/curves/SplineCurve.js";
 import "../source/src/extras/curves/SplineCurve3.js";
 
+import "../source/src/extras/geometries/BoxGeometry.js";
+import "../source/src/extras/geometries/BoxGeometry2.js";
 import "../source/src/extras/geometries/CircleGeometry.js";
 import "../source/src/extras/geometries/CubeGeometry.js";
 import "../source/src/extras/geometries/CylinderGeometry.js";
@@ -94,6 +96,7 @@ import "../source/src/extras/geometries/LatheGeometry.js";
 import "../source/src/extras/geometries/OctahedronGeometry.js";
 import "../source/src/extras/geometries/ParametricGeometry.js";
 import "../source/src/extras/geometries/PlaneGeometry.js";
+import "../source/src/extras/geometries/PlaneGeometry2.js";
 import "../source/src/extras/geometries/PolyhedronGeometry.js";
 import "../source/src/extras/geometries/ShapeGeometry.js";
 import "../source/src/extras/geometries/SphereGeometry.js";
@@ -144,7 +147,8 @@ import "../source/src/lights/PointLight.js";
 import "../source/src/lights/SpotLight.js";
 
 import "../source/src/loaders/Loader.js";
-import "../source/src/loaders/GeometryLoader.js";
+// import "../source/src/loaders/GeometryLoader.js";
+import "../source/src/loaders/Geometry2Loader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingManager.js";
@@ -197,7 +201,7 @@ import "../source/src/objects/ParticleSystem.js";
 import "../source/src/objects/SkinnedMesh.js";
 import "../source/src/objects/Sprite.js";
 
-import "../source/src/renderers/renderables/RenderableFace3.js";
+import "../source/src/renderers/renderables/RenderableFace.js";
 import "../source/src/renderers/renderables/RenderableLine.js";
 import "../source/src/renderers/renderables/RenderableObject.js";
 import "../source/src/renderers/renderables/RenderableSprite.js";
