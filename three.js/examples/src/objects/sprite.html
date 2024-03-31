@@ -130,14 +130,11 @@
 				spriteFolder.add(sprite.scale, 'y', -20, 20).name('scale.y');
 
 
-				// materialFolder.add(sprite.material, 'useScreenCoordinates');
-				// materialFolder.add(sprite.material, 'sizeAttenuation');
+				materialFolder.add(sprite.material.map.repeat, 'x', -2, 2).name('uvScale.x');
+				materialFolder.add(sprite.material.map.repeat, 'y', -2, 2).name('uvScale.y');
 
-				materialFolder.add(sprite.material.uvScale, 'x', -2, 2).name('uvScale.x');
-				materialFolder.add(sprite.material.uvScale, 'y', -2, 2).name('uvScale.y');
-
-				materialFolder.add(sprite.material.uvOffset, 'x', -2, 2).name('uvOffset.x');
-				materialFolder.add(sprite.material.uvOffset, 'y', -2, 2).name('uvOffset.y');
+				materialFolder.add(sprite.material.map.offset, 'x', -2, 2).name('uvOffset.x');
+				materialFolder.add(sprite.material.map.offset, 'y', -2, 2).name('uvOffset.y');
 
 				materialFolder.add(sprite.material, 'opacity', 0, 1);
 

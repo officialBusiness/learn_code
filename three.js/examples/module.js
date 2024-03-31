@@ -109,6 +109,7 @@ import "../source/src/extras/helpers/BoundingBoxHelper.js";
 import "../source/src/extras/helpers/BoxHelper.js";
 import "../source/src/extras/helpers/CameraHelper.js";
 import "../source/src/extras/helpers/DirectionalLightHelper.js";
+import "../source/src/extras/helpers/EdgesHelper.js";
 import "../source/src/extras/helpers/FaceNormalsHelper.js";
 import "../source/src/extras/helpers/GridHelper.js";
 import "../source/src/extras/helpers/HemisphereLightHelper.js";
