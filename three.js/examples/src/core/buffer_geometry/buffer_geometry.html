@@ -4,13 +4,13 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" href="../../icon.png">
+		<link rel="icon" href="../../../icon.png">
 		<title>buffer_geometry</title>
-		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../source/src/Three.js"></script>
+		<script type="text/javascript" src="../../../../source/src/Three.js"></script>
 
-		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
 
 	</head>
 	<!--
@@ -18,7 +18,7 @@
 	-->
 	<body>
 		<script type="module">
-			import '../../module.js';
+			import '../../../module.js';
 
 			var scene = new THREE.Scene();
 
@@ -45,63 +45,41 @@
 
 			var plane = new THREE.BufferGeometry();
 
-			plane.attributes[ "position" ] = {
-				itemSize: 3,
-				array: new Float32Array([
-					-4, 4, 0,
-					 4, 4, 0,
-					-4,-4, 0,
-					 4,-4, 0,
-				]),
-			}
+			plane.addAttribute( "position", new THREE.BufferAttribute(new Float32Array([
+				-4, 4, 0,
+				 4, 4, 0,
+				-4,-4, 0,
+				 4,-4, 0,
+			]), 3) );
+			plane.addAttribute( "uv", new THREE.BufferAttribute( new Float32Array([
+				0, 1,
+				1, 1,
+				0, 0,
+				1, 0,
+			]), 2) );
 
-			plane.attributes[ "uv" ] = {
-				itemSize: 2,
-				array: new Float32Array([
-					0, 1,
-					1, 1,
-					0, 0,
-					1, 0,
-				]),
-			}
-
-			plane.attributes[ "index" ] = {
-				itemSize: 1,
-				array: new Int16Array([
-					0, 2, 3,
-					3, 1, 0,
-				]),
-			}
-
-			plane.offsets = [{
-				start: 0,
-				count: 6,
-				index: 0
-			}]
-
-			plane.computeBoundingSphere();
-			plane.computeVertexNormals();
+			plane.setIndex( new THREE.BufferAttribute(new Uint16Array([
+				0, 2, 3,
+				3, 1, 0
+			]), 1) );
 
 			var mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: THREE.ImageUtils.loadTexture('../../assets/images/logo1.jpg'),
+					map: THREE.ImageUtils.loadTexture('../../../assets/images/logo1.jpg'),
 					// envMap: THREE.ImageUtils.loadTextureCube(
 					// 	[
 					// 		"px.jpg", "nx.jpg",
 					// 		"py.jpg", "ny.jpg",
 					// 		"pz.jpg", "nz.jpg"
 					// 	].map((url)=>{
-					// 		 	return "../../assets/images/cube/Escher/" + url;
+					// 		 	return "../../../assets/images/cube/Escher/" + url;
 					// 	})
 					// ),
 				})
 			);
 
 			scene.add(mesh);
-
-			var ambient = new THREE.AmbientLight( 0x80ffff );
-			scene.add( ambient );
 
 			var stats = new Stats();
 			stats.domElement.style.position = 'absolute';

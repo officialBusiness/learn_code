@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../icon.png">
-		<title>particle_system</title>
+		<title>points</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
 		<script type="text/javascript" src="../../../source/src/Three.js"></script>
@@ -39,9 +39,9 @@
 
 			scene.add(camera);
 
-			var particle = new THREE.Geometry();
+			var pointsGeometry = new THREE.Geometry();
 
-			particle.vertices.push(
+			pointsGeometry.vertices.push(
 				new THREE.Vector3( 0, 0, 0 ),
 				new THREE.Vector3(-4, 4, 0 ),
 				new THREE.Vector3( 4, 4, 0 ),
@@ -49,7 +49,7 @@
 				new THREE.Vector3( 4,-4, 0 )
 			);
 
-			particle.colors.push(
+			pointsGeometry.colors.push(
 				new THREE.Color( 0xff0000 ),
 				new THREE.Color( 0xffff00 ),
 				new THREE.Color( 0xff00ff ),
@@ -85,7 +85,7 @@
 				return texture;
 			}
 
-			var particleBasicMaterial = new THREE.ParticleBasicMaterial({
+			var pointsMaterial = new THREE.PointsMaterial({
 				color: 0xffffff,
 				map: addTexture('../../assets/images/logo.jpeg'),
 				// map: THREE.ImageUtils.loadTexture('../../assets/images/logo.jpeg'),
@@ -94,7 +94,7 @@
 				vertexColors: false,
 			})
 
-			var particleSystem = new THREE.ParticleSystem(particle, particleBasicMaterial);
+			var particleSystem = new THREE.Points(pointsGeometry, pointsMaterial);
 
 			scene.add(particleSystem);
 
@@ -110,10 +110,10 @@
 
 				const gui = new lil.GUI();
 
-				initParticleBasicMaterial(gui, particleBasicMaterial, 'particleBasicMaterial')
+				initPointsMaterial(gui, pointsMaterial, 'pointsMaterial');
 			}
 
-			function initParticleBasicMaterial(gui, material, name){
+			function initPointsMaterial(gui, material, name){
 
 				const materialFolder = gui.addFolder(name);
 
