@@ -45,7 +45,7 @@
 			var mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: THREE.ImageUtils.loadTexture('../../assets/images/logo.jpeg'),
+					map: new THREE.TextureLoader().load('../../assets/images/logo.jpeg'),
 				})
 			);
 			scene.add(mesh);

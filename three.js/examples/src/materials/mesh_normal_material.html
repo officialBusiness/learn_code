@@ -70,34 +70,6 @@
 
 			plane.computeFaceNormals();
 
-			function nearest_pow2(n) {
-				var l = Math.log(n) / Math.LN2;
-				return Math.pow( 2, Math.round(l) );
-			}
-
-			function addTexture(url){
-
-				var image = new Image();
-				image.src = url;
-
-				var canvasElement = document.createElement('canvas');
-
-				var texture = new THREE.Texture( canvasElement );
-
-
-				image.onload = ()=>{
-
-					canvasElement.width = nearest_pow2(image.naturalWidth);
-					canvasElement.height = nearest_pow2(image.naturalHeight);
-
-					canvasElement.getContext("2d").drawImage( image, 0, 0, canvasElement.width, canvasElement.height );
-
-					texture.needsUpdate = true;
-				}
-
-				return texture;
-			}
-
 			var meshNormalMaterial = new THREE.MeshNormalMaterial({
 				depthTest: false,
 			})

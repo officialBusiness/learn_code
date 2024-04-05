@@ -47,15 +47,13 @@
 			var mesh = new THREE.Mesh( cube,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					envMap: THREE.ImageUtils.loadTextureCube(
-						[
+					envMap: new THREE.CubeTextureLoader().load([
 							"px.jpg", "nx.jpg",
 							"py.jpg", "ny.jpg",
 							"pz.jpg", "nz.jpg"
 						].map((url)=>{
 							 	return "../../assets/images/cube/Escher/" + url;
-						})
-					),
+						}))
 				})
 			);
 			mesh.updateMatrix();

@@ -114,8 +114,8 @@
 			var mesh = new THREE.SkinnedMesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: THREE.ImageUtils.loadTexture('../../assets/images/logo1.jpg'),
-					envMap: THREE.ImageUtils.loadTextureCube(
+					map: new THREE.TextureLoader().load('../../assets/images/logo1.jpg'),
+					envMap: new THREE.CubeTextureLoader().load(
 						[
 							"px.jpg", "nx.jpg",
 							"py.jpg", "ny.jpg",

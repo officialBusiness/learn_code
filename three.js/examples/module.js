@@ -57,6 +57,22 @@ import "../source/src/extras/geometries/PolyhedronGeometry.js";
 
 import "../source/src/objects/LineSegments.js";
 
+// src
+
+import '../source/src/animation/KeyframeTrack.js';
+
+import '../source/src/animation/tracks/BooleanKeyframeTrack.js';
+import '../source/src/animation/tracks/ColorKeyframeTrack.js';
+import '../source/src/animation/tracks/NumberKeyframeTrack.js';
+import '../source/src/animation/tracks/QuaternionKeyframeTrack.js';
+import '../source/src/animation/tracks/StringKeyframeTrack.js';
+import '../source/src/animation/tracks/VectorKeyframeTrack.js';
+
+import '../source/src/animation/AnimationAction.js';
+import '../source/src/animation/AnimationClip.js';
+import '../source/src/animation/AnimationMixer.js';
+import '../source/src/animation/AnimationUtils.js';
+import '../source/src/animation/PropertyBinding.js';
 
 import '../source/src/cameras/Camera.js';
 import '../source/src/cameras/CubeCamera.js';
@@ -65,6 +81,7 @@ import '../source/src/cameras/PerspectiveCamera.js';
 
 import '../source/src/core/BufferAttribute.js';
 import '../source/src/core/BufferGeometry.js';
+import "../source/src/core/Channels.js";
 import '../source/src/core/Clock.js';
 import '../source/src/core/DirectGeometry.js';
 import '../source/src/core/EventDispatcher.js';
@@ -78,11 +95,6 @@ import '../source/src/core/InterleavedBuffer.js';
 import '../source/src/core/InterleavedBufferAttribute.js';
 import '../source/src/core/Object3D.js';
 import '../source/src/core/Raycaster.js';
-
-import "../source/src/extras/animation/Animation.js";
-import "../source/src/extras/animation/AnimationHandler.js";
-import "../source/src/extras/animation/KeyFrameAnimation.js";
-import "../source/src/extras/animation/MorphAnimation.js";
 
 import "../source/src/extras/audio/Audio.js";
 import "../source/src/extras/audio/AudioListener.js";
@@ -125,7 +137,6 @@ import "../source/src/extras/geometries/SphereBufferGeometry.js";
 import "../source/src/extras/geometries/SphereGeometry.js";
 import "../source/src/extras/geometries/SphereGeometry.js";
 import "../source/src/extras/geometries/TetrahedronGeometry.js";
-import "../source/src/extras/geometries/TextGeometry.js";
 import "../source/src/extras/geometries/TorusGeometry.js";
 import "../source/src/extras/geometries/TorusKnotGeometry.js";
 import "../source/src/extras/geometries/TubeGeometry.js";
@@ -150,12 +161,14 @@ import "../source/src/extras/helpers/WireframeHelper.js";
 import "../source/src/extras/objects/ImmediateRenderObject.js";
 import "../source/src/extras/objects/MorphBlendMesh.js";
 
-import "../source/src/extras/FontUtils.js";
+import "../source/src/extras/CurveUtils.js";
 import "../source/src/extras/GeometryUtils.js";
 import "../source/src/extras/ImageUtils.js";
 import "../source/src/extras/SceneUtils.js";
+import "../source/src/extras/ShapeUtils.js";
 
 import "../source/src/lights/Light.js";
+import "../source/src/lights/LightShadow.js";
 import "../source/src/lights/AmbientLight.js";
 import "../source/src/lights/DirectionalLight.js";
 import "../source/src/lights/HemisphereLight.js";
@@ -163,10 +176,12 @@ import "../source/src/lights/PointLight.js";
 import "../source/src/lights/SpotLight.js";
 
 import "../source/src/loaders/Loader.js";
+import "../source/src/loaders/AnimationLoader.js";
 import "../source/src/loaders/BinaryTextureLoader.js";
 import "../source/src/loaders/BufferGeometryLoader.js";
 import "../source/src/loaders/Cache.js";
 import "../source/src/loaders/CompressedTextureLoader.js";
+import "../source/src/loaders/CubeTextureLoader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingManager.js";
@@ -215,7 +230,6 @@ import "../source/src/objects/Line.js";
 import "../source/src/objects/LineSegments.js";
 import "../source/src/objects/LOD.js";
 import "../source/src/objects/Mesh.js";
-import "../source/src/objects/MorphAnimMesh.js";
 import "../source/src/objects/Points.js";
 import "../source/src/objects/Skeleton.js";
 import "../source/src/objects/SkinnedMesh.js";
@@ -261,11 +275,11 @@ import "../libs/lil-gui/lil-gui.umd.min.js";
 
 // source/examples/jsm
 
-import "../source/examples/js/cameras/CombinedCamera.js";
+// import "../source/examples/js/cameras/CombinedCamera.js";
 
 // import "../source/examples/js/controls/DeviceOrientationControls.js";
 // import "../source/examples/js/controls/EditorControls.js";
-// import "../source/examples/js/controls/FirstPersonControls.js";
+import "../source/examples/js/controls/FirstPersonControls.js";
 // import "../source/examples/js/controls/FlyControls.js";
 // import "../source/examples/js/controls/OculusControls.js";
 import "../source/examples/js/controls/OrbitControls.js";
