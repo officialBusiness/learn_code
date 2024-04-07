@@ -55,6 +55,7 @@ import "../source/src/extras/geometries/PolyhedronGeometry.js";
 
 import "../source/src/objects/LineSegments.js";
 
+import "../source/src/textures/CubeTexture.js";
 // src
 
 import '../source/src/animation/KeyframeTrack.js';
@@ -274,6 +275,7 @@ import "../source/src/renderers/webgl/WebGLProperties.js";
 import "../source/src/renderers/webgl/WebGLShader.js";
 import "../source/src/renderers/webgl/WebGLShadowMap.js";
 import "../source/src/renderers/webgl/WebGLState.js";
+import "../source/src/renderers/webgl/WebGLTextures.js";
 import "../source/src/renderers/webgl/WebGLUniforms.js";
 
 import "../source/src/renderers/WebGLRenderer.js";

@@ -509,11 +509,6 @@ THREE.ShaderChunk[ 'envmap_fragment' ] = `#ifdef USE_ENVMAP
 	#else
 		vec3 reflectVec = vReflect;
 	#endif
-	#ifdef DOUBLE_SIDED
-		float flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );
-	#else
-		float flipNormal = 1.0;
-	#endif
 	#ifdef ENVMAP_TYPE_CUBE
 		vec4 envColor = textureCube( envMap, flipNormal * vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );
 	#elif defined( ENVMAP_TYPE_EQUIREC )
@@ -522,7 +517,7 @@ THREE.ShaderChunk[ 'envmap_fragment' ] = `#ifdef USE_ENVMAP
 		sampleUV.x = atan( flipNormal * reflectVec.z, flipNormal * reflectVec.x ) * RECIPROCAL_PI2 + 0.5;
 		vec4 envColor = texture2D( envMap, sampleUV );
 	#elif defined( ENVMAP_TYPE_SPHERE )
-		vec3 reflectView = flipNormal * normalize((viewMatrix * vec4( reflectVec, 0.0 )).xyz + vec3(0.0,0.0,1.0));
+		vec3 reflectView = flipNormal * normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0, 0.0, 1.0 ) );
 		vec4 envColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5 );
 	#endif
 	envColor = envMapTexelToLinear( envColor );
@@ -795,11 +790,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 	#endif
 #if defined( USE_ENVMAP ) && defined( PHYSICAL )
 	vec3 getLightProbeIndirectIrradiance( const in GeometricContext geometry, const in int maxMIPLevel ) {
-		#ifdef DOUBLE_SIDED
-			float flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );
-		#else
-			float flipNormal = 1.0;
-		#endif
+		#include <normal_flip>
 		vec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );
 		#ifdef ENVMAP_TYPE_CUBE
 			vec3 queryVec = flipNormal * vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
@@ -828,11 +819,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		#else
 			vec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );
 		#endif
-		#ifdef DOUBLE_SIDED
-			float flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );
-		#else
-			float flipNormal = 1.0;
-		#endif
+		#include <normal_flip>
 		reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
 		float specularMIPLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );
 		#ifdef ENVMAP_TYPE_CUBE
@@ -857,7 +844,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			#endif
 			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		#elif defined( ENVMAP_TYPE_SPHERE )
-			vec3 reflectView = flipNormal * normalize((viewMatrix * vec4( reflectVec, 0.0 )).xyz + vec3(0.0,0.0,1.0));
+			vec3 reflectView = flipNormal * normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0,0.0,1.0 ) );
 			#ifdef TEXTURE_LOD_EXT
 				vec4 envMapColor = texture2DLodEXT( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
 			#else
@@ -914,9 +901,10 @@ THREE.ShaderChunk[ 'lights_physical_fragment' ] = `PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
 material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
 #ifdef STANDARD
-	material.specularColor = mix( vec3( 0.04 ), diffuseColor.rgb, metalnessFactor );
+	material.specularColor = mix( vec3( DEFAULT_SPECULAR_COEFFICIENT ), diffuseColor.rgb, metalnessFactor );
 	#else
-	material.specularColor = mix( vec3( 0.16 * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
+	material.specularColor = mix( vec3( MAXIMUM_SPECULAR_COEFFICIENT * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
+	material.clearCoat = saturate( clearCoat );	material.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );
 	#endif
 `;
 
@@ -927,27 +915,38 @@ THREE.ShaderChunk[ 'lights_physical_pars_fragment' ] = `struct PhysicalMaterial 
 	float	specularRoughness;
 	vec3	specularColor;
 	#ifndef STANDARD
+		float clearCoat;
+		float clearCoatRoughness;
 	#endif
 };
+#define MAXIMUM_SPECULAR_COEFFICIENT 0.16
+#define DEFAULT_SPECULAR_COEFFICIENT 0.04
 void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 	float dotNL = saturate( dot( geometry.normal, directLight.direction ) );
 	vec3 irradiance = dotNL * directLight.color;
 	#ifndef PHYSICALLY_CORRECT_LIGHTS
 		irradiance *= PI;
 	#endif
-	reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 	reflectedLight.directSpecular += irradiance * BRDF_Specular_GGX( directLight, geometry, material.specularColor, material.specularRoughness );
+	reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+	#ifndef STANDARD
+		reflectedLight.directSpecular += irradiance * material.clearCoat * BRDF_Specular_GGX( directLight, geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );
+	#endif
 }
 void RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 }
-void RE_IndirectSpecular_Physical( const in vec3 radiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
+void RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 	reflectedLight.indirectSpecular += radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );
+	#ifndef STANDARD
+		reflectedLight.indirectSpecular += clearCoatRadiance * material.clearCoat * BRDF_Specular_GGX_Environment( geometry, vec3( DEFAULT_SPECULAR_COEFFICIENT ), material.clearCoatRoughness );
+	#endif
 }
 #define RE_Direct				RE_Direct_Physical
 #define RE_IndirectDiffuse		RE_IndirectDiffuse_Physical
 #define RE_IndirectSpecular		RE_IndirectSpecular_Physical
 #define Material_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.specularRoughness )
+#define Material_ClearCoat_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.clearCoatRoughness )
 float computeSpecularOcclusion( const in float dotNV, const in float ambientOcclusion, const in float roughness ) {
 	return saturate( pow( dotNV + ambientOcclusion, exp2( - 16.0 * roughness - 1.0 ) ) - 1.0 + ambientOcclusion );
 }
@@ -1015,7 +1014,13 @@ IncidentLight directLight;
 	#endif
 #if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
 	vec3 radiance = getLightProbeIndirectRadiance( geometry, Material_BlinnShininessExponent( material ), 8 );
-	RE_IndirectSpecular( radiance, geometry, material, reflectedLight );
+	#ifndef STANDARD
+		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );
+	#else
+		vec3 clearCoatRadiance = vec3( 0.0 );
+	#endif
+
+	RE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );
 	#endif
 `;
 
@@ -1139,6 +1144,15 @@ THREE.ShaderChunk[ 'morphtarget_vertex' ] = `#ifdef USE_MORPHTARGETS
 	#endif
 `;
 
+// File:src/renderers/shaders/ShaderChunk/normal_flip.glsl
+
+THREE.ShaderChunk[ 'normal_flip' ] = `#ifdef DOUBLE_SIDED
+	float flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );
+	#else
+	float flipNormal = 1.0;
+	#endif
+`;
+
 // File:src/renderers/shaders/ShaderChunk/normal_fragment.glsl
 
 THREE.ShaderChunk[ 'normal_fragment' ] = `#ifdef FLAT_SHADED
@@ -1146,10 +1160,7 @@ THREE.ShaderChunk[ 'normal_fragment' ] = `#ifdef FLAT_SHADED
 	vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );
 	vec3 normal = normalize( cross( fdx, fdy ) );
 	#else
-	vec3 normal = normalize( vNormal );
-	#ifdef DOUBLE_SIDED
-		normal = normal * ( -1.0 + 2.0 * float( gl_FrontFacing ) );
-	#endif
+	vec3 normal = normalize( vNormal ) * flipNormal;
 	#endif
 #ifdef USE_NORMALMAP
 	normal = perturbNormal2Arb( -vViewPosition, normal );
@@ -1198,10 +1209,10 @@ vec4 packDepthToRGBA( const in float v ) {
 float unpackRGBAToDepth( const in vec4 v ) {
 	return dot( v, UnpackFactors );
 }
-float viewZToOrthoDepth( const in float viewZ, const in float near, const in float far ) {
+float viewZToOrthographicDepth( const in float viewZ, const in float near, const in float far ) {
   return ( viewZ + near ) / ( near - far );
 }
-float OrthoDepthToViewZ( const in float linearClipZ, const in float near, const in float far ) {
+float orthographicDepthToViewZ( const in float linearClipZ, const in float near, const in float far ) {
   return linearClipZ * ( near - far ) - near;
 }
 float viewZToPerspectiveDepth( const in float viewZ, const in float near, const in float far ) {
@@ -1837,6 +1848,7 @@ void main() {
 	reflectedLight.indirectSpecular = vec3( 0.0 );
 	#include <aomap_fragment>
 	vec3 outgoingLight = reflectedLight.indirectDiffuse;
+	#include <normal_flip>
 	#include <envmap_fragment>
 	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 	#include <premultiplied_alpha_fragment>
@@ -1930,6 +1942,7 @@ void main() {
 	reflectedLight.directDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb ) * getShadowMask();
 	#include <aomap_fragment>
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;
+	#include <normal_flip>
 	#include <envmap_fragment>
 	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 	#include <premultiplied_alpha_fragment>
@@ -2020,6 +2033,7 @@ void main() {
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>
 	#include <specularmap_fragment>
+	#include <normal_flip>
 	#include <normal_fragment>
 	#include <emissivemap_fragment>
 	#include <lights_phong_fragment>
@@ -2087,6 +2101,10 @@ uniform vec3 emissive;
 uniform float roughness;
 uniform float metalness;
 uniform float opacity;
+#ifndef STANDARD
+	uniform float clearCoat;
+	uniform float clearCoatRoughness;
+	#endif
 uniform float envMapIntensity;
 varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
@@ -2128,6 +2146,7 @@ void main() {
 	#include <specularmap_fragment>
 	#include <roughnessmap_fragment>
 	#include <metalnessmap_fragment>
+	#include <normal_flip>
 	#include <normal_fragment>
 	#include <emissivemap_fragment>
 	#include <lights_physical_fragment>
@@ -2294,3 +2313,5 @@ void main() {
 	#include <shadowmap_vertex>
 }
 `;
+
+
