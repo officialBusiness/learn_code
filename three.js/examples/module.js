@@ -66,6 +66,7 @@ import '../source/src/animation/tracks/QuaternionKeyframeTrack.js';
 import '../source/src/animation/tracks/StringKeyframeTrack.js';
 import '../source/src/animation/tracks/VectorKeyframeTrack.js';
 
+import '../source/src/animation/AnimationAction.js';
 import '../source/src/animation/AnimationClip.js';
 import '../source/src/animation/AnimationMixer.js';
 import '../source/src/animation/AnimationUtils.js';
@@ -261,6 +262,7 @@ import "../source/src/renderers/webgl/plugins/SpritePlugin.js";
 
 import "../source/src/renderers/webgl/WebGLBufferRenderer.js";
 import "../source/src/renderers/webgl/WebGLCapabilities.js";
+import "../source/src/renderers/webgl/WebGLClipping.js";
 import "../source/src/renderers/webgl/WebGLExtensions.js";
 import "../source/src/renderers/webgl/WebGLGeometries.js";
 import "../source/src/renderers/webgl/WebGLIndexedBufferRenderer.js";
