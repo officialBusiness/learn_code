@@ -26,7 +26,7 @@ THREE.ShaderChunk[ 'alphatest_fragment' ] = `#ifdef ALPHATEST
 THREE.ShaderChunk[ 'aomap_fragment' ] = `#ifdef USE_AOMAP
 	float ambientOcclusion = ( texture2D( aoMap, vUv2 ).r - 1.0 ) * aoMapIntensity + 1.0;
 	reflectedLight.indirectDiffuse *= ambientOcclusion;
-	#if defined( USE_ENVMAP ) && defined( STANDARD )
+	#if defined( USE_ENVMAP ) && defined( PHYSICAL )
 		float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
 		reflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );
 	#endif
@@ -82,6 +82,12 @@ float G_GGX_Smith( const in float alpha, const in float dotNL, const in float do
 	float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );
 	return 1.0 / ( gl * gv );
 }
+float G_GGX_SmithCorrelated( const in float alpha, const in float dotNL, const in float dotNV ) {
+	float a2 = pow2( alpha );
+	float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );
+	float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );
+	return 0.5 / max( gv + gl, EPSILON );
+}
 float D_GGX( const in float alpha, const in float dotNH ) {
 	float a2 = pow2( alpha );
 	float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;
@@ -95,7 +101,7 @@ vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in Geometric
 	float dotNH = saturate( dot( geometry.normal, halfDir ) );
 	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
 	vec3 F = F_Schlick( specularColor, dotLH );
-	float G = G_GGX_Smith( alpha, dotNL, dotNV );
+	float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
 	float D = D_GGX( alpha, dotNH );
 	return F * ( G * D );
 }
@@ -157,6 +163,40 @@ THREE.ShaderChunk[ 'bumpmap_pars_fragment' ] = `#ifdef USE_BUMPMAP
 	#endif
 `;
 
+// File:src/renderers/shaders/ShaderChunk/clipping_planes_fragment.glsl
+
+THREE.ShaderChunk[ 'clipping_planes_fragment' ] = `#if NUM_CLIPPING_PLANES > 0
+	for ( int i = 0; i < NUM_CLIPPING_PLANES; ++ i ) {
+		vec4 plane = clippingPlanes[ i ];
+		if ( dot( vViewPosition, plane.xyz ) > plane.w ) discard;
+	}
+	#endif
+`;
+
+// File:src/renderers/shaders/ShaderChunk/clipping_planes_pars_fragment.glsl
+
+THREE.ShaderChunk[ 'clipping_planes_pars_fragment' ] = `#if NUM_CLIPPING_PLANES > 0
+	#if ! defined( PHYSICAL ) && ! defined( PHONG )
+		varying vec3 vViewPosition;
+	#endif
+	uniform vec4 clippingPlanes[ NUM_CLIPPING_PLANES ];
+	#endif
+`;
+
+// File:src/renderers/shaders/ShaderChunk/clipping_planes_pars_vertex.glsl
+
+THREE.ShaderChunk[ 'clipping_planes_pars_vertex' ] = `#if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )
+	varying vec3 vViewPosition;
+	#endif
+`;
+
+// File:src/renderers/shaders/ShaderChunk/clipping_planes_vertex.glsl
+
+THREE.ShaderChunk[ 'clipping_planes_vertex' ] = `#if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )
+	vViewPosition = - mvPosition.xyz;
+	#endif
+`;
+
 // File:src/renderers/shaders/ShaderChunk/color_fragment.glsl
 
 THREE.ShaderChunk[ 'color_fragment' ] = `#ifdef USE_COLOR
@@ -184,8 +224,8 @@ THREE.ShaderChunk[ 'color_vertex' ] = `#ifdef USE_COLOR
 
 // File:src/renderers/shaders/ShaderChunk/common.glsl
 
-THREE.ShaderChunk[ 'common' ] = `#define PI 3.14159
-#define PI2 6.28318
+THREE.ShaderChunk[ 'common' ] = `#define PI 3.14159265359
+#define PI2 6.28318530718
 #define RECIPROCAL_PI 0.31830988618
 #define RECIPROCAL_PI2 0.15915494
 #define LOG2 1.442695
@@ -196,6 +236,11 @@ float pow2( const in float x ) { return x*x; }
 float pow3( const in float x ) { return x*x*x; }
 float pow4( const in float x ) { float x2 = x*x; return x2*x2; }
 float average( const in vec3 color ) { return dot( color, vec3( 0.3333 ) ); }
+highp float rand( const in vec2 uv ) {
+	const highp float a = 12.9898, b = 78.233, c = 43758.5453;
+	highp float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );
+	return fract(sin(sn) * c);
+}
 struct IncidentLight {
 	vec3 color;
 	vec3 direction;
@@ -235,106 +280,106 @@ vec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 poi
 THREE.ShaderChunk[ 'cube_uv_reflection_fragment' ] = `#ifdef ENVMAP_TYPE_CUBE_UV
 const float cubeUV_textureSize = 1024.0;
 int getFaceFromDirection(vec3 direction) {
-    vec3 absDirection = abs(direction);
-    int face = -1;
-    if( absDirection.x > absDirection.z ) {
-        if(absDirection.x > absDirection.y )
-            face = direction.x > 0.0 ? 0 : 3;
-        else
-            face = direction.y > 0.0 ? 1 : 4;
-    }
-    else {
-        if(absDirection.z > absDirection.y )
-            face = direction.z > 0.0 ? 2 : 5;
-        else
-            face = direction.y > 0.0 ? 1 : 4;
-    }
-    return face;
-  }
-const float cubeUV_maxLods1 = log2(cubeUV_textureSize*0.25) - 1.0;
-const float cubeUV_rangeClamp = exp2((6.0 - 1.0) * 2.0);
+	vec3 absDirection = abs(direction);
+	int face = -1;
+	if( absDirection.x > absDirection.z ) {
+		if(absDirection.x > absDirection.y )
+			face = direction.x > 0.0 ? 0 : 3;
+		else
+			face = direction.y > 0.0 ? 1 : 4;
+	}
+	else {
+		if(absDirection.z > absDirection.y )
+			face = direction.z > 0.0 ? 2 : 5;
+		else
+			face = direction.y > 0.0 ? 1 : 4;
+	}
+	return face;
+}
+float cubeUV_maxLods1 = log2(cubeUV_textureSize*0.25) - 1.0;
+float cubeUV_rangeClamp = exp2((6.0 - 1.0) * 2.0);
 vec2 MipLevelInfo( vec3 vec, float roughnessLevel, float roughness ) {
-    float scale = exp2(cubeUV_maxLods1 - roughnessLevel);
-    float dxRoughness = dFdx(roughness);
-    float dyRoughness = dFdy(roughness);
-    vec3 dx = dFdx( vec * scale * dxRoughness );
-    vec3 dy = dFdy( vec * scale * dyRoughness );
-    float d = max( dot( dx, dx ), dot( dy, dy ) );
-    d = clamp(d, 1.0, cubeUV_rangeClamp);
-    float mipLevel = 0.5 * log2(d);
-    return vec2(floor(mipLevel), fract(mipLevel));
-  }
-const float cubeUV_maxLods2 = log2(cubeUV_textureSize*0.25) - 2.0;
+	float scale = exp2(cubeUV_maxLods1 - roughnessLevel);
+	float dxRoughness = dFdx(roughness);
+	float dyRoughness = dFdy(roughness);
+	vec3 dx = dFdx( vec * scale * dxRoughness );
+	vec3 dy = dFdy( vec * scale * dyRoughness );
+	float d = max( dot( dx, dx ), dot( dy, dy ) );
+	d = clamp(d, 1.0, cubeUV_rangeClamp);
+	float mipLevel = 0.5 * log2(d);
+	return vec2(floor(mipLevel), fract(mipLevel));
+}
+float cubeUV_maxLods2 = log2(cubeUV_textureSize*0.25) - 2.0;
 const float cubeUV_rcpTextureSize = 1.0 / cubeUV_textureSize;
 vec2 getCubeUV(vec3 direction, float roughnessLevel, float mipLevel) {
-    mipLevel = roughnessLevel > cubeUV_maxLods2 - 3.0 ? 0.0 : mipLevel;
-    float a = 16.0 * cubeUV_rcpTextureSize;
-    vec2 exp2_packed = exp2( vec2( roughnessLevel, mipLevel ) );
-    vec2 rcp_exp2_packed = vec2( 1.0 ) / exp2_packed;
-    float powScale = exp2_packed.x * exp2_packed.y;
-    float scale = rcp_exp2_packed.x * rcp_exp2_packed.y * 0.25;
-    float mipOffset = 0.75*(1.0 - rcp_exp2_packed.y) * rcp_exp2_packed.x;
-    bool bRes = mipLevel == 0.0;
-    scale =  bRes && (scale < a) ? a : scale;
-    vec3 r;
-    vec2 offset;
-    int face = getFaceFromDirection(direction);
-    float rcpPowScale = 1.0 / powScale;
-    if( face == 0) {
-        r = vec3(direction.x, -direction.z, direction.y);
-        offset = vec2(0.0+mipOffset,0.75 * rcpPowScale);
-        offset.y = bRes && (offset.y < 2.0*a) ?  a : offset.y;
-    }
-    else if( face == 1) {
-        r = vec3(direction.y, direction.x, direction.z);
-        offset = vec2(scale+mipOffset, 0.75 * rcpPowScale);
-        offset.y = bRes && (offset.y < 2.0*a) ?  a : offset.y;
-    }
-    else if( face == 2) {
-        r = vec3(direction.z, direction.x, direction.y);
-        offset = vec2(2.0*scale+mipOffset, 0.75 * rcpPowScale);
-        offset.y = bRes && (offset.y < 2.0*a) ?  a : offset.y;
-    }
-    else if( face == 3) {
-        r = vec3(direction.x, direction.z, direction.y);
-        offset = vec2(0.0+mipOffset,0.5 * rcpPowScale);
-        offset.y = bRes && (offset.y < 2.0*a) ?  0.0 : offset.y;
-    }
-    else if( face == 4) {
-        r = vec3(direction.y, direction.x, -direction.z);
-        offset = vec2(scale+mipOffset, 0.5 * rcpPowScale);
-        offset.y = bRes && (offset.y < 2.0*a) ?  0.0 : offset.y;
-    }
-    else {
-        r = vec3(direction.z, -direction.x, direction.y);
-        offset = vec2(2.0*scale+mipOffset, 0.5 * rcpPowScale);
-        offset.y = bRes && (offset.y < 2.0*a) ?  0.0 : offset.y;
-    }
-    r = normalize(r);
-    float texelOffset = 0.5 * cubeUV_rcpTextureSize;
-    vec2 s = ( r.yz / abs( r.x ) + vec2( 1.0 ) ) * 0.5;
-    vec2 base = offset + vec2( texelOffset );
-    return base + s * ( scale - 2.0 * texelOffset );
-  }
-const float cubeUV_maxLods3 = log2(cubeUV_textureSize*0.25) - 3.0;
+	mipLevel = roughnessLevel > cubeUV_maxLods2 - 3.0 ? 0.0 : mipLevel;
+	float a = 16.0 * cubeUV_rcpTextureSize;
+	vec2 exp2_packed = exp2( vec2( roughnessLevel, mipLevel ) );
+	vec2 rcp_exp2_packed = vec2( 1.0 ) / exp2_packed;
+	float powScale = exp2_packed.x * exp2_packed.y;
+	float scale = rcp_exp2_packed.x * rcp_exp2_packed.y * 0.25;
+	float mipOffset = 0.75*(1.0 - rcp_exp2_packed.y) * rcp_exp2_packed.x;
+	bool bRes = mipLevel == 0.0;
+	scale =  bRes && (scale < a) ? a : scale;
+	vec3 r;
+	vec2 offset;
+	int face = getFaceFromDirection(direction);
+	float rcpPowScale = 1.0 / powScale;
+	if( face == 0) {
+		r = vec3(direction.x, -direction.z, direction.y);
+		offset = vec2(0.0+mipOffset,0.75 * rcpPowScale);
+		offset.y = bRes && (offset.y < 2.0*a) ?  a : offset.y;
+	}
+	else if( face == 1) {
+		r = vec3(direction.y, direction.x, direction.z);
+		offset = vec2(scale+mipOffset, 0.75 * rcpPowScale);
+		offset.y = bRes && (offset.y < 2.0*a) ?  a : offset.y;
+	}
+	else if( face == 2) {
+		r = vec3(direction.z, direction.x, direction.y);
+		offset = vec2(2.0*scale+mipOffset, 0.75 * rcpPowScale);
+		offset.y = bRes && (offset.y < 2.0*a) ?  a : offset.y;
+	}
+	else if( face == 3) {
+		r = vec3(direction.x, direction.z, direction.y);
+		offset = vec2(0.0+mipOffset,0.5 * rcpPowScale);
+		offset.y = bRes && (offset.y < 2.0*a) ?  0.0 : offset.y;
+	}
+	else if( face == 4) {
+		r = vec3(direction.y, direction.x, -direction.z);
+		offset = vec2(scale+mipOffset, 0.5 * rcpPowScale);
+		offset.y = bRes && (offset.y < 2.0*a) ?  0.0 : offset.y;
+	}
+	else {
+		r = vec3(direction.z, -direction.x, direction.y);
+		offset = vec2(2.0*scale+mipOffset, 0.5 * rcpPowScale);
+		offset.y = bRes && (offset.y < 2.0*a) ?  0.0 : offset.y;
+	}
+	r = normalize(r);
+	float texelOffset = 0.5 * cubeUV_rcpTextureSize;
+	vec2 s = ( r.yz / abs( r.x ) + vec2( 1.0 ) ) * 0.5;
+	vec2 base = offset + vec2( texelOffset );
+	return base + s * ( scale - 2.0 * texelOffset );
+}
+float cubeUV_maxLods3 = log2(cubeUV_textureSize*0.25) - 3.0;
 vec4 textureCubeUV(vec3 reflectedDirection, float roughness ) {
-    float roughnessVal = roughness* cubeUV_maxLods3;
-    float r1 = floor(roughnessVal);
-    float r2 = r1 + 1.0;
-    float t = fract(roughnessVal);
-    vec2 mipInfo = MipLevelInfo(reflectedDirection, r1, roughness);
-    float s = mipInfo.y;
-    float level0 = mipInfo.x;
-    float level1 = level0 + 1.0;
-    level1 = level1 > 5.0 ? 5.0 : level1;
-    level0 += min( floor( s + 0.5 ), 5.0 );
-    vec2 uv_10 = getCubeUV(reflectedDirection, r1, level0);
-    vec4 color10 = envMapTexelToLinear(texture2D(envMap, uv_10));
-    vec2 uv_20 = getCubeUV(reflectedDirection, r2, level0);
-    vec4 color20 = envMapTexelToLinear(texture2D(envMap, uv_20));
-    vec4 result = mix(color10, color20, t);
-    return vec4(result.rgb, 1.0);
-  }
+	float roughnessVal = roughness* cubeUV_maxLods3;
+	float r1 = floor(roughnessVal);
+	float r2 = r1 + 1.0;
+	float t = fract(roughnessVal);
+	vec2 mipInfo = MipLevelInfo(reflectedDirection, r1, roughness);
+	float s = mipInfo.y;
+	float level0 = mipInfo.x;
+	float level1 = level0 + 1.0;
+	level1 = level1 > 5.0 ? 5.0 : level1;
+	level0 += min( floor( s + 0.5 ), 5.0 );
+	vec2 uv_10 = getCubeUV(reflectedDirection, r1, level0);
+	vec4 color10 = envMapTexelToLinear(texture2D(envMap, uv_10));
+	vec2 uv_20 = getCubeUV(reflectedDirection, r2, level0);
+	vec4 color20 = envMapTexelToLinear(texture2D(envMap, uv_20));
+	vec4 result = mix(color10, color20, t);
+	return vec4(result.rgb, 1.0);
+}
 #endif
 `;
 
@@ -493,18 +538,21 @@ THREE.ShaderChunk[ 'envmap_fragment' ] = `#ifdef USE_ENVMAP
 
 // File:src/renderers/shaders/ShaderChunk/envmap_pars_fragment.glsl
 
-THREE.ShaderChunk[ 'envmap_pars_fragment' ] = `#if defined( USE_ENVMAP ) || defined( STANDARD )
+THREE.ShaderChunk[ 'envmap_pars_fragment' ] = `#if defined( USE_ENVMAP ) || defined( PHYSICAL )
 	uniform float reflectivity;
 	uniform float envMapIntenstiy;
 	#endif
 #ifdef USE_ENVMAP
+	#if ! defined( PHYSICAL ) && ( defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG ) )
+		varying vec3 vWorldPosition;
+	#endif
 	#ifdef ENVMAP_TYPE_CUBE
 		uniform samplerCube envMap;
 	#else
 		uniform sampler2D envMap;
 	#endif
 	uniform float flipEnvMap;
-	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG ) || defined( STANDARD )
+	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG ) || defined( PHYSICAL )
 		uniform float refractionRatio;
 	#else
 		varying vec3 vReflect;
@@ -514,21 +562,29 @@ THREE.ShaderChunk[ 'envmap_pars_fragment' ] = `#if defined( USE_ENVMAP ) || defi
 
 // File:src/renderers/shaders/ShaderChunk/envmap_pars_vertex.glsl
 
-THREE.ShaderChunk[ 'envmap_pars_vertex' ] = `#if defined( USE_ENVMAP ) && ! defined( USE_BUMPMAP ) && ! defined( USE_NORMALMAP ) && ! defined( PHONG ) && ! defined( STANDARD )
-	varying vec3 vReflect;
-	uniform float refractionRatio;
+THREE.ShaderChunk[ 'envmap_pars_vertex' ] = `#ifdef USE_ENVMAP
+	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )
+		varying vec3 vWorldPosition;
+	#else
+		varying vec3 vReflect;
+		uniform float refractionRatio;
+	#endif
 	#endif
 `;
 
 // File:src/renderers/shaders/ShaderChunk/envmap_vertex.glsl
 
-THREE.ShaderChunk[ 'envmap_vertex' ] = `#if defined( USE_ENVMAP ) && ! defined( USE_BUMPMAP ) && ! defined( USE_NORMALMAP ) && ! defined( PHONG ) && ! defined( STANDARD )
-	vec3 cameraToVertex = normalize( worldPosition.xyz - cameraPosition );
-	vec3 worldNormal = inverseTransformDirection( transformedNormal, viewMatrix );
-	#ifdef ENVMAP_MODE_REFLECTION
-		vReflect = reflect( cameraToVertex, worldNormal );
+THREE.ShaderChunk[ 'envmap_vertex' ] = `#ifdef USE_ENVMAP
+	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )
+		vWorldPosition = worldPosition.xyz;
 	#else
-		vReflect = refract( cameraToVertex, worldNormal, refractionRatio );
+		vec3 cameraToVertex = normalize( worldPosition.xyz - cameraPosition );
+		vec3 worldNormal = inverseTransformDirection( transformedNormal, viewMatrix );
+		#ifdef ENVMAP_MODE_REFLECTION
+			vReflect = reflect( cameraToVertex, worldNormal );
+		#else
+			vReflect = refract( cameraToVertex, worldNormal, refractionRatio );
+		#endif
 	#endif
 	#endif
 `;
@@ -596,7 +652,7 @@ float dotNL;
 vec3 directLightColor_Diffuse;
 #if NUM_POINT_LIGHTS > 0
 	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
-		directLight = getPointDirectLightIrradiance( pointLights[ i ], geometry );
+		getPointDirectLightIrradiance( pointLights[ i ], geometry, directLight );
 		dotNL = dot( geometry.normal, directLight.direction );
 		directLightColor_Diffuse = PI * directLight.color;
 		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
@@ -607,7 +663,7 @@ vec3 directLightColor_Diffuse;
 	#endif
 #if NUM_SPOT_LIGHTS > 0
 	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-		directLight = getSpotDirectLightIrradiance( spotLights[ i ], geometry );
+		getSpotDirectLightIrradiance( spotLights[ i ], geometry, directLight );
 		dotNL = dot( geometry.normal, directLight.direction );
 		directLightColor_Diffuse = PI * directLight.color;
 		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
@@ -618,7 +674,7 @@ vec3 directLightColor_Diffuse;
 	#endif
 #if NUM_DIR_LIGHTS > 0
 	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
-		directLight = getDirectionalDirectLightIrradiance( directionalLights[ i ], geometry );
+		getDirectionalDirectLightIrradiance( directionalLights[ i ], geometry, directLight );
 		dotNL = dot( geometry.normal, directLight.direction );
 		directLightColor_Diffuse = PI * directLight.color;
 		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
@@ -657,12 +713,10 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		vec2 shadowMapSize;
 	};
 	uniform DirectionalLight directionalLights[ NUM_DIR_LIGHTS ];
-	IncidentLight getDirectionalDirectLightIrradiance( const in DirectionalLight directionalLight, const in GeometricContext geometry ) {
-		IncidentLight directLight;
+	void getDirectionalDirectLightIrradiance( const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight directLight ) {
 		directLight.color = directionalLight.color;
 		directLight.direction = directionalLight.direction;
 		directLight.visible = true;
-		return directLight;
 	}
 	#endif
 #if NUM_POINT_LIGHTS > 0
@@ -677,8 +731,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		vec2 shadowMapSize;
 	};
 	uniform PointLight pointLights[ NUM_POINT_LIGHTS ];
-	IncidentLight getPointDirectLightIrradiance( const in PointLight pointLight, const in GeometricContext geometry ) {
-		IncidentLight directLight;
+	void getPointDirectLightIrradiance( const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight ) {
 		vec3 lVector = pointLight.position - geometry.position;
 		directLight.direction = normalize( lVector );
 		float lightDistance = length( lVector );
@@ -690,7 +743,6 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			directLight.color = vec3( 0.0 );
 			directLight.visible = false;
 		}
-		return directLight;
 	}
 	#endif
 #if NUM_SPOT_LIGHTS > 0
@@ -708,8 +760,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		vec2 shadowMapSize;
 	};
 	uniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];
-	IncidentLight getSpotDirectLightIrradiance( const in SpotLight spotLight, const in GeometricContext geometry ) {
-		IncidentLight directLight;
+	void getSpotDirectLightIrradiance( const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight  ) {
 		vec3 lVector = spotLight.position - geometry.position;
 		directLight.direction = normalize( lVector );
 		float lightDistance = length( lVector );
@@ -723,7 +774,6 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			directLight.color = vec3( 0.0 );
 			directLight.visible = false;
 		}
-		return directLight;
 	}
 	#endif
 #if NUM_HEMI_LIGHTS > 0
@@ -743,7 +793,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		return irradiance;
 	}
 	#endif
-#if defined( USE_ENVMAP ) && defined( STANDARD )
+#if defined( USE_ENVMAP ) && defined( PHYSICAL )
 	vec3 getLightProbeIndirectIrradiance( const in GeometricContext geometry, const in int maxMIPLevel ) {
 		#ifdef DOUBLE_SIDED
 			float flipNormal = ( float( gl_FrontFacing ) * 2.0 - 1.0 );
@@ -758,13 +808,13 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			#else
 				vec4 envMapColor = textureCube( envMap, queryVec, float( maxMIPLevel ) );
 			#endif
+			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		#elif defined( ENVMAP_TYPE_CUBE_UV )
 			vec3 queryVec = flipNormal * vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
 			vec4 envMapColor = textureCubeUV( queryVec, 1.0 );
 		#else
 			vec4 envMapColor = vec4( 0.0 );
 		#endif
-		envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		return PI * envMapColor.rgb * envMapIntensity;
 	}
 	float getSpecularMIPLevel( const in float blinnShininessExponent, const in int maxMIPLevel ) {
@@ -792,6 +842,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			#else
 				vec4 envMapColor = textureCube( envMap, queryReflectVec, specularMIPLevel );
 			#endif
+			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		#elif defined( ENVMAP_TYPE_CUBE_UV )
 			vec3 queryReflectVec = flipNormal * vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
 			vec4 envMapColor = textureCubeUV(queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
@@ -804,6 +855,7 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			#else
 				vec4 envMapColor = texture2D( envMap, sampleUV, specularMIPLevel );
 			#endif
+			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		#elif defined( ENVMAP_TYPE_SPHERE )
 			vec3 reflectView = flipNormal * normalize((viewMatrix * vec4( reflectVec, 0.0 )).xyz + vec3(0.0,0.0,1.0));
 			#ifdef TEXTURE_LOD_EXT
@@ -811,8 +863,8 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 			#else
 				vec4 envMapColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
 			#endif
+			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		#endif
-		envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
 		return envMapColor.rgb * envMapIntensity;
 	}
 	#endif
@@ -829,10 +881,7 @@ material.specularStrength = specularStrength;
 
 // File:src/renderers/shaders/ShaderChunk/lights_phong_pars_fragment.glsl
 
-THREE.ShaderChunk[ 'lights_phong_pars_fragment' ] = `#ifdef USE_ENVMAP
-	varying vec3 vWorldPosition;
-	#endif
-varying vec3 vViewPosition;
+THREE.ShaderChunk[ 'lights_phong_pars_fragment' ] = `varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
 	varying vec3 vNormal;
 	#endif
@@ -859,36 +908,28 @@ void RE_IndirectDiffuse_BlinnPhong( const in vec3 irradiance, const in Geometric
 #define Material_LightProbeLOD( material )	(0)
 `;
 
-// File:src/renderers/shaders/ShaderChunk/lights_phong_pars_vertex.glsl
+// File:src/renderers/shaders/ShaderChunk/lights_physical_fragment.glsl
 
-THREE.ShaderChunk[ 'lights_phong_pars_vertex' ] = `#ifdef USE_ENVMAP
-	varying vec3 vWorldPosition;
-	#endif
-`;
-
-// File:src/renderers/shaders/ShaderChunk/lights_phong_vertex.glsl
-
-THREE.ShaderChunk[ 'lights_phong_vertex' ] = `#ifdef USE_ENVMAP
-	vWorldPosition = worldPosition.xyz;
-	#endif
-`;
-
-// File:src/renderers/shaders/ShaderChunk/lights_standard_fragment.glsl
-
-THREE.ShaderChunk[ 'lights_standard_fragment' ] = `StandardMaterial material;
+THREE.ShaderChunk[ 'lights_physical_fragment' ] = `PhysicalMaterial material;
 material.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );
 material.specularRoughness = clamp( roughnessFactor, 0.04, 1.0 );
-material.specularColor = mix( vec3( 0.04 ), diffuseColor.rgb, metalnessFactor );
+#ifdef STANDARD
+	material.specularColor = mix( vec3( 0.04 ), diffuseColor.rgb, metalnessFactor );
+	#else
+	material.specularColor = mix( vec3( 0.16 * pow2( reflectivity ) ), diffuseColor.rgb, metalnessFactor );
+	#endif
 `;
 
-// File:src/renderers/shaders/ShaderChunk/lights_standard_pars_fragment.glsl
+// File:src/renderers/shaders/ShaderChunk/lights_physical_pars_fragment.glsl
 
-THREE.ShaderChunk[ 'lights_standard_pars_fragment' ] = `struct StandardMaterial {
+THREE.ShaderChunk[ 'lights_physical_pars_fragment' ] = `struct PhysicalMaterial {
 	vec3	diffuseColor;
 	float	specularRoughness;
 	vec3	specularColor;
+	#ifndef STANDARD
+	#endif
 };
-void RE_Direct_Standard( const in IncidentLight directLight, const in GeometricContext geometry, const in StandardMaterial material, inout ReflectedLight reflectedLight ) {
+void RE_Direct_Physical( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 	float dotNL = saturate( dot( geometry.normal, directLight.direction ) );
 	vec3 irradiance = dotNL * directLight.color;
 	#ifndef PHYSICALLY_CORRECT_LIGHTS
@@ -897,15 +938,15 @@ void RE_Direct_Standard( const in IncidentLight directLight, const in GeometricC
 	reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 	reflectedLight.directSpecular += irradiance * BRDF_Specular_GGX( directLight, geometry, material.specularColor, material.specularRoughness );
 }
-void RE_IndirectDiffuse_Standard( const in vec3 irradiance, const in GeometricContext geometry, const in StandardMaterial material, inout ReflectedLight reflectedLight ) {
+void RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 }
-void RE_IndirectSpecular_Standard( const in vec3 radiance, const in GeometricContext geometry, const in StandardMaterial material, inout ReflectedLight reflectedLight ) {
+void RE_IndirectSpecular_Physical( const in vec3 radiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {
 	reflectedLight.indirectSpecular += radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );
 }
-#define RE_Direct				RE_Direct_Standard
-#define RE_IndirectDiffuse		RE_IndirectDiffuse_Standard
-#define RE_IndirectSpecular		RE_IndirectSpecular_Standard
+#define RE_Direct				RE_Direct_Physical
+#define RE_IndirectDiffuse		RE_IndirectDiffuse_Physical
+#define RE_IndirectSpecular		RE_IndirectSpecular_Physical
 #define Material_BlinnShininessExponent( material )   GGXRoughnessToBlinnExponent( material.specularRoughness )
 float computeSpecularOcclusion( const in float dotNV, const in float ambientOcclusion, const in float roughness ) {
 	return saturate( pow( dotNV + ambientOcclusion, exp2( - 16.0 * roughness - 1.0 ) ) - 1.0 + ambientOcclusion );
@@ -924,7 +965,7 @@ IncidentLight directLight;
 	PointLight pointLight;
 	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
 		pointLight = pointLights[ i ];
-		directLight = getPointDirectLightIrradiance( pointLight, geometry );
+		getPointDirectLightIrradiance( pointLight, geometry, directLight );
 		#ifdef USE_SHADOWMAP
 		directLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;
 		#endif
@@ -935,7 +976,7 @@ IncidentLight directLight;
 	SpotLight spotLight;
 	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
 		spotLight = spotLights[ i ];
-		directLight = getSpotDirectLightIrradiance( spotLight, geometry );
+		getSpotDirectLightIrradiance( spotLight, geometry, directLight );
 		#ifdef USE_SHADOWMAP
 		directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
 		#endif
@@ -946,7 +987,7 @@ IncidentLight directLight;
 	DirectionalLight directionalLight;
 	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
 		directionalLight = directionalLights[ i ];
-		directLight = getDirectionalDirectLightIrradiance( directionalLight, geometry );
+		getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );
 		#ifdef USE_SHADOWMAP
 		directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
 		#endif
@@ -967,7 +1008,7 @@ IncidentLight directLight;
 			irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );
 		}
 	#endif
-	#if defined( USE_ENVMAP ) && defined( STANDARD ) && defined( ENVMAP_TYPE_CUBE_UV )
+	#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )
 	 	irradiance += getLightProbeIndirectIrradiance( geometry, 8 );
 	#endif
 	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
@@ -1138,6 +1179,39 @@ THREE.ShaderChunk[ 'normalmap_pars_fragment' ] = `#ifdef USE_NORMALMAP
 	#endif
 `;
 
+// File:src/renderers/shaders/ShaderChunk/packing.glsl
+
+THREE.ShaderChunk[ 'packing' ] = `vec3 packNormalToRGB( const in vec3 normal ) {
+  return normalize( normal ) * 0.5 + 0.5;
+}
+vec3 unpackRGBToNormal( const in vec3 rgb ) {
+  return 1.0 - 2.0 * rgb.xyz;
+}
+vec4 packDepthToRGBA( const in float value ) {
+	const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );
+	const vec4 bit_mask = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );
+	vec4 res = mod( value * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );
+	res -= res.xxyz * bit_mask;
+	return res;
+}
+float unpackRGBAToDepth( const in vec4 rgba ) {
+	const vec4 bitSh = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );
+	return dot( rgba, bitSh );
+}
+float viewZToOrthoDepth( const in float viewZ, const in float near, const in float far ) {
+  return ( viewZ + near ) / ( near - far );
+}
+float OrthoDepthToViewZ( const in float linearClipZ, const in float near, const in float far ) {
+  return linearClipZ * ( near - far ) - near;
+}
+float viewZToPerspectiveDepth( const in float viewZ, const in float near, const in float far ) {
+  return (( near + viewZ ) * far ) / (( far - near ) * viewZ );
+}
+float perspectiveDepthToViewZ( const in float invClipZ, const in float near, const in float far ) {
+  return ( near * far ) / ( ( far - near ) * invClipZ - far );
+}
+`;
+
 // File:src/renderers/shaders/ShaderChunk/premultiplied_alpha_fragment.glsl
 
 THREE.ShaderChunk[ 'premultiplied_alpha_fragment' ] = `#ifdef PREMULTIPLIED_ALPHA
@@ -1185,12 +1259,8 @@ THREE.ShaderChunk[ 'shadowmap_pars_fragment' ] = `#ifdef USE_SHADOWMAP
 		uniform sampler2D pointShadowMap[ NUM_POINT_LIGHTS ];
 		varying vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];
 	#endif
-	float unpackDepth( const in vec4 rgba_depth ) {
-		const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );
-		return dot( rgba_depth, bit_shift );
-	}
 	float texture2DCompare( sampler2D depths, vec2 uv, float compare ) {
-		return step( compare, unpackDepth( texture2D( depths, uv ) ) );
+		return step( compare, unpackRGBAToDepth( texture2D( depths, uv ) ) );
 	}
 	float texture2DShadowLerp( sampler2D depths, vec2 size, vec2 uv, float compare ) {
 		const vec2 offset = vec2( 0.0, 1.0 );
@@ -1403,9 +1473,9 @@ THREE.ShaderChunk[ 'skinning_pars_vertex' ] = `#ifdef USE_SKINNING
 			return bone;
 		}
 	#else
-		uniform mat4 boneGlobalMatrices[ MAX_BONES ];
+		uniform mat4 boneMatrices[ MAX_BONES ];
 		mat4 getBoneMatrix( const in float i ) {
-			mat4 bone = boneGlobalMatrices[ int(i) ];
+			mat4 bone = boneMatrices[ int(i) ];
 			return bone;
 		}
 	#endif
@@ -1526,7 +1596,7 @@ THREE.ShaderChunk[ 'uv_vertex' ] = `#if defined( USE_MAP ) || defined( USE_BUMPM
 
 // File:src/renderers/shaders/ShaderChunk/worldpos_vertex.glsl
 
-THREE.ShaderChunk[ 'worldpos_vertex' ] = `#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( STANDARD ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )
+THREE.ShaderChunk[ 'worldpos_vertex' ] = `#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( PHYSICAL ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )
 	#ifdef USE_SKINNING
 		vec4 worldPosition = modelMatrix * skinned;
 	#else
@@ -1535,6 +1605,7 @@ THREE.ShaderChunk[ 'worldpos_vertex' ] = `#if defined( USE_ENVMAP ) || defined( 
 	#endif
 `;
 
+
 // File:src/renderers/shaders/ShaderLib/cube_frag.glsl
 
 THREE.ShaderChunk[ 'cube_frag' ] = `uniform samplerCube tCube;
@@ -1542,7 +1613,9 @@ uniform float tFlip;
 varying vec3 vWorldPosition;
 #include <common>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	gl_FragColor = textureCube( tCube, vec3( tFlip * vWorldPosition.x, vWorldPosition.yz ) );
 	#include <logdepthbuf_fragment>
 }
@@ -1553,79 +1626,65 @@ void main() {
 THREE.ShaderChunk[ 'cube_vert' ] = `varying vec3 vWorldPosition;
 #include <common>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	vWorldPosition = transformDirection( position, modelMatrix );
-	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	#include <begin_vertex>
+	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 }
 `;
 
 // File:src/renderers/shaders/ShaderLib/depth_frag.glsl
 
-THREE.ShaderChunk[ 'depth_frag' ] = `uniform float mNear;
-uniform float mFar;
-uniform float opacity;
-#include <common>
-#include <logdepthbuf_pars_fragment>
-void main() {
-	#include <logdepthbuf_fragment>
-	#ifdef USE_LOGDEPTHBUF_EXT
-		float depth = gl_FragDepthEXT / gl_FragCoord.w;
-	#else
-		float depth = gl_FragCoord.z / gl_FragCoord.w;
+THREE.ShaderChunk[ 'depth_frag' ] = `#if DEPTH_PACKING == 3200
+	uniform float opacity;
 	#endif
-	float color = 1.0 - smoothstep( mNear, mFar, depth );
-	gl_FragColor = vec4( vec3( color ), opacity );
+#include <common>
+#include <packing>
+#include <uv_pars_fragment>
+#include <map_pars_fragment>
+#include <alphamap_pars_fragment>
+#include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
+void main() {
+	#include <clipping_planes_fragment>
+	vec4 diffuseColor = vec4( 1.0 );
+	#if DEPTH_PACKING == 3200
+		diffuseColor.a = opacity;
+	#endif
+	#include <map_fragment>
+	#include <alphamap_fragment>
+	#include <alphatest_fragment>
+	#include <logdepthbuf_fragment>
+	#if DEPTH_PACKING == 3200
+		gl_FragColor = vec4( vec3( gl_FragCoord.z ), opacity );
+	#elif DEPTH_PACKING == 3201
+		gl_FragColor = packDepthToRGBA( gl_FragCoord.z );
+	#endif
 }
 `;
 
 // File:src/renderers/shaders/ShaderLib/depth_vert.glsl
 
 THREE.ShaderChunk[ 'depth_vert' ] = `#include <common>
-#include <morphtarget_pars_vertex>
-#include <logdepthbuf_pars_vertex>
-void main() {
-	#include <begin_vertex>
-	#include <morphtarget_vertex>
-	#include <project_vertex>
-	#include <logdepthbuf_vertex>
-}
-`;
-
-// File:src/renderers/shaders/ShaderLib/depthRGBA_frag.glsl
-
-THREE.ShaderChunk[ 'depthRGBA_frag' ] = `#include <common>
-#include <logdepthbuf_pars_fragment>
-vec4 pack_depth( const in float depth ) {
-	const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );
-	const vec4 bit_mask = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );
-	vec4 res = mod( depth * bit_shift * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );
-	res -= res.xxyz * bit_mask;
-	return res;
-}
-void main() {
-	#include <logdepthbuf_fragment>
-	#ifdef USE_LOGDEPTHBUF_EXT
-		gl_FragData[ 0 ] = pack_depth( gl_FragDepthEXT );
-	#else
-		gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );
-	#endif
-}
-`;
-
-// File:src/renderers/shaders/ShaderLib/depthRGBA_vert.glsl
-
-THREE.ShaderChunk[ 'depthRGBA_vert' ] = `#include <common>
+#include <uv_pars_vertex>
+#include <displacementmap_pars_vertex>
 #include <morphtarget_pars_vertex>
 #include <skinning_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
+	#include <uv_vertex>
 	#include <skinbase_vertex>
 	#include <begin_vertex>
+	#include <displacementmap_vertex>
 	#include <morphtarget_vertex>
 	#include <skinning_vertex>
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 }
 `;
 
@@ -1634,20 +1693,11 @@ void main() {
 THREE.ShaderChunk[ 'distanceRGBA_frag' ] = `uniform vec3 lightPos;
 varying vec4 vWorldPosition;
 #include <common>
-vec4 pack1K ( float depth ) {
-	depth /= 1000.0;
-	const vec4 bitSh = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );
-	const vec4 bitMsk = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );
-	vec4 res = mod( depth * bitSh * vec4( 255 ), vec4( 256 ) ) / vec4( 255 );
-	res -= res.xxyz * bitMsk;
-	return res;
-}
-float unpack1K ( vec4 color ) {
-	const vec4 bitSh = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );
-	return dot( color, bitSh ) * 1000.0;
-}
+#include <packing>
+#include <clipping_planes_pars_fragment>
 void main () {
-	gl_FragColor = pack1K( length( vWorldPosition.xyz - lightPos.xyz ) );
+	#include <clipping_planes_fragment>
+	gl_FragColor = packDepthToRGBA( length( vWorldPosition.xyz - lightPos.xyz ) / 1000.0 );
 }
 `;
 
@@ -1657,6 +1707,7 @@ THREE.ShaderChunk[ 'distanceRGBA_vert' ] = `varying vec4 vWorldPosition;
 #include <common>
 #include <morphtarget_pars_vertex>
 #include <skinning_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <skinbase_vertex>
 	#include <begin_vertex>
@@ -1664,6 +1715,7 @@ void main() {
 	#include <skinning_vertex>
 	#include <project_vertex>
 	#include <worldpos_vertex>
+	#include <clipping_planes_vertex>
 	vWorldPosition = worldPosition;
 }
 `;
@@ -1675,7 +1727,9 @@ uniform float tFlip;
 varying vec3 vWorldPosition;
 #include <common>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	vec3 direction = normalize( vWorldPosition );
 	vec2 sampleUV;
 	sampleUV.y = saturate( tFlip * direction.y * -0.5 + 0.5 );
@@ -1690,10 +1744,13 @@ void main() {
 THREE.ShaderChunk[ 'equirect_vert' ] = `varying vec3 vWorldPosition;
 #include <common>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	vWorldPosition = transformDirection( position, modelMatrix );
-	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	#include <begin_vertex>
+	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 }
 `;
 
@@ -1708,7 +1765,9 @@ varying float vLineDistance;
 #include <color_pars_fragment>
 #include <fog_pars_fragment>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	if ( mod( vLineDistance, totalSize ) > dashSize ) {
 		discard;
 	}
@@ -1733,12 +1792,14 @@ varying float vLineDistance;
 #include <common>
 #include <color_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <color_vertex>
 	vLineDistance = scale * lineDistance;
 	vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 	gl_Position = projectionMatrix * mvPosition;
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 }
 `;
 
@@ -1760,7 +1821,9 @@ uniform float opacity;
 #include <fog_pars_fragment>
 #include <specularmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	#include <logdepthbuf_fragment>
 	#include <map_fragment>
@@ -1794,6 +1857,7 @@ THREE.ShaderChunk[ 'meshbasic_vert' ] = `#include <common>
 #include <morphtarget_pars_vertex>
 #include <skinning_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <uv_vertex>
 	#include <uv2_vertex>
@@ -1811,6 +1875,7 @@ void main() {
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
 	#include <worldpos_vertex>
+	#include <clipping_planes_vertex>
 	#include <envmap_vertex>
 }
 `;
@@ -1825,6 +1890,7 @@ varying vec3 vLightFront;
 	varying vec3 vLightBack;
 	#endif
 #include <common>
+#include <packing>
 #include <color_pars_fragment>
 #include <uv_pars_fragment>
 #include <uv2_pars_fragment>
@@ -1841,7 +1907,9 @@ varying vec3 vLightFront;
 #include <shadowmask_pars_fragment>
 #include <specularmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
@@ -1890,6 +1958,7 @@ varying vec3 vLightFront;
 #include <skinning_pars_vertex>
 #include <shadowmap_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <uv_vertex>
 	#include <uv2_vertex>
@@ -1904,6 +1973,7 @@ void main() {
 	#include <skinning_vertex>
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 	#include <worldpos_vertex>
 	#include <envmap_vertex>
 	#include <lights_lambert_vertex>
@@ -1920,6 +1990,7 @@ uniform vec3 specular;
 uniform float shininess;
 uniform float opacity;
 #include <common>
+#include <packing>
 #include <color_pars_fragment>
 #include <uv_pars_fragment>
 #include <uv2_pars_fragment>
@@ -1938,7 +2009,9 @@ uniform float opacity;
 #include <normalmap_pars_fragment>
 #include <specularmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
@@ -1975,12 +2048,12 @@ varying vec3 vViewPosition;
 #include <uv2_pars_vertex>
 #include <displacementmap_pars_vertex>
 #include <envmap_pars_vertex>
-#include <lights_phong_pars_vertex>
 #include <color_pars_vertex>
 #include <morphtarget_pars_vertex>
 #include <skinning_pars_vertex>
 #include <shadowmap_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <uv_vertex>
 	#include <uv2_vertex>
@@ -1999,17 +2072,17 @@ void main() {
 	#include <skinning_vertex>
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 	vViewPosition = - mvPosition.xyz;
 	#include <worldpos_vertex>
 	#include <envmap_vertex>
-	#include <lights_phong_vertex>
 	#include <shadowmap_vertex>
 }
 `;
 
-// File:src/renderers/shaders/ShaderLib/meshstandard_frag.glsl
+// File:src/renderers/shaders/ShaderLib/meshphysical_frag.glsl
 
-THREE.ShaderChunk[ 'meshstandard_frag' ] = `#define STANDARD
+THREE.ShaderChunk[ 'meshphysical_frag' ] = `#define PHYSICAL
 uniform vec3 diffuse;
 uniform vec3 emissive;
 uniform float roughness;
@@ -2021,6 +2094,7 @@ varying vec3 vViewPosition;
 	varying vec3 vNormal;
 	#endif
 #include <common>
+#include <packing>
 #include <color_pars_fragment>
 #include <uv_pars_fragment>
 #include <uv2_pars_fragment>
@@ -2034,14 +2108,16 @@ varying vec3 vViewPosition;
 #include <bsdfs>
 #include <cube_uv_reflection_fragment>
 #include <lights_pars>
-#include <lights_standard_pars_fragment>
+#include <lights_physical_pars_fragment>
 #include <shadowmap_pars_fragment>
 #include <bumpmap_pars_fragment>
 #include <normalmap_pars_fragment>
 #include <roughnessmap_pars_fragment>
 #include <metalnessmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
@@ -2055,7 +2131,7 @@ void main() {
 	#include <metalnessmap_fragment>
 	#include <normal_fragment>
 	#include <emissivemap_fragment>
-	#include <lights_standard_fragment>
+	#include <lights_physical_fragment>
 	#include <lights_template>
 	#include <aomap_fragment>
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
@@ -2067,9 +2143,9 @@ void main() {
 }
 `;
 
-// File:src/renderers/shaders/ShaderLib/meshstandard_vert.glsl
+// File:src/renderers/shaders/ShaderLib/meshphysical_vert.glsl
 
-THREE.ShaderChunk[ 'meshstandard_vert' ] = `#define STANDARD
+THREE.ShaderChunk[ 'meshphysical_vert' ] = `#define PHYSICAL
 varying vec3 vViewPosition;
 #ifndef FLAT_SHADED
 	varying vec3 vNormal;
@@ -2078,13 +2154,13 @@ varying vec3 vViewPosition;
 #include <uv_pars_vertex>
 #include <uv2_pars_vertex>
 #include <displacementmap_pars_vertex>
-#include <envmap_pars_vertex>
 #include <color_pars_vertex>
 #include <morphtarget_pars_vertex>
 #include <skinning_pars_vertex>
 #include <shadowmap_pars_vertex>
 #include <specularmap_pars_fragment>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <uv_vertex>
 	#include <uv2_vertex>
@@ -2103,9 +2179,9 @@ void main() {
 	#include <skinning_vertex>
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 	vViewPosition = - mvPosition.xyz;
 	#include <worldpos_vertex>
-	#include <envmap_vertex>
 	#include <shadowmap_vertex>
 }
 `;
@@ -2115,9 +2191,12 @@ void main() {
 THREE.ShaderChunk[ 'normal_frag' ] = `uniform float opacity;
 varying vec3 vNormal;
 #include <common>
+#include <packing>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
-	gl_FragColor = vec4( 0.5 * normalize( vNormal ) + 0.5, opacity );
+	#include <clipping_planes_fragment>
+	gl_FragColor = vec4( packNormalToRGB( vNormal ), opacity );
 	#include <logdepthbuf_fragment>
 }
 `;
@@ -2128,12 +2207,14 @@ THREE.ShaderChunk[ 'normal_vert' ] = `varying vec3 vNormal;
 #include <common>
 #include <morphtarget_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	vNormal = normalize( normalMatrix * normal );
 	#include <begin_vertex>
 	#include <morphtarget_vertex>
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 }
 `;
 
@@ -2147,7 +2228,9 @@ uniform float opacity;
 #include <fog_pars_fragment>
 #include <shadowmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
+#include <clipping_planes_pars_fragment>
 void main() {
+	#include <clipping_planes_fragment>
 	vec3 outgoingLight = vec3( 0.0 );
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	#include <logdepthbuf_fragment>
@@ -2171,6 +2254,7 @@ uniform float scale;
 #include <color_pars_vertex>
 #include <shadowmap_pars_vertex>
 #include <logdepthbuf_pars_vertex>
+#include <clipping_planes_pars_vertex>
 void main() {
 	#include <color_vertex>
 	#include <begin_vertex>
@@ -2181,6 +2265,7 @@ void main() {
 		gl_PointSize = size;
 	#endif
 	#include <logdepthbuf_vertex>
+	#include <clipping_planes_vertex>
 	#include <worldpos_vertex>
 	#include <shadowmap_vertex>
 }

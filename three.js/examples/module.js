@@ -66,7 +66,6 @@ import '../source/src/animation/tracks/QuaternionKeyframeTrack.js';
 import '../source/src/animation/tracks/StringKeyframeTrack.js';
 import '../source/src/animation/tracks/VectorKeyframeTrack.js';
 
-// import '../source/src/animation/AnimationAction.js';
 import '../source/src/animation/AnimationClip.js';
 import '../source/src/animation/AnimationMixer.js';
 import '../source/src/animation/AnimationUtils.js';
@@ -75,7 +74,6 @@ import '../source/src/animation/PropertyMixer.js';
 
 import '../source/src/audio/Audio.js';
 import '../source/src/audio/AudioAnalyser.js';
-import '../source/src/audio/AudioBuffer.js';
 import '../source/src/audio/AudioListener.js';
 import '../source/src/audio/PositionalAudio.js';
 
@@ -176,12 +174,15 @@ import "../source/src/lights/Light.js";
 import "../source/src/lights/LightShadow.js";
 import "../source/src/lights/AmbientLight.js";
 import "../source/src/lights/DirectionalLight.js";
+import "../source/src/lights/DirectionalLightShadow.js";
 import "../source/src/lights/HemisphereLight.js";
 import "../source/src/lights/PointLight.js";
 import "../source/src/lights/SpotLight.js";
+import "../source/src/lights/SpotLightShadow.js";
 
 import "../source/src/loaders/Loader.js";
 import "../source/src/loaders/AnimationLoader.js";
+import "../source/src/loaders/AudioLoader.js";
 import "../source/src/loaders/BinaryTextureLoader.js";
 import "../source/src/loaders/BufferGeometryLoader.js";
 import "../source/src/loaders/Cache.js";
@@ -205,6 +206,7 @@ import "../source/src/materials/MeshLambertMaterial.js";
 import "../source/src/materials/MeshNormalMaterial.js";
 import "../source/src/materials/MeshPhongMaterial.js";
 import "../source/src/materials/MeshStandardMaterial.js";
+import "../source/src/materials/MeshPhysicalMaterial.js";
 import "../source/src/materials/MultiMaterial.js";
 import "../source/src/materials/PointsMaterial.js";
 import "../source/src/materials/ShaderMaterial.js";
@@ -270,6 +272,7 @@ import "../source/src/renderers/webgl/WebGLProperties.js";
 import "../source/src/renderers/webgl/WebGLShader.js";
 import "../source/src/renderers/webgl/WebGLShadowMap.js";
 import "../source/src/renderers/webgl/WebGLState.js";
+import "../source/src/renderers/webgl/WebGLUniforms.js";
 
 import "../source/src/renderers/WebGLRenderer.js";
 import "../source/src/renderers/WebGLRenderTarget.js";
@@ -283,6 +286,7 @@ import "../source/src/textures/CanvasTexture.js";
 import "../source/src/textures/CompressedTexture.js";
 import "../source/src/textures/CubeTexture.js";
 import "../source/src/textures/DataTexture.js";
+import "../source/src/textures/DepthTexture.js";
 import "../source/src/textures/Texture.js";
 import "../source/src/textures/VideoTexture.js";
 
@@ -316,10 +320,10 @@ import "../source/examples/js/effects/VREffect.js";
 
 import "../source/examples/js/loaders/DDSLoader.js";
 
+import "../source/examples/js/postprocessing/EffectComposer.js";
 import "../source/examples/js/postprocessing/BloomPass.js";
 import "../source/examples/js/postprocessing/BokehPass.js";
 import "../source/examples/js/postprocessing/DotScreenPass.js";
-import "../source/examples/js/postprocessing/EffectComposer.js";
 import "../source/examples/js/postprocessing/FilmPass.js";
 import "../source/examples/js/postprocessing/GlitchPass.js";
 import "../source/examples/js/postprocessing/MaskPass.js";
