@@ -212,27 +212,27 @@
 
 				var ground = null;
 
-				if (sceneInfo.addGround) {
-					var groundMaterial = new THREE.MeshPhongMaterial({
-							color: 0xFFFFFF,
-							shading: THREE.SmoothShading,
-						});
-					ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(1024, 1024), groundMaterial);
+				// if (sceneInfo.addGround) {
+				// 	var groundMaterial = new THREE.MeshPhongMaterial({
+				// 			color: 0xFFFFFF,
+				// 			shading: THREE.SmoothShading,
+				// 		});
+				// 	ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(1024, 1024), groundMaterial);
 
-					if (sceneInfo.shadows) {
-						ground.receiveShadow = true;
-					}
+				// 	if (sceneInfo.shadows) {
+				// 		ground.receiveShadow = true;
+				// 	}
 
-					if (sceneInfo.groundPos) {
-						ground.position.copy(sceneInfo.groundPos);
-					} else {
-						ground.position.z = -70;
-					}
+				// 	if (sceneInfo.groundPos) {
+				// 		ground.position.copy(sceneInfo.groundPos);
+				// 	} else {
+				// 		ground.position.z = -70;
+				// 	}
 
-					ground.rotation.x = -Math.PI / 2;
+				// 	ground.rotation.x = -Math.PI / 2;
 
-					scene.add(ground);
-				}
+				// 	scene.add(ground);
+				// }
 
 				loader = new THREE.glTFLoader;
 				var loadStartTime = Date.now();
@@ -247,7 +247,7 @@
 				var status = document.getElementById("status");
 				status.innerHTML = "Loading...";
 				loader.load( url, function(data) {
-
+					console.log('url:', url);
 					gltf = data;
 
 					var object = gltf.scene;
