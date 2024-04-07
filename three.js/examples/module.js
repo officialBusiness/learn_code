@@ -25,8 +25,6 @@ import "../source/src/math/Ray.js";
 
 import "../source/src/math/Math.js";
 
-import "../source/src/extras/GeometryUtils.js";
-
 import "../source/src/math/Color.js";
 
 import "../source/src/math/Box3.js";
@@ -68,11 +66,18 @@ import '../source/src/animation/tracks/QuaternionKeyframeTrack.js';
 import '../source/src/animation/tracks/StringKeyframeTrack.js';
 import '../source/src/animation/tracks/VectorKeyframeTrack.js';
 
-import '../source/src/animation/AnimationAction.js';
+// import '../source/src/animation/AnimationAction.js';
 import '../source/src/animation/AnimationClip.js';
 import '../source/src/animation/AnimationMixer.js';
 import '../source/src/animation/AnimationUtils.js';
 import '../source/src/animation/PropertyBinding.js';
+import '../source/src/animation/PropertyMixer.js';
+
+import '../source/src/audio/Audio.js';
+import '../source/src/audio/AudioAnalyser.js';
+import '../source/src/audio/AudioBuffer.js';
+import '../source/src/audio/AudioListener.js';
+import '../source/src/audio/PositionalAudio.js';
 
 import '../source/src/cameras/Camera.js';
 import '../source/src/cameras/CubeCamera.js';
@@ -81,26 +86,24 @@ import '../source/src/cameras/PerspectiveCamera.js';
 
 import '../source/src/core/BufferAttribute.js';
 import '../source/src/core/BufferGeometry.js';
-import "../source/src/core/Channels.js";
 import '../source/src/core/Clock.js';
 import '../source/src/core/DirectGeometry.js';
 import '../source/src/core/EventDispatcher.js';
 import '../source/src/core/Face3.js';
-import '../source/src/core/Face4.js';
 import '../source/src/core/Geometry.js';
 import '../source/src/core/InstancedBufferAttribute.js';
 import '../source/src/core/InstancedBufferGeometry.js';
 import '../source/src/core/InstancedInterleavedBuffer.js';
 import '../source/src/core/InterleavedBuffer.js';
 import '../source/src/core/InterleavedBufferAttribute.js';
+import '../source/src/core/Layers.js';
 import '../source/src/core/Object3D.js';
 import '../source/src/core/Raycaster.js';
-
-import "../source/src/extras/audio/Audio.js";
-import "../source/src/extras/audio/AudioListener.js";
+import '../source/src/core/Uniform.js';
 
 import "../source/src/extras/core/Curve.js";
 import "../source/src/extras/core/CurvePath.js";
+import "../source/src/extras/core/Font.js";
 import "../source/src/extras/core/Path.js";
 import "../source/src/extras/core/Shape.js";
 
@@ -137,6 +140,7 @@ import "../source/src/extras/geometries/SphereBufferGeometry.js";
 import "../source/src/extras/geometries/SphereGeometry.js";
 import "../source/src/extras/geometries/SphereGeometry.js";
 import "../source/src/extras/geometries/TetrahedronGeometry.js";
+import "../source/src/extras/geometries/TextGeometry.js";
 import "../source/src/extras/geometries/TorusGeometry.js";
 import "../source/src/extras/geometries/TorusKnotGeometry.js";
 import "../source/src/extras/geometries/TubeGeometry.js";
@@ -162,8 +166,6 @@ import "../source/src/extras/objects/ImmediateRenderObject.js";
 import "../source/src/extras/objects/MorphBlendMesh.js";
 
 import "../source/src/extras/CurveUtils.js";
-import "../source/src/extras/GeometryUtils.js";
-import "../source/src/extras/ImageUtils.js";
 import "../source/src/extras/SceneUtils.js";
 import "../source/src/extras/ShapeUtils.js";
 
@@ -182,6 +184,7 @@ import "../source/src/loaders/BufferGeometryLoader.js";
 import "../source/src/loaders/Cache.js";
 import "../source/src/loaders/CompressedTextureLoader.js";
 import "../source/src/loaders/CubeTextureLoader.js";
+import "../source/src/loaders/FontLoader.js";
 import "../source/src/loaders/ImageLoader.js";
 import "../source/src/loaders/JSONLoader.js";
 import "../source/src/loaders/LoadingManager.js";
@@ -198,11 +201,18 @@ import "../source/src/materials/MeshDepthMaterial.js";
 import "../source/src/materials/MeshLambertMaterial.js";
 import "../source/src/materials/MeshNormalMaterial.js";
 import "../source/src/materials/MeshPhongMaterial.js";
+import "../source/src/materials/MeshStandardMaterial.js";
 import "../source/src/materials/MultiMaterial.js";
 import "../source/src/materials/PointsMaterial.js";
 import "../source/src/materials/ShaderMaterial.js";
 import "../source/src/materials/RawShaderMaterial.js";
 import "../source/src/materials/SpriteMaterial.js";
+
+import "../source/src/math/Interpolant.js";
+import "../source/src/math/interpolants/CubicInterpolant.js";
+import "../source/src/math/interpolants/DiscreteInterpolant.js";
+import "../source/src/math/interpolants/LinearInterpolant.js";
+import "../source/src/math/interpolants/QuaternionLinearInterpolant.js";
 
 import "../source/src/math/Box2.js";
 import "../source/src/math/Box3.js";
@@ -248,6 +258,7 @@ import "../source/src/renderers/webgl/WebGLCapabilities.js";
 import "../source/src/renderers/webgl/WebGLExtensions.js";
 import "../source/src/renderers/webgl/WebGLGeometries.js";
 import "../source/src/renderers/webgl/WebGLIndexedBufferRenderer.js";
+import "../source/src/renderers/webgl/WebGLLights.js";
 import "../source/src/renderers/webgl/WebGLObjects.js";
 import "../source/src/renderers/webgl/WebGLProgram.js";
 import "../source/src/renderers/webgl/WebGLPrograms.js";
@@ -298,6 +309,8 @@ import "../source/examples/js/effects/VREffect.js";
 // import "../source/examples/js/loaders/gltf/glTFAnimation.js";
 // import "../source/examples/js/loaders/gltf/glTFLoader.js";
 // import "../source/examples/js/loaders/gltf/GLTFLoaderUtils.js";
+
+import "../source/examples/js/loaders/DDSLoader.js";
 
 import "../source/examples/js/postprocessing/BloomPass.js";
 import "../source/examples/js/postprocessing/BokehPass.js";
