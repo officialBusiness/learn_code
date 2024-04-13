@@ -8,16 +8,16 @@
 		<title>image_loader</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../module.js';
+			import * as THREE from '../../../source/src/THREE.js';
 
 			setTimeout(()=>{
 
@@ -27,10 +27,43 @@
 				document.body.appendChild(image);
 			}, 2000);
 
-			new THREE.ImageLoader().load(
+			// THREE.Cache.enabled = true;
+			const loader = new THREE.ImageLoader();
+
+			function load(){
+				loader.load( '../../assets/images/logo1.jpg',
+					(cached)=>{
+						console.log('onLoad:', cached);
+					},
+					(event)=>{
+						console.log('onProgress:', event);
+					},
+					(event)=>{
+						console.log('onError:', event);
+					}
+				);
+
+			}
+
+			loader.load(
 				'../../assets/images/logo1.jpg',
 				(cached)=>{
-					console.log('onLoad:', cached);
+					// console.log('onLoad:', cached);
+
+					// loader.load(
+					// 	'../../assets/images/logo1.jpg',
+					// 	(cached)=>{
+					// 		console.log('onLoad:', cached);
+
+					// 		// load();
+					// 	},
+					// 	(event)=>{
+					// 		console.log('onProgress:', event);
+					// 	},
+					// 	(event)=>{
+					// 		console.log('onError:', event);
+					// 	}
+					// );
 				},
 				(event)=>{
 					console.log('onProgress:', event);

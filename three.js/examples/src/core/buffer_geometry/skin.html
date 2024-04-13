@@ -8,17 +8,18 @@
 		<title>skin</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
 
+		<script type="text/javascript" src="../../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../../module.js';
+			import * as THREE from '../../../../source/src/THREE.js';
+			import { OrbitControls } from '../../../jsm/jsm.js';
+
 
 			var scene = new THREE.Scene();
 
@@ -46,10 +47,10 @@
 			var plane = new THREE.BufferGeometry();
 
 			plane.addAttribute( "position", new THREE.BufferAttribute(new Float32Array([
-				-4, 4, 0,
-				 4, 4, 0,
-				-4,-4, 0,
-				 4,-4, 0
+				-3, 3, 0,
+				 3, 3, 0,
+				-3,-3, 0,
+				 3,-3, 0
 			]), 3) );
 
 			plane.addAttribute( "uv", new THREE.BufferAttribute( new Float32Array([
@@ -78,32 +79,22 @@
 				3, 1, 0
 			]), 1) );
 
-			plane.bones = [
-				{
-					parent: -1,
-					pos: [-1, 0, 0],
-					scl: [1, 1, 1],
-					rotq: [0, 0, 0, 1],
-				},
-				{
-					parent: -1,
-					pos: [0, 0, 0],
-					scl: [1, 1, 1],
-					rotq: [0, 0, 0, 1],
-				},
-				{
-					parent: -1,
-					pos: [1, 0, 0],
-					scl: [1, 1, 1],
-					rotq: [0, 0, 0, 1],
-				},
-				{
-					parent: -1,
-					pos: [0, 0, 0],
-					scl: [1, 1, 1],
-					rotq: [0, 0, 0, 1],
-				}
-			]
+			const
+				bone1 = new THREE.Bone(),
+				bone2 = new THREE.Bone(),
+				bone3 = new THREE.Bone(),
+				bone4 = new THREE.Bone(),
+				skeleton = new THREE.Skeleton([
+					bone1, bone2, bone3, bone4,
+				]);
+
+			bone1.position.x = -1;
+			// bone1.updateMatrixWorld();
+
+			bone3.position.x = 1;
+			// bone3.updateMatrixWorld();
+
+			// skeleton.update();
 
 
 			var mesh = new THREE.SkinnedMesh( plane,
@@ -113,6 +104,8 @@
 					skinning: true,
 				})
 			);
+
+			mesh.bind(skeleton);
 
 			scene.add(mesh);
 
@@ -127,10 +120,10 @@
 
 				const gui = new lil.GUI();
 
-				initBone(gui, mesh.skeleton.bones[0], 'bone1');
-				initBone(gui, mesh.skeleton.bones[1], 'bone2').close();
-				initBone(gui, mesh.skeleton.bones[2], 'bone3').close();
-				initBone(gui, mesh.skeleton.bones[3], 'bone4').close();
+				initBone(gui, bone1, 'bone1');
+				initBone(gui, bone2, 'bone2').close();
+				initBone(gui, bone3, 'bone3').close();
+				initBone(gui, bone4, 'bone4').close();
 			}
 
 
@@ -138,9 +131,15 @@
 
 				const boneFolder = gui.addFolder(boneName);
 
-				boneFolder.add(bone.position, 'x', -3, 3).name('position.x');
-				boneFolder.add(bone.position, 'y', -3, 3).name('position.y');
-				boneFolder.add(bone.position, 'z', -3, 3).name('position.z');
+				boneFolder.add(bone.position, 'x', -5, 5).name('position.x').onChange(()=>{
+					bone.updateMatrixWorld();
+				});
+				boneFolder.add(bone.position, 'y', -5, 5).name('position.y').onChange(()=>{
+					bone.updateMatrixWorld();
+				});
+				boneFolder.add(bone.position, 'z', -5, 5).name('position.z').onChange(()=>{
+					bone.updateMatrixWorld();
+				});
 
 				boneFolder.add(bone.scale, 'x', -3, 3).name('scale.x');
 				boneFolder.add(bone.scale, 'y', -3, 3).name('scale.y');

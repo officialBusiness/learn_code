@@ -8,25 +8,18 @@
 		<title>gltf</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<!-- <script type="text/javascript" src="../../../../source/src/Three.js"></script> -->
-
 		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
 
-		<script src="../../../../source/build/three.min.js"></script>
-		<script src="../../../../source/examples/js/controls/OrbitControls.js"></script>
-
-		<script src="../../../../source/examples/js/loaders/gltf/glTF-parser.js"></script>
-		<script src="../../../../source/examples/js/loaders/gltf/glTFLoader.js"></script>
-		<script src="../../../../source/examples/js/loaders/gltf/glTFLoaderUtils.js"></script>
-		<script src="../../../../source/examples/js/loaders/gltf/glTFAnimation.js"></script>
-		<script src="../../../../source/examples/js/loaders/gltf/glTFShaders.js"></script>
+		<script type="text/javascript" src="../../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			// import '../../../module.js';
+			import * as THREE from '../../../../source/src/THREE.js';
+			import { OrbitControls, GLTFLoader } from '../../jsm.js';
+
 
 			var scene = new THREE.Scene();
 
@@ -44,32 +37,33 @@
 
 			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 1000 );
 
-			// camera.position.set(30, 10, 70);
+			camera.position.z = 10
 
-			var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+			var orbitControls = new OrbitControls(camera, renderer.domElement);
 
 			var ambient = new THREE.AmbientLight( 0xffffff );
 			scene.add( ambient );
 
-			var loader = new THREE.glTFLoader;
+			var loader = new GLTFLoader();
 
-			loader.load( '../../../assets/models/gltf/duck/duck.gltf', function(gltf){
+			var	clock = new THREE.Clock();
+			var mixer;
 
-					// gltf.scene.position.set(2, 6, 0);
-					// gltf.scene.rotation.set(-1.5707963267948966, 0, -1.5707963267948966,);
-					// gltf.scene.scale.set(0.01, 0.01, 0.01);
+			loader.load( '../../../assets/models/gltf/RobotExpressive/RobotExpressive.glb', function(gltf){
 
-					if (gltf.animations && gltf.animations.length) {
-						var i, len = gltf.animations.length;
-						for (i = 0; i < len; i++) {
-							var animation = gltf.animations[i];
-							animation.loop = true;
+				mixer = new THREE.AnimationMixer( gltf.scene );
 
-							animation.duration = 3;
-							animation.play();
-						}
-					}
-					scene.add( gltf.scene );
+				var dance = gltf.animations.find( function ( clip ) {
+
+					return clip.name === 'Dance';
+
+				} );
+
+				var action = mixer.clipAction( dance );
+
+				action.play();
+
+				scene.add( gltf.scene );
 			});
 
 
@@ -78,11 +72,13 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-			loop();
-			function loop() {
+			loop(0);
+			function loop(delta) {
 
-        THREE.glTFAnimator.update();
-				orbitControls.update();
+				if( mixer ){
+
+					mixer.update( clock.getDelta() );
+				}
 
 				renderer.render( scene, camera );
 

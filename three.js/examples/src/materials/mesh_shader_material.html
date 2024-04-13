@@ -8,16 +8,17 @@
 		<title>mesh_shader_material</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../module.js';
+			import * as THREE from '../../../source/src/THREE.js';
+			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 
@@ -42,10 +43,10 @@
 			var plane = new THREE.Geometry();
 
 			plane.vertices.push(
-				new THREE.Vector3(-1, 1, 0 ),
-				new THREE.Vector3( 1, 1, 0 ),
-				new THREE.Vector3(-1,-1, 0 ),
-				new THREE.Vector3( 1,-1, 0 )
+				new THREE.Vector3(-1, 1, -1 ),
+				new THREE.Vector3( 1, 1, -1 ),
+				new THREE.Vector3(-1,-1, -1 ),
+				new THREE.Vector3( 1,-1, -1 )
 			);
 
 			plane.faces.push(
@@ -75,6 +76,14 @@
 						value: new THREE.TextureLoader().load('../../assets/images/logo1.jpg'),
 					}
 				},
+				vertexShader: `
+					varying vec2 vUv;
+
+					void main(void) {
+						vUv = uv;
+						gl_Position = vec4( position.xyz, 1.0 );
+					}
+				`,
 				fragmentShader: `
 					uniform	sampler2D	map;
 
@@ -89,14 +98,6 @@
 						// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 					}
 				`,
-				vertexShader: `
-					varying vec2 vUv;
-
-					void main(void) {
-						vUv = uv;
-						gl_Position = vec4( position.xyz, 1.0 );
-					}
-				`
 			})
 			var mesh = new THREE.Mesh( plane, meshShaderMaterial );
 

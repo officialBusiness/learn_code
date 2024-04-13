@@ -8,16 +8,17 @@
 		<title>sprite</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../module.js';
+			import * as THREE from '../../../source/src/THREE.js';
+			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 
@@ -37,9 +38,7 @@
 			camera.position.z = 50;
 			// camera.position.x = 50;
 
-			scene.add(camera);
-
-			var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+			var orbitControls = new OrbitControls(camera, renderer.domElement);
 
 			var cube = new THREE.BoxGeometry(1, 1, 1);
 
@@ -63,8 +62,8 @@
 			var sprite = new THREE.Sprite( new THREE.SpriteMaterial({
 				map: new THREE.TextureLoader().load('../../assets/images/logo1.jpg')
 			}) );
-
-			sprite.rotation3d = new THREE.Euler(0, 0, 0);
+			sprite.scale.x = 10;
+			sprite.scale.y = 10;
 
 			scene.add( sprite );
 
@@ -118,8 +117,6 @@
 
 			loop();
 			function loop() {
-
-				orbitControls.update();
 
 				renderer.render( scene, camera );
 

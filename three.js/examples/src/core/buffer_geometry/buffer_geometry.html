@@ -8,30 +8,29 @@
 		<title>buffer_geometry</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
 
+		<script type="text/javascript" src="../../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../../module.js';
+			import * as THREE from '../../../../source/src/THREE.js';
+			import { OrbitControls } from '../../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 
-			var webglRenderer = new THREE.WebGLRenderer({
+			var renderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
-			webglRenderer.domElement.id = 'renderCanvas';
+			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( webglRenderer.domElement );
+			document.body.appendChild( renderer.domElement );
 
 
 			var camera = new THREE.PerspectiveCamera(
@@ -41,7 +40,7 @@
 
 			camera.position.z = 10;
 
-			// scene.add(camera);
+			var orbitControls = new OrbitControls(camera, renderer.domElement);
 
 			var plane = new THREE.BufferGeometry();
 
@@ -89,7 +88,7 @@
 			loop();
 			function loop() {
 
-				webglRenderer.render( scene, camera );
+				renderer.render( scene, camera );
 
 				stats.update();
 

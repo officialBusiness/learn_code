@@ -8,16 +8,17 @@
 		<title>fog</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../module.js';
+			import * as THREE from '../../../source/src/THREE.js';
+			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 			scene.fog = new THREE.Fog( 0x050505, 1, 10 );

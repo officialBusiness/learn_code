@@ -8,26 +8,23 @@
 		<title>template</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../source/examples/js/libs/stats.min.js"></script>
 
+		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 		案例模板
 	-->
 	<body>
 		<script type="module">
-			import '../module.js';
+			import * as THREE from '../../source/src/THREE.js';
+			import { OrbitControls } from '../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 
 			var renderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			// var renderer = new THREE.WebGLRenderer2({
-			// 	antialias: true
-			// });
 
 			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
@@ -39,24 +36,26 @@
 			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 1000 );
 
 			camera.position.z = 100;
-			// camera.rotation.x = -Math.PI / 2;
 
-			// scene.add( camera );
+			var orbitControls = new OrbitControls(camera, renderer.domElement);
+
+			scene.add( new THREE.AxesHelper(80) );
 
 			var plane = new THREE.PlaneGeometry(40, 40, 1, 1);
 
 			var mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
-					color: 0x0000ff,
-					envMap: new THREE.CubeTextureLoader().load(
-						[
-							"px.jpg", "nx.jpg",
-							"py.jpg", "ny.jpg",
-							"pz.jpg", "nz.jpg"
-						].map((url)=>{
-							 	return "../assets/images/cube/Escher/" + url;
-						})
-					),
+					color: 0xffffff,
+					map: new THREE.TextureLoader().load('../assets/images/logo.jpeg'),
+					// envMap: new THREE.CubeTextureLoader().load(
+					// 	[
+					// 		"px.jpg", "nx.jpg",
+					// 		"py.jpg", "ny.jpg",
+					// 		"pz.jpg", "nz.jpg"
+					// 	].map((url)=>{
+					// 		 	return "../assets/images/cube/Escher/" + url;
+					// 	})
+					// ),
 				})
 			);
 			scene.add(mesh);
@@ -69,11 +68,10 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-			loop();
-			function loop() {
+			loop(0);
+			function loop(t) {
 
-				mesh.rotation.y += 0.02;
-				mesh.updateMatrix();
+				mesh.rotation.y =  Math.sin( t / 1000 );
 
 				renderer.render( scene, camera );
 

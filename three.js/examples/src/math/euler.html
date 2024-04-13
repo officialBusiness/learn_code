@@ -8,24 +8,23 @@
 		<title>euler</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 
-		<script type="text/javascript" src="../../../source/src/Three.js"></script>
-
 		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
 		<script type="module">
-			import '../../module.js';
+			import * as THREE from '../../../source/src/THREE.js';
+			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 
 			var renderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			// var renderer = new THREE.WebGLRenderer2(true);
-
 
 			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
@@ -38,13 +37,13 @@
 
 			camera.position.set(0, 0, 10);
 
-			var orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+			var orbitControls = new OrbitControls(camera, renderer.domElement);
 
-			scene.add(new THREE.AxisHelper( 10 ));
+			scene.add(new THREE.AxesHelper( 10 ));
 
 			const group = new THREE.Object3D();
 
-			group.add(new THREE.AxisHelper( 4 ));
+			group.add(new THREE.AxesHelper( 4 ));
 			group.add(new THREE.Mesh(
 				new THREE.BoxGeometry(2,2,2),
 				new THREE.MeshBasicMaterial( {color: 0xffff00} )
@@ -73,8 +72,6 @@
 
 			loop();
 			function loop() {
-
-				orbitControls.update();
 
 				renderer.render( scene, camera );
 

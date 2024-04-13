@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="../../icon.png">
+		<title>background</title>
+		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+
+		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
+
+		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
+	</head>
+	<!--
+
+	-->
+	<body>
+		<script type="module">
+			import * as THREE from '../../../source/src/THREE.js';
+			import { OrbitControls } from '../../jsm/jsm.js';
+
+			var scene = new THREE.Scene();
+			scene.fog = new THREE.Fog( 0x050505, 1, 10 );
+			// scene.background = new THREE.Color(1, 0, 0);
+			// scene.background = new THREE.TextureLoader().load('../../assets/images/logo.jpeg');
+
+			scene.background = new THREE.CubeTextureLoader().load(
+				[
+					"px.jpg", "nx.jpg",
+					"py.jpg", "ny.jpg",
+					"pz.jpg", "nz.jpg"
+				].map((url)=>{
+					 	return "../../assets/images/cube/skybox/" + url;
+				})
+			);
+			scene.add( new THREE.AxesHelper(80) );
+
+			var renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+
+			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
+
+			renderer.domElement.id = 'renderCanvas';
+
+			document.body.appendChild( renderer.domElement );
+
+
+			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100 );
+
+			camera.position.z = 14;
+
+			var orbitControls = new OrbitControls(camera, renderer.domElement);
+
+			var stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
+
+			loop();
+			function loop() {
+
+				renderer.render( scene, camera );
+
+				stats.update();
+
+				requestAnimationFrame(loop)
+			}
+		</script>
+	</body>
+</html>
