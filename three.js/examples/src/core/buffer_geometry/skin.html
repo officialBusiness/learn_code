@@ -7,17 +7,22 @@
 		<link rel="icon" href="../../../icon.png">
 		<title>skin</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../../source/src/THREE.js';
+			import * as THREE from 'three';
+			import '../../../module.js';
 			import { OrbitControls } from '../../../jsm/jsm.js';
 
 
@@ -46,28 +51,28 @@
 
 			var plane = new THREE.BufferGeometry();
 
-			plane.addAttribute( "position", new THREE.BufferAttribute(new Float32Array([
+			plane.setAttribute( "position", new THREE.BufferAttribute(new Float32Array([
 				-3, 3, 0,
 				 3, 3, 0,
 				-3,-3, 0,
 				 3,-3, 0
 			]), 3) );
 
-			plane.addAttribute( "uv", new THREE.BufferAttribute( new Float32Array([
+			plane.setAttribute( "uv", new THREE.BufferAttribute( new Float32Array([
 				0, 1,
 				1, 1,
 				0, 0,
 				1, 0
 			]), 2) );
 
-			plane.addAttribute( "skinIndex", new THREE.BufferAttribute( new Float32Array([
+			plane.setAttribute( "skinIndex", new THREE.BufferAttribute( new Float32Array([
 				0, 0, 0, 0,
 				1, 0, 0, 0,
 				2, 0, 0, 0,
 				3, 0, 0, 0
 			]), 4) );
 
-			plane.addAttribute( "skinWeight", new THREE.BufferAttribute( new Float32Array([
+			plane.setAttribute( "skinWeight", new THREE.BufferAttribute( new Float32Array([
 				1, 0, 0, 0,
 				1, 0, 0, 0,
 				1, 0, 0, 0,
@@ -94,14 +99,11 @@
 			bone3.position.x = 1;
 			// bone3.updateMatrixWorld();
 
-			// skeleton.update();
-
 
 			var mesh = new THREE.SkinnedMesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
-					skinning: true,
+					map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg')
 				})
 			);
 

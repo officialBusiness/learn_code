@@ -7,39 +7,40 @@
 		<link rel="icon" href="../../../icon.png">
 		<title>webgl_render_target</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../../source/src/THREE.js';
+			import '../../../module.js';
+			import * as THREE from 'three';
 			import { OrbitControls } from '../../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 			var targetScene = new THREE.Scene();
 
-			var webglRenderer = new THREE.WebGLRenderer({
+			var renderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
-			webglRenderer.domElement.id = 'renderCanvas';
+			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( webglRenderer.domElement );
+			document.body.appendChild( renderer.domElement );
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 2 );
+			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 20 );
 
 			camera.position.z = 2;
 			// camera.rotation.x = -Math.PI / 2;
-
-			scene.add(camera);
 
 			var cube = new THREE.BoxGeometry(1, 1, 1);
 
@@ -47,33 +48,30 @@
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: new THREE.TextureLoader().load('../../../assets/images/logo.jpeg'),
-					envMap: new THREE.CubeTextureLoader().load(
-						[
-							"px.jpg", "nx.jpg",
-							"py.jpg", "ny.jpg",
-							"pz.jpg", "nz.jpg"
-						].map((url)=>{
-							 	return "../../../assets/images/cube/Escher/" + url;
-						})
-					),
+					// envMap: new THREE.CubeTextureLoader().load(
+					// 	[
+					// 		"px.jpg", "nx.jpg",
+					// 		"py.jpg", "ny.jpg",
+					// 		"pz.jpg", "nz.jpg"
+					// 	].map((url)=>{
+					// 		 	return "../../../assets/images/cube/Escher/" + url;
+					// 	})
+					// ),
 				})
 			);
 
 			targetScene.add(cubeMesh);
 
 			var rtTexture = new THREE.WebGLRenderTarget(
-				window.innerWidth,
-				window.innerHeight, {
-				minFilter: THREE.LinearFilter,
-				magFilter: THREE.NearestFilter
-			});
+				window.innerWidth, window.innerHeight
+			);
 
-			var plane = new THREE.PlaneGeometry(2, 2, 2, 2);
+			var plane = new THREE.PlaneGeometry(2, 2);
 
 			var planeMesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: rtTexture,
+					map: rtTexture.texture,
 					envMap: new THREE.CubeTextureLoader().load(
 						[
 							"px.jpg", "nx.jpg",
@@ -103,10 +101,13 @@
 
 				planeMesh.position.x = Math.sin(time / 500);
 
-				webglRenderer.setClearColor(0xffffff, 1);
-				webglRenderer.render( targetScene, camera, rtTexture );
+				renderer.setClearColor(0xffffff, 1);
+				renderer.setRenderTarget(rtTexture);
+				renderer.render( targetScene, camera );
+				renderer.setRenderTarget(null);
 
-				webglRenderer.render( scene, camera );
+				renderer.setClearColor(0x000000, 1);
+				renderer.render( scene, camera );
 
 				stats.update();
 

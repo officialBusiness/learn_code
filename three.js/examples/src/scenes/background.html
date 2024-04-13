@@ -7,17 +7,21 @@
 		<link rel="icon" href="../../icon.png">
 		<title>background</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../source/src/THREE.js';
+			import '../../module.js';
+			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();

@@ -7,18 +7,23 @@
 		<link rel="icon" href="../../../icon.png">
 		<title>buffer_geometry</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../../source/src/THREE.js';
+			import * as THREE from 'three';
+			import '../../../module.js';
 			import { OrbitControls } from '../../../jsm/jsm.js';
+
 
 			var scene = new THREE.Scene();
 
@@ -44,13 +49,13 @@
 
 			var plane = new THREE.BufferGeometry();
 
-			plane.addAttribute( "position", new THREE.BufferAttribute(new Float32Array([
+			plane.setAttribute( "position", new THREE.BufferAttribute(new Float32Array([
 				-4, 4, 0,
 				 4, 4, 0,
 				-4,-4, 0,
 				 4,-4, 0,
 			]), 3) );
-			plane.addAttribute( "uv", new THREE.BufferAttribute( new Float32Array([
+			plane.setAttribute( "uv", new THREE.BufferAttribute( new Float32Array([
 				0, 1,
 				1, 1,
 				0, 0,

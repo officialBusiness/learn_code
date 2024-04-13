@@ -7,72 +7,67 @@
 		<link rel="icon" href="../../icon.png">
 		<title>mesh_shader_material</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../source/src/THREE.js';
+			import '../../module.js';
+			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
 
-			var webglRenderer = new THREE.WebGLRenderer({
+			var renderer = new THREE.WebGLRenderer({
 				antialias: true
 			});
-			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
 
-			webglRenderer.domElement.id = 'renderCanvas';
+			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( webglRenderer.domElement );
+			document.body.appendChild( renderer.domElement );
 
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 2 );
+			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 200 );
 
 			camera.position.z = 2;
 
 			scene.add(camera);
 
-			var plane = new THREE.Geometry();
+      const controls = new OrbitControls( camera, renderer.domElement );
 
-			plane.vertices.push(
-				new THREE.Vector3(-1, 1, -1 ),
-				new THREE.Vector3( 1, 1, -1 ),
-				new THREE.Vector3(-1,-1, -1 ),
-				new THREE.Vector3( 1,-1, -1 )
-			);
+      const plane = new THREE.BufferGeometry();
+      plane.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [
+        -1.0, -1.0,  0.0,
+         1.0, -1.0,  0.0,
+        -1.0,  1.0,  0.0,
+         1.0,  1.0,  0.0,
+      ] ), 3 ) );
 
-			plane.faces.push(
-				new THREE.Face3( 0, 2, 1 ),
-				new THREE.Face3( 2, 3, 1 )
-			);
+      plane.setAttribute('uv', new THREE.BufferAttribute( new Float32Array( [
+        0.0, 0.0,
+        1.0, 0.0,
+        0.0, 1.0,
+        1.0, 1.0,
+      ] ), 2) );
 
-			plane.faceVertexUvs = [
-				[
-					[
-						new THREE.Vector2(0, 1 ),
-						new THREE.Vector2(0, 0 ),
-						new THREE.Vector2(1, 1 ),
-					],
-					[
-						new THREE.Vector2(0, 0 ),
-						new THREE.Vector2(1, 0 ),
-						new THREE.Vector2(1, 1 ),
-					]
-				]
-			];
+      plane.setIndex( [
+        1, 3, 2,
+        2, 0, 1
+      ] );
 
 			var meshShaderMaterial = new THREE.ShaderMaterial({
 				uniforms: {
 					map: {
-						type: "t",
 						value: new THREE.TextureLoader().load('../../assets/images/logo1.jpg'),
 					}
 				},
@@ -81,7 +76,9 @@
 
 					void main(void) {
 						vUv = uv;
-						gl_Position = vec4( position.xyz, 1.0 );
+						// gl_Position = vec4( position.xyz, 1.0 );
+
+            gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4( position, 1.0 );
 					}
 				`,
 				fragmentShader: `
@@ -112,7 +109,7 @@
 			loop();
 			function loop() {
 
-				webglRenderer.render( scene, camera );
+				renderer.render( scene, camera );
 
 				stats.update();
 

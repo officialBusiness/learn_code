@@ -7,17 +7,21 @@
 		<link rel="icon" href="../../icon.png">
 		<title>euler</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../source/src/THREE.js';
+			import '../../module.js';
+			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
@@ -62,11 +66,20 @@
 
 				const
 					gui = new lil.GUI(),
-					folder = gui.addFolder( '欧拉角旋转' );
+					folder = gui.addFolder( '欧拉角旋转' ),
+					onChange = (dir)=>{
+						return (data)=>{
+							group.rotation[dir] = data / 180 * Math.PI;
+						}
+					};
 
-				folder.add( group.rotation, 'x', -Math.PI, Math.PI );
-				folder.add( group.rotation, 'y', -Math.PI, Math.PI );
-				folder.add( group.rotation, 'z', -Math.PI, Math.PI );
+				group.rotation['dx'] =
+				group.rotation['dy'] =
+				group.rotation['dz'] = 0;
+
+				folder.add( group.rotation, 'dx', -180, 180 ).onChange( onChange('x') ).name('x');
+				folder.add( group.rotation, 'dy', -180, 180 ).onChange( onChange('y') ).name('y');
+				folder.add( group.rotation, 'dz', -180, 180 ).onChange( onChange('z') ).name('z');
 			}
 
 

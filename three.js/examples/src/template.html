@@ -7,17 +7,28 @@
 		<link rel="icon" href="../icon.png">
 		<title>template</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 		案例模板
 	-->
 	<body>
+		<!-- <script type="importmap">
+			{
+				"imports": {
+						"three": "../../source/build/three.module.js"
+				}
+			}
+		</script> -->
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../source/src/THREE.js';
+			import * as THREE from 'three';
+			import '../module.js';
 			import { OrbitControls } from '../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
@@ -47,15 +58,6 @@
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: new THREE.TextureLoader().load('../assets/images/logo.jpeg'),
-					// envMap: new THREE.CubeTextureLoader().load(
-					// 	[
-					// 		"px.jpg", "nx.jpg",
-					// 		"py.jpg", "ny.jpg",
-					// 		"pz.jpg", "nz.jpg"
-					// 	].map((url)=>{
-					// 		 	return "../assets/images/cube/Escher/" + url;
-					// 	})
-					// ),
 				})
 			);
 			scene.add(mesh);

@@ -7,17 +7,21 @@
 		<link rel="icon" href="../../icon.png">
 		<title>points</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../source/examples/js/libs/stats.min.js"></script>
-
-		<script type="text/javascript" src="../../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 
 	-->
 	<body>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../source/src/THREE.js"
+				}
+			}
+		</script>
 		<script type="module">
-			import * as THREE from '../../../source/src/THREE.js';
+			import '../../module.js';
+			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
 			var scene = new THREE.Scene();
@@ -42,24 +46,23 @@
 
 			scene.add(camera);
 
-			var pointsGeometry = new THREE.Geometry();
+			var pointsGeometry = new THREE.BufferGeometry();
 
-			pointsGeometry.vertices.push(
-				new THREE.Vector3( 0, 0, 0 ),
-				new THREE.Vector3(-4, 4, 0 ),
-				new THREE.Vector3( 4, 4, 0 ),
-				new THREE.Vector3(-4,-4, 0 ),
-				new THREE.Vector3( 4,-4, 0 ),
-				// new THREE.Vector3( 0, 0, 0 )
-			);
+			pointsGeometry.setAttribute( "position", new THREE.BufferAttribute(new Float32Array([
+				 0, 0, 0,
+				-4, 4, 0,
+				 4, 4, 0,
+				-4,-4, 0,
+				 4,-4, 0
+			]), 3) );
 
-			pointsGeometry.colors.push(
-				new THREE.Color( 0xff0000 ),
-				new THREE.Color( 0xffff00 ),
-				new THREE.Color( 0xff00ff ),
-				new THREE.Color( 0x0000ff ),
-				new THREE.Color( 0x00ffff )
-			);
+			pointsGeometry.setAttribute( "color", new THREE.BufferAttribute(new Float32Array([
+				 1, 0, 0,
+				 1, 1, 0,
+				 1, 0, 1,
+				 0, 0, 1,
+				 0, 1, 1
+			]), 3) );
 
 			function nearest_pow2(n) {
 				var l = Math.log(n) / Math.LN2;
@@ -95,7 +98,7 @@
 				// map: THREE.ImageUtils.loadTexture('../../assets/images/logo.jpeg'),
 				size: 100,
 				sizeAttenuation: false,
-				vertexColors: false,
+				vertexColors: true,
 			})
 
 			var particleSystem = new THREE.Points(pointsGeometry, pointsMaterial);
@@ -127,7 +130,7 @@
 
 				// materialFolder.add(material, 'sizeAttenuation');
 
-				// materialFolder.add(material, 'vertexColors');
+				materialFolder.add(material, 'vertexColors').disable();
 			}
 
 			loop();
