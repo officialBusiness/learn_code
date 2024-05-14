@@ -12,6 +12,7 @@
 
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -23,22 +24,24 @@
 			import '../../module.js';
 			import * as THREE from 'three';
 
-			var scene = new THREE.Scene();
+			const canvas = document.getElementById('renderCanvas');
 
-			var webglRenderer = new THREE.WebGLRenderer({
+			const scene = new THREE.Scene();
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
-			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-			webglRenderer.domElement.id = 'renderCanvas';
+			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( webglRenderer.domElement );
+			document.body.appendChild( renderer.domElement );
 
 
-			var camera = new THREE.PerspectiveCamera(
-				75, document.body.clientWidth / document.body.clientHeight,
+			const camera = new THREE.PerspectiveCamera(
+				75, canvas.clientWidth / canvas.clientHeight,
 				1, 100
 			);
 
@@ -46,9 +49,9 @@
 
 			scene.add(camera);
 
-			var cube = new THREE.BoxGeometry(1, 1, 1);
+			const cube = new THREE.BoxGeometry(1, 1, 1);
 
-			var mesh = new THREE.Mesh( cube,
+			const mesh = new THREE.Mesh( cube,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					envMap: new THREE.CubeTextureLoader().load([
@@ -64,10 +67,10 @@
 
 			scene.add(mesh);
 
-			var ambient = new THREE.AmbientLight( 0x80ffff );
+			const ambient = new THREE.AmbientLight( 0x80ffff );
 			scene.add( ambient );
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
@@ -85,17 +88,17 @@
 
 				const matrixFolder = gui.addFolder('matrix');
 
-				matrixFolder.add(camera.position, 'x').name('position.x');
-				matrixFolder.add(camera.position, 'y').name('position.y');
-				matrixFolder.add(camera.position, 'z').name('position.z');
+				matrixFolder.add(camera.position, 'x', -3, 3).name('position.x');
+				matrixFolder.add(camera.position, 'y', -2, 2).name('position.y');
+				matrixFolder.add(camera.position, 'z', 2, 10).name('position.z');
 
-				matrixFolder.add(camera.rotation, 'x').name('rotation.x');
-				matrixFolder.add(camera.rotation, 'y').name('rotation.y');
-				matrixFolder.add(camera.rotation, 'z').name('rotation.z');
+				matrixFolder.add(camera.rotation, 'x', -Math.PI, Math.PI).name('rotation.x');
+				matrixFolder.add(camera.rotation, 'y',  -Math.PI, Math.PI).name('rotation.y');
+				matrixFolder.add(camera.rotation, 'z',  -Math.PI, Math.PI).name('rotation.z');
 
-				matrixFolder.add(camera.scale, 'x').name('scale.x');
-				matrixFolder.add(camera.scale, 'y').name('scale.y');
-				matrixFolder.add(camera.scale, 'z').name('scale.z');
+				matrixFolder.add(camera.scale, 'x', 0.5, 2).name('scale.x');
+				matrixFolder.add(camera.scale, 'y', 0.5, 2).name('scale.y');
+				matrixFolder.add(camera.scale, 'z', 0.5, 2).name('scale.z');
 
 				const updateProjectionMatrix = ()=>{
 					camera.updateProjectionMatrix()
@@ -115,7 +118,7 @@
 				mesh.rotation.y += 0.01;
 				mesh.updateMatrix();
 
-				webglRenderer.render( scene, camera );
+				renderer.render( scene, camera );
 
 				stats.update();
 

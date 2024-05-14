@@ -24,6 +24,7 @@
 			unpackAlignment
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -36,29 +37,26 @@
 			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
-			var scene = new THREE.Scene();
+			const canvas = document.getElementById('renderCanvas');
 
-			var renderer = new THREE.WebGLRenderer({
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
-			// var renderer = new THREE.WebGLRenderer2({
-			// 	antialias: true
-			// });
 
-			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-			renderer.domElement.id = 'renderCanvas';
-
-			document.body.appendChild( renderer.domElement );
-
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
 
 			camera.position.z = 6;
 			// camera.rotation.x = -Math.PI / 2;
 
-			var orbitControls = new OrbitControls(camera, renderer.domElement);
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
 
-			var imageCanvas = document.createElement( "canvas" ),
+
+			const scene = new THREE.Scene();
+
+			const imageCanvas = document.createElement( "canvas" ),
 				context = imageCanvas.getContext( "2d" );
 
 			imageCanvas.width = imageCanvas.height = 128;
@@ -70,14 +68,14 @@
 			context.fillRect( 0, 0, 64, 64);
 			context.fillRect( 64, 64, 64, 64 );
 
-			var texture = new THREE.Texture( imageCanvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping );
+			const texture = new THREE.Texture( imageCanvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping );
 
 			texture.needsUpdate = true;
 			texture.repeat.set( 10, 10 );
 
-			var plane = new THREE.PlaneGeometry(8, 8, 1, 1);
+			const plane = new THREE.PlaneGeometry(8, 8, 1, 1);
 
-			var mesh = new THREE.Mesh( plane,
+			const mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: texture
@@ -85,10 +83,10 @@
 			);
 			scene.add(mesh);
 
-			var ambient = new THREE.AmbientLight( 0x80ffff );
+			const ambient = new THREE.AmbientLight( 0x80ffff );
 			scene.add( ambient );
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );

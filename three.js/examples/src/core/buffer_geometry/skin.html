@@ -13,6 +13,7 @@
 	-->
 	<body>
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -25,23 +26,24 @@
 			import '../../../module.js';
 			import { OrbitControls } from '../../../jsm/jsm.js';
 
+			const canvas = document.getElementById('renderCanvas');
 
-			var scene = new THREE.Scene();
+			const scene = new THREE.Scene();
 
-			var webglRenderer = new THREE.WebGLRenderer({
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
-			// var webglRenderer = new THREE.WebGLRenderer2(true);
 
-			webglRenderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-			webglRenderer.domElement.id = 'renderCanvas';
+			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( webglRenderer.domElement );
+			document.body.appendChild( renderer.domElement );
 
 
-			var camera = new THREE.PerspectiveCamera(
-				75, document.body.clientWidth / document.body.clientHeight,
+			const camera = new THREE.PerspectiveCamera(
+				75, canvas.clientWidth / canvas.clientHeight,
 				1, 1000
 			);
 
@@ -49,7 +51,7 @@
 
 			// scene.add(camera);
 
-			var plane = new THREE.BufferGeometry();
+			const plane = new THREE.BufferGeometry();
 
 			plane.setAttribute( "position", new THREE.BufferAttribute(new Float32Array([
 				-3, 3, 0,
@@ -100,7 +102,7 @@
 			// bone3.updateMatrixWorld();
 
 
-			var mesh = new THREE.SkinnedMesh( plane,
+			const mesh = new THREE.SkinnedMesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg')
@@ -111,7 +113,7 @@
 
 			scene.add(mesh);
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
@@ -153,7 +155,7 @@
 			loop();
 			function loop() {
 
-				webglRenderer.render( scene, camera );
+				renderer.render( scene, camera );
 
 				stats.update();
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="../../icon.png">
+		<title>water</title>
+		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<!--
+
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../source/src/THREE.js"
+				}
+			}
+		</script>
+		<script type="module">
+			import '../../module.js';
+			import * as THREE from 'three';
+			import { OrbitControls, Water } from '../jsm.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
+				antialias: true
+			});
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+			const camera = new THREE.PerspectiveCamera(
+				75, canvas.clientWidth / canvas.clientHeight,
+				1, 10000
+			);
+
+			camera.position.z = 6;
+
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+			const scene = new THREE.Scene();
+
+
+			var ambient = new THREE.AmbientLight( 0xff0000 );
+			scene.add( ambient );
+
+			const	box = new THREE.Mesh(
+				new THREE.BoxGeometry( 1, 1, 1 ),
+				new THREE.MeshStandardMaterial( { roughness: 0 } )
+			);
+			scene.add( box );
+
+			scene.add( new THREE.AxesHelper(20) );
+
+			const waterGeometry = new THREE.PlaneGeometry( 10, 10 );
+
+			const water = new Water(
+				waterGeometry,
+				{
+					textureWidth: 512,
+					textureHeight: 512,
+					waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
+
+						texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+					} ),
+					sunDirection: new THREE.Vector3(),
+					sunColor: 0xffffff,
+					waterColor: 0x001e0f,
+					distortionScale: 3.7,
+					fog: scene.fog !== undefined
+				}
+			);
+
+			water.position.y = 1;
+			water.rotation.x = Math.PI * - 0.5;
+			scene.add( water );
+
+			const stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
+
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				initWaterGui( gui, water, 'water' );
+			}
+
+			function initWaterGui( gui, water, name ){
+
+				const waterFolder = gui.addFolder( name );
+
+				waterFolder.add( water.material.uniforms.alpha, 'value', 0, 1 ).name( 'alpha' );
+
+				waterFolder.add( water.material.uniforms.size, 'value', 0, 30 ).name( 'size' );
+
+				waterFolder.add( water.material.uniforms.distortionScale, 'value', 0, 10 ).name( 'distortionScale' );
+
+				waterFolder.addColor( water.material.uniforms.sunColor, 'value' ).name('sunColor');
+
+				waterFolder.add( water.material.uniforms.sunDirection.value, 'x', 0, 1 ).name( 'sunDirection.x' );
+				waterFolder.add( water.material.uniforms.sunDirection.value, 'y', 0, 1 ).name( 'sunDirection.y' );
+				waterFolder.add( water.material.uniforms.sunDirection.value, 'z', 0, 1 ).name( 'sunDirection.z' );
+
+				waterFolder.add( water.material.uniforms.eye.value, 'x', 0, 1 ).name( 'eye.x' );
+				waterFolder.add( water.material.uniforms.eye.value, 'y', 0, 1 ).name( 'eye.y' );
+				waterFolder.add( water.material.uniforms.eye.value, 'z', 0, 1 ).name( 'eye.z' );
+
+				waterFolder.addColor( water.material.uniforms.waterColor, 'value' ).name('waterColor');
+			}
+
+
+			loop( 0 );
+			function loop( time ) {
+
+				time /= 1000;
+
+				box.position.y = Math.sin( time ) * 2 + 1;
+				box.rotation.x = time * 0.5;
+				box.rotation.z = time * 0.5;
+
+				water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+
+				orbitControls.update();
+
+				renderer.render( scene, camera );
+
+				stats.update();
+
+				requestAnimationFrame(loop)
+			}
+		</script>
+	</body>
+</html>

@@ -12,6 +12,7 @@
 
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -24,29 +25,28 @@
 			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
-			var scene = new THREE.Scene();
+			const canvas = document.getElementById('renderCanvas');
 
-			var renderer = new THREE.WebGLRenderer({
+			const scene = new THREE.Scene();
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
 
-			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
-
-			renderer.domElement.id = 'renderCanvas';
-
-			document.body.appendChild( renderer.domElement );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 1000 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000 );
 
 			camera.position.z = 50;
 			// camera.position.x = 50;
 
-			var orbitControls = new OrbitControls(camera, renderer.domElement);
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
 
-			var cube = new THREE.BoxGeometry(1, 1, 1);
+			const cube = new THREE.BoxGeometry(1, 1, 1);
 
-			var mesh = new THREE.Mesh( cube,
+			const mesh = new THREE.Mesh( cube,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					envMap: new THREE.CubeTextureLoader().load(
@@ -63,7 +63,7 @@
 
 			scene.add(mesh);
 
-			var sprite = new THREE.Sprite( new THREE.SpriteMaterial({
+			const sprite = new THREE.Sprite( new THREE.SpriteMaterial({
 				map: new THREE.TextureLoader().load('../../assets/images/logo1.jpg')
 			}) );
 			sprite.scale.x = 10;
@@ -71,7 +71,7 @@
 
 			scene.add( sprite );
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );

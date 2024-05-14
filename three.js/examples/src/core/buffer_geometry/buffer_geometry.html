@@ -12,6 +12,7 @@
 
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -24,22 +25,20 @@
 			import '../../../module.js';
 			import { OrbitControls } from '../../../jsm/jsm.js';
 
+			const canvas = document.getElementById('renderCanvas');
 
 			var scene = new THREE.Scene();
 
 			var renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
 
-			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
-
-			renderer.domElement.id = 'renderCanvas';
-
-			document.body.appendChild( renderer.domElement );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 
 			var camera = new THREE.PerspectiveCamera(
-				75, document.body.clientWidth / document.body.clientHeight,
+				75, canvas.clientWidth / canvas.clientHeight,
 				1, 1000
 			);
 

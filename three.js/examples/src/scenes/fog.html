@@ -12,6 +12,7 @@
 
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -24,30 +25,27 @@
 			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
-			var scene = new THREE.Scene();
-			scene.fog = new THREE.Fog( 0x050505, 1, 10 );
+			const canvas = document.getElementById('renderCanvas');
 
-			var render = new THREE.WebGLRenderer({
+			const render = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
 
-			render.setSize( document.body.clientWidth, document.body.clientHeight );
-
-			render.domElement.id = 'renderCanvas';
-
-			document.body.appendChild( render.domElement );
+			render.setSize( canvas.clientWidth, canvas.clientHeight );
 
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 100 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
 
 			camera.position.z = 14;
 			// camera.rotation.x = -Math.PI / 2;
 
-			scene.add( camera );
+			const scene = new THREE.Scene();
+			scene.fog = new THREE.Fog( 0x050505, 1, 10 );
 
-			var plane = new THREE.PlaneGeometry(5, 5, 4, 4);
+			const plane = new THREE.PlaneGeometry(5, 5, 4, 4);
 
-			var mesh = new THREE.Mesh( plane,
+			const mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: new THREE.TextureLoader().load('../../assets/images/logo.jpeg'),
@@ -55,10 +53,10 @@
 			);
 			scene.add(mesh);
 
-			var ambient = new THREE.AmbientLight( 0x80ffff );
+			const ambient = new THREE.AmbientLight( 0x80ffff );
 			scene.add( ambient );
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
@@ -74,14 +72,14 @@
 
 			function initObject(gui, object, name){
 
-				var objectFolder = gui.addFolder(name);
+				const objectFolder = gui.addFolder(name);
 
 				objectFolder.add(object.position, 'z', 0, 10).name('position.z')
 			}
 
 			function initFog(gui, fog, name){
 
-				var fogFolder = gui.addFolder(name);
+				const fogFolder = gui.addFolder(name);
 
 				fogFolder.addColor(fog, 'color');
 

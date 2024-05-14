@@ -12,6 +12,7 @@
 
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -24,29 +25,27 @@
 			import * as THREE from 'three';
 			import { OrbitControls } from '../../jsm/jsm.js';
 
-			var scene = new THREE.Scene();
+			const canvas = document.getElementById('renderCanvas');
 
-			var renderer = new THREE.WebGLRenderer({
+			const scene = new THREE.Scene();
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
-			// var renderer = new THREE.WebGLRenderer2(true);
 
-			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
-
-			renderer.domElement.id = 'renderCanvas';
-
-			document.body.appendChild( renderer.domElement );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 1, 1000 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 1000 );
 
-			var orbitControls = new OrbitControls(camera, renderer.domElement);
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
 
 			camera.position.z = 10;
 
 			scene.add(camera);
 
-			var pointsGeometry = new THREE.BufferGeometry();
+			const pointsGeometry = new THREE.BufferGeometry();
 
 			pointsGeometry.setAttribute( "position", new THREE.BufferAttribute(new Float32Array([
 				 0, 0, 0,
@@ -65,18 +64,18 @@
 			]), 3) );
 
 			function nearest_pow2(n) {
-				var l = Math.log(n) / Math.LN2;
+				const l = Math.log(n) / Math.LN2;
 				return Math.pow( 2, Math.round(l) );
 			}
 
 			function addTexture(url){
 
-				var image = new Image();
+				const image = new Image();
 				image.src = url;
 
-				var canvasElement = document.createElement('canvas');
+				const canvasElement = document.createElement('canvas');
 
-				var texture = new THREE.Texture( canvasElement );
+				const texture = new THREE.Texture( canvasElement );
 
 
 				image.onload = ()=>{
@@ -92,7 +91,7 @@
 				return texture;
 			}
 
-			var pointsMaterial = new THREE.PointsMaterial({
+			const pointsMaterial = new THREE.PointsMaterial({
 				color: 0xffffff,
 				map: addTexture('../../assets/images/logo.jpeg'),
 				// map: THREE.ImageUtils.loadTexture('../../assets/images/logo.jpeg'),
@@ -101,12 +100,12 @@
 				vertexColors: true,
 			})
 
-			var particleSystem = new THREE.Points(pointsGeometry, pointsMaterial);
+			const particleSystem = new THREE.Points(pointsGeometry, pointsMaterial);
 
 			scene.add(particleSystem);
 
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );

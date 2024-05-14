@@ -12,6 +12,7 @@
 
 	-->
 	<body>
+		<canvas id="renderCanvas"></canvas>
 		<script type="importmap">
 			{
 				"imports": {
@@ -24,27 +25,27 @@
 			import * as THREE from 'three';
 			import { OrbitControls } from '../../../jsm/jsm.js';
 
-			var scene = new THREE.Scene();
-			var targetScene = new THREE.Scene();
+			const canvas = document.getElementById('renderCanvas');
 
-			var renderer = new THREE.WebGLRenderer({
+			const scene = new THREE.Scene();
+			const targetScene = new THREE.Scene();
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
 				antialias: true
 			});
 
-			renderer.setSize( document.body.clientWidth, document.body.clientHeight );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-			renderer.domElement.id = 'renderCanvas';
 
-			document.body.appendChild( renderer.domElement );
-
-			var camera = new THREE.PerspectiveCamera( 75, document.body.clientWidth / document.body.clientHeight, 0.1, 20 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 0.1, 20 );
 
 			camera.position.z = 2;
 			// camera.rotation.x = -Math.PI / 2;
 
-			var cube = new THREE.BoxGeometry(1, 1, 1);
+			const cube = new THREE.BoxGeometry(1, 1, 1);
 
-			var cubeMesh = new THREE.Mesh( cube,
+			const cubeMesh = new THREE.Mesh( cube,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: new THREE.TextureLoader().load('../../../assets/images/logo.jpeg'),
@@ -62,13 +63,13 @@
 
 			targetScene.add(cubeMesh);
 
-			var rtTexture = new THREE.WebGLRenderTarget(
+			const rtTexture = new THREE.WebGLRenderTarget(
 				window.innerWidth, window.innerHeight
 			);
 
-			var plane = new THREE.PlaneGeometry(2, 2);
+			const plane = new THREE.PlaneGeometry(2, 2);
 
-			var planeMesh = new THREE.Mesh( plane,
+			const planeMesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: rtTexture.texture,
@@ -86,18 +87,17 @@
 
 			scene.add(planeMesh);
 
-			var stats = new Stats();
+			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
 
-			loop();
-			function loop(time) {
+			loop( 0 );
+			function loop( time ) {
 
 				cubeMesh.rotation.y += 0.01;
 				cubeMesh.rotation.x += 0.01;
-				cubeMesh.updateMatrix();
 
 				planeMesh.position.x = Math.sin(time / 500);
 
