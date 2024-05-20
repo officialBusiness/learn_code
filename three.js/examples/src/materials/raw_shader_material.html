@@ -45,8 +45,6 @@
 
 			camera.position.z = 2;
 
-			scene.add(camera);
-
 			const controls = new OrbitControls( camera, renderer.domElement );
 
 			const plane = new THREE.BufferGeometry();
@@ -69,7 +67,7 @@
 				2, 0, 1
 			] );
 
-			const shaderMaterial = new THREE.RawShaderMaterial({
+			const rawShaderMaterial = new THREE.RawShaderMaterial({
 				uniforms: {
 					map: {
 						value: new THREE.TextureLoader().load('../../assets/images/logo1.jpg'),
@@ -112,7 +110,7 @@
 					}
 				`,
 			})
-			const mesh = new THREE.Mesh( plane, shaderMaterial );
+			const mesh = new THREE.Mesh( plane, rawShaderMaterial );
 
 			scene.add(mesh);
 

@@ -64,22 +64,26 @@
 			initGui();
 			function initGui(){
 
-				const
-					gui = new lil.GUI(),
-					folder = gui.addFolder( '欧拉角旋转' ),
+				const gui = new lil.GUI();
+				initObject3D( gui, group, '欧拉角旋转' );
+			}
+
+			function initObject3D( gui, object3D, name ){
+
+				const	folder = gui.addFolder( name ),
 					onChange = (dir)=>{
 						return (data)=>{
-							group.rotation[dir] = data / 180 * Math.PI;
+							object3D.rotation[dir] = data / 180 * Math.PI;
 						}
 					};
 
-				group.rotation['dx'] =
-				group.rotation['dy'] =
-				group.rotation['dz'] = 0;
+				object3D.rotation['dx'] =
+				object3D.rotation['dy'] =
+				object3D.rotation['dz'] = 0;
 
-				folder.add( group.rotation, 'dx', -180, 180 ).onChange( onChange('x') ).name('x');
-				folder.add( group.rotation, 'dy', -180, 180 ).onChange( onChange('y') ).name('y');
-				folder.add( group.rotation, 'dz', -180, 180 ).onChange( onChange('z') ).name('z');
+				folder.add( object3D.rotation, 'dx', -180, 180 ).onChange( onChange('x') ).name('x');
+				folder.add( object3D.rotation, 'dy', -180, 180 ).onChange( onChange('y') ).name('y');
+				folder.add( object3D.rotation, 'dz', -180, 180 ).onChange( onChange('z') ).name('z');
 			}
 
 
