@@ -70,7 +70,7 @@
 			document.body.appendChild( stats.domElement );
 
 
-			const gui = initGui();
+			initGui();
 			function initGui(){
 
 				const
@@ -83,8 +83,6 @@
 					};
 
 				gui.add( param, 'exportGlb' );
-
-				return gui;
 			}
 
 			loop(0);

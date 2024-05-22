@@ -56,6 +56,10 @@
 
 			const loader = new GLTFLoader();
 
+			const dracoLoader = new DRACOLoader();
+			dracoLoader.setDecoderPath( '../../../../source/examples/jsm/libs/draco/' );
+			loader.setDRACOLoader( dracoLoader );
+
 			document.body.addEventListener('dragstart', function(e){
 				console.log('dragstart')
 				e.preventDefault();
@@ -80,13 +84,18 @@
 					console.log('模型加载完成:', gltf);
 					scene.add( gltf.scene );
 
-					gltf.scene.traverse((node)=>{
-						if( node.material ){
-							node.material = new THREE.MeshStandardMaterial();
+					// gltf.scene.traverse((node)=>{
+					// 	if( node.material ){
+					// 		// node.material = new THREE.MeshStandardMaterial();
 
-							node.material.emissive.set( 1, 1, 1 );
-						}
-					})
+					// 		// node.material = new THREE.MeshBasicMaterial({
+					// 		// 	color: new THREE.Color( 0xffffff ),
+					// 		// });
+
+
+					// 		node.material.emissive.set( 1, 1, 1 );
+					// 	}
+					// })
 
 					URL.revokeObjectURL( url );
 				});
