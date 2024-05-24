@@ -17,7 +17,11 @@ export { OBJLoader } from '../../source/examples/jsm/loaders/OBJLoader.js';
 export { Water } from '../../source/examples/jsm/objects/Water.js';
 export { Water as Water2 } from '../../source/examples/jsm/objects/Water2.js';
 
+
+export { BloomPass } from '../../source/examples/jsm/postprocessing/BloomPass.js';
 export { EffectComposer } from '../../source/examples/jsm/postprocessing/EffectComposer.js';
+export { OutputPass } from '../../source/examples/jsm/postprocessing/OutputPass.js';
 export { Pass, FullScreenQuad } from '../../source/examples/jsm/postprocessing/Pass.js';
 export { RenderPass } from '../../source/examples/jsm/postprocessing/RenderPass.js';
 export { ShaderPass } from '../../source/examples/jsm/postprocessing/ShaderPass.js';
+export { UnrealBloomPass } from '../../source/examples/jsm/postprocessing/UnrealBloomPass.js';
