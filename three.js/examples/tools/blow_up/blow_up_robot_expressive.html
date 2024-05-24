@@ -9,7 +9,18 @@
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
-		骨骼的偏移计算待完善
+		骨骼的偏移计算需要配套的修改 skinning_vertex.glsl.js glsl 代码
+
+	vec4 skinVertex = vec4( transformed, 1.0 );
+
+	vec4 skinned = vec4( 0.0 );
+	skinned += boneMatX * skinVertex * skinWeight.x;
+	skinned += boneMatY * skinVertex * skinWeight.y;
+	skinned += boneMatZ * skinVertex * skinWeight.z;
+	skinned += boneMatW * skinVertex * skinWeight.w;
+
+	transformed = ( bindMatrix * bindMatrixInverse * skinned ).xyz;
+
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>

@@ -1,12 +1,11 @@
 import * as THREE from 'three';
 
-function resetBox3( box3 ){
 
-	box3.min.x = box3.min.y = box3.min.z = Infinity;
-	box3.max.x = box3.max.y = box3.max.z = -Infinity;
-}
+const
+	_vector3 = new THREE.Vector3(),
+	_matrix4 = new THREE.Matrix4();
 
-// 只支持 mesh
+// 支持 mesh, skinnedMesh( skinnedMesh 稍微有点混乱 )
 // 待完善其他 mesh 的偏移
 // 待完善自定义路径操作
 export default class BlowUp{
@@ -31,22 +30,13 @@ export default class BlowUp{
 
 			if( node.geometry && !meshMap.has( node ) ){
 
-				if( node.isSkinnedMesh ){
-					console.warn('不支持 SkinnedMesh');
-					// return;
-				} else if( node.isInstancedMesh ){
-					console.warn('应该不支持 InstancedMesh 吧');
-					// return;
+				if( node.isInstancedMesh ){
+					console.warn('应该不支持 InstancedMesh 吧, 试试吧, 需要注意');
 				} else if( node.isBatchedMesh ){
-					console.warn('BatchedMesh 不知道支不支持，试试吧');
+					console.warn('BatchedMesh 不知道支不支持, 试试吧, 需要注意');
 				}
 
-				const { geometry, matrix, matrixWorld } = node;
-
-				if( !geometry.boundingBox ){
-
-					geometry.computeBoundingBox();
-				}
+				// const { matrix, matrixWorld } = node;
 
 				const meshMessage = {
 
@@ -94,9 +84,10 @@ export default class BlowUp{
 
 		resetModelMessage();
 		function resetModelMessage(){
+
 			model.updateMatrixWorld( true, true );
 
-			resetBox3( modelBox3 );
+			modelBox3.makeEmpty();
 
 			meshMap.forEach(( meshMessage, mesh, map )=>{
 
@@ -105,9 +96,32 @@ export default class BlowUp{
 					position, quaternion, scale
 				} = mesh;
 
+				let boundingBox;
+
+				if( !geometry.boundingBox ){
+
+					geometry.computeBoundingBox();
+				}
+
+				if( mesh.isSkinnedMesh ){
+
+					mesh.computeBoundingBox();
+
+					if( !mesh.boundingBox ){
+
+						mesh.computeBoundingBox();
+					}
+
+					boundingBox = mesh.boundingBox;
+				}else {
+
+					boundingBox = geometry.boundingBox;
+				}
+
 				meshMessage.position.copy( position );
 				meshMessage.quaternion.copy( quaternion );
 				meshMessage.scale.copy( scale );
+
 
 				matrixWorld.decompose(
 					meshMessage.positionWorld,
@@ -115,19 +129,30 @@ export default class BlowUp{
 					meshMessage.scaleWorld,
 				);
 
+				// parentMatrixInvert
+				// 1.
+				// meshMessage.parentMatrixInvert.identity();
+
+				// if( mesh.parent ){
+
+				// 	meshMessage.parentMatrixInvert
+				// 		.copy( mesh.parent.matrixWorld )
+				// 		.invert();
+				// }
+				// 2.
 				meshMessage.parentMatrixInvert
 					.copy( matrix )
 					.invert()
 					.premultiply( matrixWorld )
 					.invert()
 
-				_min.copy( geometry.boundingBox.min ).applyMatrix4( matrixWorld );
-				_max.copy( geometry.boundingBox.max ).applyMatrix4( matrixWorld );
+				_min.copy( boundingBox.min ).applyMatrix4( matrixWorld );
+				_max.copy( boundingBox.max ).applyMatrix4( matrixWorld );
 
 				modelBox3.expandByPoint( _min );
 				modelBox3.expandByPoint( _max );
 
-				geometry.boundingBox.getCenter( meshMessage.centerWorld );
+				boundingBox.getCenter( meshMessage.centerWorld );
 				meshMessage.centerWorld.applyMatrix4( matrixWorld );
 
 				meshMessage.helper.position.copy( meshMessage.centerWorld );
@@ -141,8 +166,6 @@ export default class BlowUp{
 			blowUpHelper,
 			resetModelMessage,
 			blowUpMeshes( skew ){
-
-				const _vector3 = new THREE.Vector3();
 
 				meshMap.forEach(( meshMessage, mesh, map )=>{
 
@@ -160,6 +183,25 @@ export default class BlowUp{
 						.copy( meshMessage.positionWorld )
 						.add( _vector3 )
 						.applyMatrix4( meshMessage.parentMatrixInvert );
+
+					if( mesh.isSkinnedMesh ){
+
+						if( mesh.bindMode === THREE.AttachedBindMode ){
+							// 暂时先这样吧
+							// 1. 要改 shader 进行配合, bindMatrix 移到 bindMatrixInverse 前面
+							mesh.bindMatrix.compose(
+								mesh.position,
+								mesh.quaternion,
+								mesh.scale,
+							);
+
+						}else if( mesh.bindMode === THREE.DetachedBindMode ){
+							// console.warn('一般来说, 没什么问题, 暂时没什么操作, 出问题了再看看');
+						}else {
+
+							console.error('未知的 bindMode:', mesh.bindMode);
+						}
+					}
 				});
 			}
 		}

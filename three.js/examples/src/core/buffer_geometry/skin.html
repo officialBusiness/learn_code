@@ -96,6 +96,7 @@
 				]);
 
 			bone1.position.x = -1;
+			// 因为 boneInverses 的原因, skinnedMesh 在 bind 的时候, 类似加了一个骨骼变化初始状态, 之后的变化会以此为基础
 			// bone1.updateMatrixWorld();
 
 			bone3.position.x = 1;
@@ -124,6 +125,14 @@
 
 				const gui = new lil.GUI();
 
+				gui.add( mesh, 'isSkinnedMesh' );
+
+				gui.add( mesh, 'bindMode', {
+					AttachedBindMode: 'attached',
+					DetachedBindMode: 'detached',
+				} )
+
+				initBone(gui, mesh, 'mesh');
 				initBone(gui, bone1, 'bone1');
 				initBone(gui, bone2, 'bone2').close();
 				initBone(gui, bone3, 'bone3').close();
@@ -133,7 +142,13 @@
 
 			function initBone(gui, bone, boneName){
 
-				const boneFolder = gui.addFolder(boneName);
+				const
+					boneFolder = gui.addFolder(boneName),
+					angleParam = {
+						x: bone.rotation.x / Math.PI * 180,
+						y: bone.rotation.y / Math.PI * 180,
+						z: bone.rotation.z / Math.PI * 180,
+					};
 
 				boneFolder.add(bone.position, 'x', -5, 5).name('position.x').onChange(()=>{
 					bone.updateMatrixWorld();
@@ -145,9 +160,31 @@
 					bone.updateMatrixWorld();
 				});
 
-				boneFolder.add(bone.scale, 'x', -3, 3).name('scale.x');
-				boneFolder.add(bone.scale, 'y', -3, 3).name('scale.y');
-				boneFolder.add(bone.scale, 'z', -3, 3).name('scale.z');
+				boneFolder.add(angleParam, 'x', -180, 180).name('rotation.x').onChange(( angle )=>{
+
+					bone.rotation.x = angle / 180 * Math.PI;
+					bone.updateMatrixWorld();
+				});
+				boneFolder.add(angleParam, 'y',  -180, 180).name('rotation.y').onChange(( angle )=>{
+
+					bone.rotation.y = angle / 180 * Math.PI;
+					bone.updateMatrixWorld();
+				});
+				boneFolder.add(angleParam, 'z',  -180, 180).name('rotation.z').onChange(( angle )=>{
+
+					bone.rotation.z = angle / 180 * Math.PI;
+					bone.updateMatrixWorld();
+				});
+
+				boneFolder.add(bone.scale, 'x', -3, 3).name('scale.x').onChange(()=>{
+					bone.updateMatrixWorld();
+				});
+				boneFolder.add(bone.scale, 'y', -3, 3).name('scale.y').onChange(()=>{
+					bone.updateMatrixWorld();
+				});
+				boneFolder.add(bone.scale, 'z', -3, 3).name('scale.z').onChange(()=>{
+					bone.updateMatrixWorld();
+				});
 
 				return boneFolder;
 			}

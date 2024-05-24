@@ -4,6 +4,7 @@
 export { MapControls } from '../../source/examples/jsm/controls/MapControls.js';
 export { OrbitControls } from '../../source/examples/jsm/controls/OrbitControls.js';
 export { TrackballControls } from '../../source/examples/jsm/controls/TrackballControls.js';
+export { TransformControls } from '../../source/examples/jsm/controls/TransformControls.js';
 
 export { GLTFExporter } from '../../source/examples/jsm/exporters/GLTFExporter.js'
 
