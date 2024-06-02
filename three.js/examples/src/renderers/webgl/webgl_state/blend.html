@@ -5,11 +5,22 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../../../icon.png">
-		<title>depth_and_blend</title>
+		<title>blend</title>
 		<link href="../../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
-
+		相关 webgl api 需要继续深入了解
+		premultipliedAlpha 参数还未深入了解
+		CustomBlending 模式下
+			blendEquation
+			blendSrc
+			blendDst
+			blendEquationAlpha
+			blendSrcAlpha
+			blendDstAlpha
+			blendColor
+			blendAlpha
+		参数还未深入了解, 或可参考 webgl_materials_blending_custom
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -60,10 +71,7 @@
 			const material1 = new THREE.RawShaderMaterial( {
 				uniforms: {
 					texture: {
-						value: texture1,
-					},
-					opaity: {
-						value: 1,
+						value: texture1
 					}
 				},
 				vertexShader: `
@@ -92,11 +100,9 @@
 
 					uniform sampler2D texture;
 
-					uniform float opaity;
-
 					void main() {
 
-						gl_FragColor =  vec4(texture2D(texture, vUv).xyz, opaity);
+						gl_FragColor =  vec4(texture2D(texture, vUv).xyz, 1);
 					}
 				`,
 				side: THREE.DoubleSide,
@@ -133,14 +139,40 @@
 			renderer.showOpaqueMeshRenderOrder = showOpaqueMeshRenderOrder;
 
 			const
-				DepthMode = {
-					NeverDepth: THREE.NeverDepth,
-					AlwaysDepth: THREE.AlwaysDepth,
-					LessDepth: THREE.LessDepth,
-					LessEqualDepth: THREE.LessEqualDepth,
-					GreaterEqualDepth: THREE.GreaterEqualDepth,
-					GreaterDepth: THREE.GreaterDepth,
-					NotEqualDepth: THREE.NotEqualDepth,
+				BlendingMode = {
+					NoBlending: THREE.NoBlending,
+					NormalBlending: THREE.NormalBlending,
+					AdditiveBlending: THREE.AdditiveBlending,
+					SubtractiveBlending: THREE.SubtractiveBlending,
+					MultiplyBlending: THREE.MultiplyBlending,
+					CustomBlending: THREE.CustomBlending,
+				},
+				BlendingEquations = {
+					AddEquation: THREE.AddEquation,
+					SubtractEquation: THREE.SubtractEquation,
+					ReverseSubtractEquation: THREE.ReverseSubtractEquation,
+					MinEquation: THREE.MinEquation,
+					MaxEquation: THREE.MaxEquation,
+				},
+				SourceFactors = {
+					ZeroFactor: THREE.ZeroFactor,
+					OneFactor: THREE.OneFactor,
+					SrcColorFactor: THREE.SrcColorFactor,
+					OneMinusSrcColorFactor: THREE.OneMinusSrcColorFactor,
+					SrcAlphaFactor: THREE.SrcAlphaFactor,
+					OneMinusSrcAlphaFactor: THREE.OneMinusSrcAlphaFactor,
+					DstAlphaFactor: THREE.DstAlphaFactor,
+					OneMinusDstAlphaFactor: THREE.OneMinusDstAlphaFactor,
+					DstColorFactor: THREE.DstColorFactor,
+					OneMinusDstColorFactor: THREE.OneMinusDstColorFactor,
+					SrcAlphaSaturateFactor: THREE.SrcAlphaSaturateFactor,
+					ConstantColorFactor: THREE.ConstantColorFactor,
+					OneMinusConstantColorFactor: THREE.OneMinusConstantColorFactor,
+					ConstantAlphaFactor: THREE.ConstantAlphaFactor,
+					OneMinusConstantAlphaFactor: THREE.OneMinusConstantAlphaFactor,
+				},
+				DestinationFactors = {
+					SrcAlphaSaturateFactor: THREE.SrcAlphaSaturateFactor
 				};
 
 			initGui();
@@ -163,20 +195,28 @@
 
 				const materialStateFolder = gui.addFolder(name);
 
-				materialStateFolder.add( material, 'depthTest' );
-				materialStateFolder.add( material, 'depthWrite' );
-				materialStateFolder.add( material, 'depthFunc', {
-					NeverDepth: THREE.NeverDepth,
-					AlwaysDepth: THREE.AlwaysDepth,
-					LessDepth: THREE.LessDepth,
-					LessEqualDepth: THREE.LessEqualDepth,
-					GreaterEqualDepth: THREE.GreaterEqualDepth,
-					GreaterDepth: THREE.GreaterDepth,
-					NotEqualDepth: THREE.NotEqualDepth,
-				} );
+				materialStateFolder.add( material, 'opacity', 0, 1 );
 
-				materialStateFolder.add( material.uniforms.opaity, 'value', 0, 1 ).name( 'opaity' );
-				materialStateFolder.add( material, 'blending', DepthMode );
+				materialStateFolder.add( material, 'transparent' );
+				materialStateFolder.add( material, 'blending', BlendingMode );
+
+				materialStateFolder.add( material, 'premultipliedAlpha' );
+
+
+				materialStateFolder.add( material, 'blendEquation', BlendingEquations );
+				materialStateFolder.add( material, 'blendEquationAlpha', BlendingEquations );
+
+				materialStateFolder.add( material, 'blendSrc', SourceFactors );
+				// material.blendSrcAlpha = 1;
+				materialStateFolder.add( material, 'blendSrcAlpha', SourceFactors );
+
+				materialStateFolder.add( material, 'blendDst', SourceFactors );
+				// material.blendDstAlpha = 1;
+				materialStateFolder.add( material, 'blendDstAlpha', SourceFactors );
+
+				materialStateFolder.addColor( material, 'blendColor' );
+				materialStateFolder.add( material, 'blendAlpha', 0, 1, 0.01 );
+
 			}
 
 			loop();

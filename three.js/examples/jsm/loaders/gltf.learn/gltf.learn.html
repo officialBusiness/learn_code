@@ -50,8 +50,8 @@
 
 			var orbitControls = new OrbitControls(camera, renderer.domElement);
 
-			var ambient = new THREE.AmbientLight( 0xffffff );
-			scene.add( ambient );
+
+			scene.add( new THREE.AmbientLight( 0xffffff ) );
 
 			const loader = new THREE.FileLoader();
 

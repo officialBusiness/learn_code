@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../../../icon.png">
-		<title>depth_and_blend</title>
+		<title>color_buffer</title>
 		<link href="../../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
@@ -54,16 +54,12 @@
 
 			const plane = new THREE.PlaneGeometry(1, 1, 1, 1);
 
-			const texture1 = new THREE.TextureLoader().load('../../../../assets/images/logo1.jpg' );	//白咕咕
-			const texture2 = new THREE.TextureLoader().load('../../../../assets/images/logo.jpeg' );	//鱼鱼
+			const texture = new THREE.TextureLoader().load('../../../../assets/images/logo1.jpg' );	//白咕咕
 
-			const material1 = new THREE.RawShaderMaterial( {
+			const material = new THREE.RawShaderMaterial( {
 				uniforms: {
 					texture: {
-						value: texture1,
-					},
-					opaity: {
-						value: 1,
+						value: texture
 					}
 				},
 				vertexShader: `
@@ -92,91 +88,50 @@
 
 					uniform sampler2D texture;
 
-					uniform float opaity;
-
 					void main() {
 
-						gl_FragColor =  vec4(texture2D(texture, vUv).xyz, opaity);
+						gl_FragColor =  vec4(texture2D(texture, vUv).xyz, 1);
 					}
 				`,
 				side: THREE.DoubleSide,
 			} );
 
-			const material2 = material1.clone();
-			material2.uniforms.texture.value = texture2;
+			const mesh = new THREE.Mesh( plane, material );
 
-			const mesh1 = new THREE.Mesh( plane, material1 );
-			const mesh2 = new THREE.Mesh( plane, material2 );
-
-			mesh1.name = '白咕咕';
-			mesh1.position.x = 0.5;
-			mesh1.position.z = 1;
-
-			mesh2.name = '鱼鱼';
-
-			scene.add(mesh2);
-			scene.add(mesh1);
+			scene.add(mesh);
 
 			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-			function showOpaqueMeshRenderOrder(){
-
-				console.log( renderer.renderLists.get( scene, 0 ).opaque.map(( { object } )=>{
-
-					return object.name;
-				}) );
-			};
-
-			renderer.showOpaqueMeshRenderOrder = showOpaqueMeshRenderOrder;
-
-			const
-				DepthMode = {
-					NeverDepth: THREE.NeverDepth,
-					AlwaysDepth: THREE.AlwaysDepth,
-					LessDepth: THREE.LessDepth,
-					LessEqualDepth: THREE.LessEqualDepth,
-					GreaterEqualDepth: THREE.GreaterEqualDepth,
-					GreaterDepth: THREE.GreaterDepth,
-					NotEqualDepth: THREE.NotEqualDepth,
-				};
 
 			initGui();
 			function initGui(){
 
 				const gui = new lil.GUI();
 
-				gui.add( renderer, 'sortObjects' );
-
-				gui.add( renderer, 'showOpaqueMeshRenderOrder' );
-
-				gui.add( mesh1.position, 'x', 0, 0.5, 0.5 ).name('白咕咕 x');
-				gui.add( mesh1.position, 'z', 0, 1, 1 ).name('白咕咕 z');
-
-				initMaterialStateGui(gui, material1, 'material1(白咕咕)');
-				initMaterialStateGui(gui, material2, 'material2(鱼鱼)');
+				initMaterialStateGui(gui, material, 'material(白咕咕)');
 			}
 
 			function initMaterialStateGui(gui, material, name){
 
 				const materialStateFolder = gui.addFolder(name);
 
-				materialStateFolder.add( material, 'depthTest' );
-				materialStateFolder.add( material, 'depthWrite' );
-				materialStateFolder.add( material, 'depthFunc', {
-					NeverDepth: THREE.NeverDepth,
-					AlwaysDepth: THREE.AlwaysDepth,
-					LessDepth: THREE.LessDepth,
-					LessEqualDepth: THREE.LessEqualDepth,
-					GreaterEqualDepth: THREE.GreaterEqualDepth,
-					GreaterDepth: THREE.GreaterDepth,
-					NotEqualDepth: THREE.NotEqualDepth,
-				} );
+				materialStateFolder.add( material, 'colorWrite' );
 
-				materialStateFolder.add( material.uniforms.opaity, 'value', 0, 1 ).name( 'opaity' );
-				materialStateFolder.add( material, 'blending', DepthMode );
+				// 需要改相关源码
+				// material.colorWrite = {
+				// 	r: true,
+				// 	g: true,
+				// 	b: true,
+				// 	a: true,
+				// }
+
+				// materialStateFolder.add( material.colorWrite, 'r' );
+				// materialStateFolder.add( material.colorWrite, 'g' );
+				// materialStateFolder.add( material.colorWrite, 'b' );
+				// materialStateFolder.add( material.colorWrite, 'a' );
 			}
 
 			loop();

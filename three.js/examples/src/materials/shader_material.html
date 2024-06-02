@@ -73,6 +73,9 @@
 				uniforms: {
 					map: {
 						value: new THREE.TextureLoader().load('../../assets/images/logo1.jpg'),
+					},
+					intensity: {
+						value: 1,
 					}
 				},
 				vertexShader: `
@@ -87,6 +90,7 @@
 				`,
 				fragmentShader: `
 					uniform	sampler2D	map;
+					uniform	float	intensity;
 
 					varying vec2 vUv;
 
@@ -94,7 +98,7 @@
 
 						vec4 color = texture2D( map, vUv );
 
-						gl_FragColor = color;
+						gl_FragColor = color * intensity;
 
 						// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 					}
@@ -109,6 +113,13 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				gui.add( shaderMaterial.uniforms.intensity, 'value', 0, 1, 0.01 );
+			}
 
 			loop();
 			function loop() {

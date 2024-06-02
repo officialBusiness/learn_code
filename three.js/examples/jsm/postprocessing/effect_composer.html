@@ -31,7 +31,7 @@
 				canvas,
 				antialias: true
 			});
-			renderer.setPixelRatio( window.devicePixelRatio );
+			// renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 			const camera = new THREE.PerspectiveCamera(
@@ -55,9 +55,6 @@
 
 			scene.add(cubeMesh);
 
-
-			var ambient = new THREE.AmbientLight( 0x80ffff );
-			scene.add( ambient );
 
 			const composer = new EffectComposer( renderer );
 

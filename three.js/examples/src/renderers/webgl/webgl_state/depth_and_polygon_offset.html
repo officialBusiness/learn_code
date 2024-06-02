@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../../../icon.png">
-		<title>depth_and_blend</title>
+		<title>depth_and_polygon_offset</title>
 		<link href="../../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
@@ -110,7 +110,6 @@
 
 			mesh1.name = '白咕咕';
 			mesh1.position.x = 0.5;
-			mesh1.position.z = 1;
 
 			mesh2.name = '鱼鱼';
 
@@ -165,18 +164,12 @@
 
 				materialStateFolder.add( material, 'depthTest' );
 				materialStateFolder.add( material, 'depthWrite' );
-				materialStateFolder.add( material, 'depthFunc', {
-					NeverDepth: THREE.NeverDepth,
-					AlwaysDepth: THREE.AlwaysDepth,
-					LessDepth: THREE.LessDepth,
-					LessEqualDepth: THREE.LessEqualDepth,
-					GreaterEqualDepth: THREE.GreaterEqualDepth,
-					GreaterDepth: THREE.GreaterDepth,
-					NotEqualDepth: THREE.NotEqualDepth,
-				} );
+				materialStateFolder.add( material, 'depthFunc', DepthMode );
 
-				materialStateFolder.add( material.uniforms.opaity, 'value', 0, 1 ).name( 'opaity' );
-				materialStateFolder.add( material, 'blending', DepthMode );
+				materialStateFolder.add( material, 'polygonOffset' );
+				materialStateFolder.add( material, 'polygonOffsetFactor', -3, 3 );
+				materialStateFolder.add( material, 'polygonOffsetUnits', -3, 3 );
+
 			}
 
 			loop();

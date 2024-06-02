@@ -4,9 +4,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" href="../../icon.png">
-		<title>fog</title>
-		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link rel="icon" href="../../../icon.png">
+		<title>data_texture_premultiply_alpha</title>
+		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
 
@@ -16,39 +16,51 @@
 		<script type="importmap">
 			{
 				"imports": {
-						"three": "../../../source/src/THREE.js"
+						"three": "../../../../source/src/THREE.js"
 				}
 			}
 		</script>
 		<script type="module">
-			import '../../module.js';
+			import '../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls } from '../../jsm/jsm.js';
+			import { OrbitControls } from '../../../jsm/jsm.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
-			const render = new THREE.WebGLRenderer({
+			const renderer = new THREE.WebGLRenderer({
 				canvas,
 				antialias: true
 			});
 
-			render.setSize( canvas.clientWidth, canvas.clientHeight );
-
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
 
-			camera.position.z = 14;
+			camera.position.z = 6;
 			// camera.rotation.x = -Math.PI / 2;
 
-			const scene = new THREE.Scene();
-			scene.fog = new THREE.Fog( 0x050505, 1, 10 );
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
 
-			const plane = new THREE.PlaneGeometry(5, 5, 4, 4);
+
+			const scene = new THREE.Scene();
+
+
+			const width = 3;
+			const height = 1;
+			const texture = new THREE.DataTexture( new Uint8Array([
+					255,	0,		0,		10,
+					0,		255,	0,		10,
+					0,		0,		255,	10
+				]),	width,	height );
+
+			texture.needsUpdate = true;
+
+			const plane = new THREE.PlaneGeometry(8, 8, 1, 1);
 
 			const mesh = new THREE.Mesh( plane,
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: new THREE.TextureLoader().load('../../assets/images/logo.jpeg'),
+					map: texture
 				})
 			);
 			scene.add(mesh);
@@ -59,37 +71,32 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
+
 			initGui();
 			function initGui(){
 
 				const gui = new lil.GUI();
 
-				initObject(gui, mesh, 'object');
-				initFog(gui, scene.fog, 'fog');
+				initTextureGui(gui, texture, 'texture');
 			}
 
-			function initObject(gui, object, name){
+			function initTextureGui(gui, texture, name){
 
-				const objectFolder = gui.addFolder(name);
+				const textureFolder = gui.addFolder(name);
 
-				objectFolder.add(object.position, 'z', 0, 10).name('position.z')
-			}
+				function change(){
+					texture.needsUpdate = true;
+				}
 
-			function initFog(gui, fog, name){
-
-				const fogFolder = gui.addFolder(name);
-
-				fogFolder.addColor(fog, 'color');
-
-				fogFolder.add(fog, 'near', -10, 10);
-				fogFolder.add(fog, 'far', -10, 10);
-
+				textureFolder.add( texture, 'premultiplyAlpha' ).onChange(change);
 			}
 
 			loop();
 			function loop() {
 
-				render.render( scene, camera );
+				orbitControls.update();
+
+				renderer.render( scene, camera );
 
 				stats.update();
 
