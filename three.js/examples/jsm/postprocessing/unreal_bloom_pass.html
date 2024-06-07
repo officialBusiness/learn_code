@@ -90,76 +90,73 @@
 				}
 			});
 
-			const material = new THREE.RawShaderMaterial({
-				uniforms: {
-					texture: {
-						value: null,
-					}
-				},
-				vertexShader: `
-					precision mediump float;
-					precision mediump int;
+			// const material = new THREE.RawShaderMaterial({
+			// 	uniforms: {
+			// 		texture: {
+			// 			value: null,
+			// 		}
+			// 	},
+			// 	vertexShader: `
+			// 		precision mediump float;
 
-					uniform mat4 modelMatrix;
-					uniform mat4 viewMatrix;
-					uniform mat4 projectionMatrix;
+			// 		uniform mat4 modelMatrix;
+			// 		uniform mat4 viewMatrix;
+			// 		uniform mat4 projectionMatrix;
 
-					attribute vec3 position;
-					attribute vec2 uv;
+			// 		attribute vec3 position;
+			// 		attribute vec2 uv;
 
-					varying vec2 vUv;
+			// 		varying vec2 vUv;
 
-					void main() {
-						vUv = uv;
+			// 		void main() {
+			// 			vUv = uv;
 
-						gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4( position, 1.0 );
-					}
-				`,
-				fragmentShader: `
+			// 			gl_Position = vec4( position, 1.0 );
+			// 		}
+			// 	`,
+			// 	fragmentShader: `
+			// 		precision mediump float;
 
-					precision mediump float;
-					precision mediump int;
+			// 		varying vec2 vUv;
 
-					varying vec2 vUv;
+			// 		uniform sampler2D texture;
 
-					uniform sampler2D texture;
+			// 		void main() {
+			// 			vec4 texel = texture2D(texture, vUv);
 
-					void main() {
-						vec4 texel = texture2D(texture, vUv);
+			// 			texel.x = 0.0;
+			// 			gl_FragColor = texel;
+			// 		}
+			// 	`
+			// });
+			// const fullScreenQuad = new FullScreenQuad(material)
 
-						texel.x = 0.0;
-						gl_FragColor = texel;
-					}
-				`
-			});
-			const fullScreenQuad = new FullScreenQuad(material)
+			// composer.addPass({
 
-			composer.addPass({
+			// 	isPass: true,
+			// 	enabled: true,
+			// 	needsSwap: true,
+			// 	clear: false,
+			// 	renderToScreen: false,
 
-				isPass: true,
-				enabled: true,
-				needsSwap: true,
-				clear: false,
-				renderToScreen: false,
+			// 	setSize(){  },
 
-				setSize(){  },
+			// 	render(renderer, writeBuffer, readBuffer){
 
-				render(renderer, writeBuffer, readBuffer){
+			// 		if( material.uniforms.texture.value === null ){
 
-					if( material.uniforms.texture.value === null ){
+			// 			material.uniforms.texture.value = readBuffer.texture;
+			// 		}
 
-						material.uniforms.texture.value = readBuffer.texture;
-					}
+			// 		renderer.setRenderTarget( null );
+			// 		fullScreenQuad.render( renderer );
 
-					renderer.setRenderTarget( null );
-					fullScreenQuad.render( renderer );
-
-				}
-			});
+			// 	}
+			// });
 
 
 			const unrealBloomPass = new UnrealBloomPass( new THREE.Vector2( canvas.clientWidth, canvas.clientHeight ), 1.5, 0.4, 0.85 );
-			// composer.addPass( unrealBloomPass );
+			composer.addPass( unrealBloomPass );
 
 
 			const stats = new Stats();
