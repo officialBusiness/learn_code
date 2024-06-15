@@ -5,11 +5,11 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../icon.png">
-		<title>unreal_bloom_pass</title>
+		<title>fxaa_shader</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
-		原理不太懂, 先放下
+
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -23,20 +23,19 @@
 		<script type="module">
 			import '../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls, EffectComposer, FullScreenQuad, UnrealBloomPass } from '../jsm.js';
+			import { OrbitControls, EffectComposer, RenderPass, ShaderPass, FXAAShader } from '../jsm.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
 			const renderer = new THREE.WebGLRenderer({
 				canvas,
-				antialias: true
 			});
-			renderer.setPixelRatio( window.devicePixelRatio );
+
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
 			const camera = new THREE.PerspectiveCamera(
 				75, canvas.clientWidth / canvas.clientHeight,
-				1, 100
+				0.1, 100
 			);
 
 			camera.position.z = 2;
@@ -90,9 +89,16 @@
 				}
 			});
 
-			const unrealBloomPass = new UnrealBloomPass( new THREE.Vector2( canvas.clientWidth, canvas.clientHeight ), 1.5, 0.4, 0.85 );
-			composer.addPass( unrealBloomPass );
 
+			const	fxaaPass = new ShaderPass( FXAAShader );
+
+
+			const pixelRatio = renderer.getPixelRatio();
+
+			fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( canvas.offsetWidth * pixelRatio );
+			fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( canvas.offsetHeight * pixelRatio );
+
+			composer.addPass( fxaaPass );
 
 			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -105,27 +111,33 @@
 
 				const gui = new lil.GUI();
 
-				initUnrealBloomPassGui( gui, unrealBloomPass, 'unrealBloomPass' );
+				initFxaaPassGui( gui, fxaaPass, 'fxaaPass' );
 			}
 
-			function initUnrealBloomPassGui( gui, unrealBloomPass, name ){
+			function initFxaaPassGui( gui, fxaaPass, name ){
 
-				const unrealBloomFolder = gui.addFolder( 'bloom' );
+				const fxaaPassFolder = gui.addFolder(name);
 
-				unrealBloomFolder.add( unrealBloomPass, 'threshold', 0.0, 1.0 );
-
-				unrealBloomFolder.add( unrealBloomPass, 'strength', 0.0, 3 );
-
-				unrealBloomFolder.add( unrealBloomPass, 'radius', 0.0, 1.0 ).step( 0.01 );
+				fxaaPassFolder.add( fxaaPass, 'enabled' );
 			}
 
 
 			loop();
 			function loop() {
 
-				composer.render();
+				const halfWidth = canvas.offsetWidth / 2;
+
+				// renderer.setScissorTest( true );
+				// renderer.setScissor( 0, 0, halfWidth - 1, canvas.offsetHeight );
 
 				// renderer.render( scene, camera );
+
+
+				// renderer.setScissor( halfWidth, 0, halfWidth, canvas.offsetHeight );
+
+				composer.render();
+
+				// renderer.setScissorTest( false );
 
 				stats.update();
 

@@ -25,3 +25,5 @@ export { Pass, FullScreenQuad } from '../../source/examples/jsm/postprocessing/P
 export { RenderPass } from '../../source/examples/jsm/postprocessing/RenderPass.js';
 export { ShaderPass } from '../../source/examples/jsm/postprocessing/ShaderPass.js';
 export { UnrealBloomPass } from '../../source/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+export { FXAAShader } from '../../source/examples/jsm/shaders/FXAAShader.js';

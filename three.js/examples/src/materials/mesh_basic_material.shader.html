@@ -47,27 +47,27 @@
 
 			scene.add(camera);
 
-      const controls = new OrbitControls( camera, renderer.domElement );
+			const controls = new OrbitControls( camera, renderer.domElement );
 
-      const plane = new THREE.BufferGeometry();
-      plane.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [
-        -1.0, -1.0,  0.0,
-         1.0, -1.0,  0.0,
-        -1.0,  1.0,  0.0,
-         1.0,  1.0,  0.0,
-      ] ), 3 ) );
+			const plane = new THREE.BufferGeometry();
+			plane.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [
+				-1.0, -1.0,  0.0,
+				 1.0, -1.0,  0.0,
+				-1.0,  1.0,  0.0,
+				 1.0,  1.0,  0.0,
+			] ), 3 ) );
 
-      plane.setAttribute('uv', new THREE.BufferAttribute( new Float32Array( [
-        0.0, 0.0,
-        1.0, 0.0,
-        0.0, 1.0,
-        1.0, 1.0,
-      ] ), 2) );
+			plane.setAttribute('uv', new THREE.BufferAttribute( new Float32Array( [
+				0.0, 0.0,
+				1.0, 0.0,
+				0.0, 1.0,
+				1.0, 1.0,
+			] ), 2) );
 
-      plane.setIndex( [
-        1, 3, 2,
-        2, 0, 1
-      ] );
+			plane.setIndex( [
+				1, 3, 2,
+				2, 0, 1
+			] );
 
 			const shaderMaterial = new THREE.ShaderMaterial({
 				// fog: true,

@@ -10,10 +10,13 @@
 	</head>
 	<!--
 		待了解参数
-			anisotropy
 			format
 			type
 			unpackAlignment
+
+			anisotropy
+
+			colorSpace
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -50,23 +53,26 @@
 			const imageCanvas = document.createElement( "canvas" ),
 				context = imageCanvas.getContext( "2d" );
 
-			const width = imageCanvas.width = 128;
-			const height = imageCanvas.height = 128;
+			const width = imageCanvas.width = 2;
+			const height = imageCanvas.height = 2;
 
-			context.fillStyle = "#444";
-			context.fillRect( 0, 0, width, height );
-
-			context.fillStyle = "#fff";
-			context.fillRect( 0, 0, width / 2, height / 2);
+			context.fillStyle = "#f00";
+			context.fillRect( 0, 0, width / 2, height / 2 );
 			context.fillRect( width / 2, height / 2, width / 2, height / 2 );
 
-			const texture = new THREE.Texture( imageCanvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping );
+			context.fillStyle = "#0f0";
+			context.fillRect( width / 2, 0, width, height / 2);
+
+			context.fillStyle = "#00f";
+			context.fillRect( 0, height / 2, width / 2, height);
+
+			const texture = new THREE.Texture( imageCanvas, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping );
 
 			texture.needsUpdate = true;
 			texture.repeat.set( 10, 10 );
 
 			texture.flipY = true;
-			texture.repeat.set( 2, 2 );
+			texture.repeat.set( 1, 1 );
 
 			const plane = new THREE.PlaneGeometry(8, 8, 1, 1);
 
