@@ -1,9 +1,9 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
-    BABYLON.Scene = function (engine) {
+    BABYLON.Scene = function(engine) {
         this._engine = engine;
         this.autoClear = true;
         this.clearColor = new BABYLON.Color3(0.2, 0.2, 0.3);
@@ -106,9 +106,16 @@ var BABYLON = BABYLON || {};
 
         // Multi-cameras
         this.activeCameras = [];
+
+        // Render bounding boxes
+        this._boundingBoxRenderer = new BABYLON.BoundingBoxRenderer(this);
     };
 
-    // Properties   
+    // Properties 
+    BABYLON.Scene.prototype.getBoundingBoxRenderer = function () {
+        return this._boundingBoxRenderer;
+    };
+
     BABYLON.Scene.prototype.getEngine = function () {
         return this._engine;
     };
@@ -409,7 +416,7 @@ var BABYLON = BABYLON || {};
     };
 
     BABYLON.Scene.prototype.getLastMeshByID = function (id) {
-        for (var index = this.meshes.length - 1; index >= 0 ; index--) {
+        for (var index = this.meshes.length - 1; index >= 0; index--) {
             if (this.meshes[index].id === id) {
                 return this.meshes[index];
             }
@@ -419,19 +426,19 @@ var BABYLON = BABYLON || {};
     };
 
     BABYLON.Scene.prototype.getLastEntryByID = function (id) {
-        for (var index = this.meshes.length - 1; index >= 0 ; index--) {
+        for (var index = this.meshes.length - 1; index >= 0; index--) {
             if (this.meshes[index].id === id) {
                 return this.meshes[index];
             }
         }
 
-        for (var index = this.cameras.length - 1; index >= 0 ; index--) {
+        for (var index = this.cameras.length - 1; index >= 0; index--) {
             if (this.cameras[index].id === id) {
                 return this.cameras[index];
             }
         }
 
-        for (var index = this.lights.length - 1; index >= 0 ; index--) {
+        for (var index = this.lights.length - 1; index >= 0; index--) {
             if (this.lights[index].id === id) {
                 return this.lights[index];
             }
@@ -451,7 +458,7 @@ var BABYLON = BABYLON || {};
     };
 
     BABYLON.Scene.prototype.getLastSkeletonByID = function (id) {
-        for (var index = this.skeletons.length - 1; index >= 0 ; index--) {
+        for (var index = this.skeletons.length - 1; index >= 0; index--) {
             if (this.skeletons[index].id === id) {
                 return this.skeletons[index];
             }
@@ -511,6 +518,7 @@ var BABYLON = BABYLON || {};
         this._processedMaterials.reset();
         this._activeParticleSystems.reset();
         this._activeSkeletons.reset();
+        this._boundingBoxRenderer.reset();
 
         if (!this._frustumPlanes) {
             this._frustumPlanes = BABYLON.Frustum.GetPlanes(this._transformMatrix);
@@ -544,6 +552,10 @@ var BABYLON = BABYLON || {};
                             this._activeMeshes.push(mesh);
                         }
                         mesh._renderId = this._renderId;
+
+                        if (mesh.showBoundingBox) {
+                            this._boundingBoxRenderer.renderList.push(mesh);
+                        }
 
                         if (mesh.skeleton) {
                             this._activeSkeletons.pushNoDuplicate(mesh.skeleton);
@@ -584,6 +596,10 @@ var BABYLON = BABYLON || {};
                         this._activeSkeletons.pushNoDuplicate(mesh.skeleton);
                     }
 
+                    if (mesh.showBoundingBox) {
+                        this._boundingBoxRenderer.renderList.push(mesh);
+                    }
+
                     for (var subIndex = 0; subIndex < mesh.subMeshes.length; subIndex++) {
                         var subMesh = mesh.subMeshes[subIndex];
 
@@ -608,7 +624,7 @@ var BABYLON = BABYLON || {};
         this._particlesDuration += new Date() - beforeParticlesDate;
     };
 
-    BABYLON.Scene.prototype._renderForCamera = function (camera, mustClearDepth) {
+    BABYLON.Scene.prototype._renderForCamera = function (camera) {
         var engine = this._engine;
 
         this.activeCamera = camera;
@@ -618,11 +634,6 @@ var BABYLON = BABYLON || {};
 
         // Viewport
         engine.setViewport(this.activeCamera.viewport);
-
-        // Clear
-        if (mustClearDepth) {
-            this._engine.clear(this.clearColor, false, true);
-        }
 
         // Camera
         this._renderId++;
@@ -681,6 +692,9 @@ var BABYLON = BABYLON || {};
         // Render
         this._renderingManager.render(null, null, true, true);
 
+        // Bounding boxes
+        this._boundingBoxRenderer.render();
+
         // Lens flares
         for (var lensFlareSystemIndex = 0; lensFlareSystemIndex < this.lensFlareSystems.length; lensFlareSystemIndex++) {
             this.lensFlareSystems[lensFlareSystemIndex].render();
@@ -701,13 +715,31 @@ var BABYLON = BABYLON || {};
         this._renderDuration += new Date() - beforeRenderDate;
 
         // Finalize frame
-        this.postProcessManager._finalizeFrame();
+        this.postProcessManager._finalizeFrame(camera.isIntermediate);
 
         // Update camera
         this.activeCamera._updateFromScene();
 
         // Reset some special arrays
         this._renderTargets.reset();
+    };
+
+    BABYLON.Scene.prototype._processSubCameras = function (camera) {
+        if (camera.subCameras.length == 0) {
+            this._renderForCamera(camera);
+            return;
+        }
+
+        // Sub-cameras
+        for (var index = 0; index < camera.subCameras.length; index++) {
+            this._renderForCamera(camera.subCameras[index]);
+        }
+
+        this.activeCamera = camera;
+        this.setTransformMatrix(this.activeCamera.getViewMatrix(), this.activeCamera.getProjectionMatrix());
+
+        // Update camera
+        this.activeCamera._updateFromScene();
     };
 
     BABYLON.Scene.prototype.render = function () {
@@ -747,7 +779,7 @@ var BABYLON = BABYLON || {};
             var light = this.lights[lightIndex];
             var shadowGenerator = light.getShadowGenerator();
 
-            if (light.isEnabled() && shadowGenerator) {
+            if (light.isEnabled() && shadowGenerator && shadowGenerator.getShadowMap()._scene.textures.indexOf(shadowGenerator.getShadowMap()) !== -1) {
                 this._renderTargets.push(shadowGenerator.getShadowMap());
             }
         }
@@ -757,10 +789,10 @@ var BABYLON = BABYLON || {};
             var currentRenderId = this._renderId;
             for (var cameraIndex = 0; cameraIndex < this.activeCameras.length; cameraIndex++) {
                 this._renderId = currentRenderId;
-                this._renderForCamera(this.activeCameras[cameraIndex], cameraIndex != 0);
+                this._processSubCameras(this.activeCameras[cameraIndex]);
             }
         } else {
-            this._renderForCamera(this.activeCamera);
+            this._processSubCameras(this.activeCamera);
         }
 
         // After render
@@ -784,6 +816,8 @@ var BABYLON = BABYLON || {};
         this.afterRender = null;
 
         this.skeletons = [];
+
+        this._boundingBoxRenderer.dispose();
 
         // Detach cameras
         var canvas = this._engine.getRenderingCanvas();
@@ -1068,6 +1102,41 @@ var BABYLON = BABYLON || {};
             mesh._physicImpostor = BABYLON.PhysicsEngine.NoImpostor;
             this._scene._physicsEngine._unregisterMesh(mesh);
         }
+    };
+
+    // Tags
+    BABYLON.Scene.prototype._getByTags = function (list, tagsQuery) {
+        if (tagsQuery === undefined) {
+            // returns the complete list (could be done with BABYLON.Tags.MatchesQuery but no need to have a for-loop here)
+            return list;
+        }
+
+        var listByTags = [];
+
+        for (var i in list) {
+            var item = list[i];
+            if (BABYLON.Tags.MatchesQuery(item, tagsQuery)) {
+                listByTags.push(item);
+            }
+        }
+
+        return listByTags;
+    };
+
+    BABYLON.Scene.prototype.getMeshesByTags = function (tagsQuery) {
+        return this._getByTags(this.meshes, tagsQuery);
+    };
+
+    BABYLON.Scene.prototype.getCamerasByTags = function (tagsQuery) {
+        return this._getByTags(this.cameras, tagsQuery);
+    };
+
+    BABYLON.Scene.prototype.getLightsByTags = function (tagsQuery) {
+        return this._getByTags(this.lights, tagsQuery);
+    };
+
+    BABYLON.Scene.prototype.getMaterialByTags = function (tagsQuery) {
+        return this._getByTags(this.materials, tagsQuery).concat(this._getByTags(this.multiMaterials, tagsQuery));
     };
 
     // Statics

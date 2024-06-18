@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     var randomNumber = function (min, max) {
@@ -380,7 +380,7 @@ var BABYLON = BABYLON || {};
 
         result.emitter = newEmitter;
         if (this.particleTexture) {
-            result.particleTexture = new BABYLON.Texture(this.particleTexture.name, this._scene);
+            result.particleTexture = new BABYLON.Texture(this.particleTexture.url, this._scene);
         }
 
         result.start();

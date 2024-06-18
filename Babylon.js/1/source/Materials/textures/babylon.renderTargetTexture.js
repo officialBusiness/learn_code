@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.RenderTargetTexture = function (name, size, scene, generateMipMaps) {
@@ -86,12 +86,13 @@ var BABYLON = BABYLON || {};
         // Render
         this._renderingManager.render(this.customRenderFunction, this.renderList, this.renderParticles, this.renderSprites);
 
-        // Unbind
-        engine.unBindFramebuffer(this._texture);
-
+        //Call this before unBinding Framebuffer in case of manipulating texture with WebGL commands inside the onAfterRender method.
         if (this.onAfterRender) {
             this.onAfterRender();
         }
+
+        // Unbind
+        engine.unBindFramebuffer(this._texture);
     };
 
     BABYLON.RenderTargetTexture.prototype.clone = function () {

@@ -1,13 +1,13 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.GravityInputController = function (scene, target) {
         BABYLON.InputController.call(this, scene, target);
         this._moveVectorGlobal = new BABYLON.Vector3(0, 0, 0);
         this._moveVectorLocal = new BABYLON.Vector3(0, 0, 0);
-        this._fallSpeed = .6;
+        this._fallSpeed = 2;
     };
     BABYLON.GravityInputController.prototype = Object.create(BABYLON.InputController.prototype);
     BABYLON.GravityInputController.prototype.update = function () {

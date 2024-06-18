@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.Tools = BABYLON.Tools || {};
@@ -50,6 +50,13 @@ var BABYLON = BABYLON || {};
             minimum: minimum,
             maximum: maximum
         };
+    };
+	
+	BABYLON.Tools.MakeArray = function (obj, allowsNullUndefined) {
+		if (allowsNullUndefined !== true && (obj === undefined || obj == null))
+			return undefined;
+
+		return Array.isArray(obj) ? obj : [obj];
     };
 
     // Smart array
@@ -340,6 +347,13 @@ var BABYLON = BABYLON || {};
                 destination[prop] = sourceValue;
             }
         }
+    };
+
+    BABYLON.Tools.IsEmpty = function (obj) {
+        for (var i in obj) {
+            return false;
+        }
+        return true;
     };
 
     // FPS

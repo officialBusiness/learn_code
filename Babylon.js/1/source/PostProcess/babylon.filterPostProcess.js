@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.FilterPostProcess = function (name, kernelMatrix, ratio, camera, samplingMode, engine, reusable) {

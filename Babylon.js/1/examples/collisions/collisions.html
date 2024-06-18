@@ -7,58 +7,6 @@
 		<link rel="icon" type="image/png" href="../../../favicon.ico">
 		<title>collisions</title>
 		<link href="../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../source/Tools/babylon.tools.js"></script>
-		<script type="text/javascript" src="../../source/Tools/babylon.database.js"></script>
-
-		<script type="text/javascript" src="../../source/Math/babylon.math.js"></script>
-
-		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcess.js"></script>
-		<script type="text/javascript" src="../../source/PostProcess/babylon.postProcessManager.js"></script>
-
-		<script type="text/javascript" src="../../source/Collisions/babylon.collider.js"></script>
-
-		<script type="text/javascript" src="../../source/Rendering/babylon.renderingManager.js"></script>
-		<script type="text/javascript" src="../../source/Rendering/babylon.renderingGroup.js"></script>
-
-		<script type="text/javascript" src="../../source/babylon.engine.js"></script>
-		<script type="text/javascript" src="../../source/babylon.scene.js"></script>
-		<script type="text/javascript" src="../../source/babylon.node.js"></script>
-
-		<script type="text/javascript" src="../../source/Cameras/babylon.camera.js"></script>
-		<script type="text/javascript" src="../../source/Cameras/babylon.arcRotateCamera.js"></script>
-		<script type="text/javascript" src="../../source/Cameras/babylon.freeCamera.js"></script>
-		<script type="text/javascript" src="../../source/Cameras/babylon.touchCamera.js"></script>
-
-		<script type="text/javascript" src="../../source/Materials/babylon.effect.js"></script>
-		<script type="text/javascript" src="../../source/Materials/babylon.material.js"></script>
-		<script type="text/javascript" src="../../source/Materials/babylon.standardMaterial.js"></script>
-
-		<script type="text/javascript" src="../../source/Lights/babylon.light.js"></script>
-		<script type="text/javascript" src="../../source/Lights/babylon.directionalLight.js"></script>
-		<script type="text/javascript" src="../../source/Lights/babylon.hemisphericLight.js"></script>
-		<script type="text/javascript" src="../../source/Lights/babylon.pointLight.js"></script>
-		<script type="text/javascript" src="../../source/Lights/babylon.spotLight.js"></script>
-
-		<script type="text/javascript" src="../../source/Materials/textures/babylon.baseTexture.js"></script>
-		<script type="text/javascript" src="../../source/Materials/textures/babylon.texture.js"></script>
-		<script type="text/javascript" src="../../source/Materials/textures/babylon.videoTexture.js"></script>
-
-		<script type="text/javascript" src="../../source/Layer/babylon.layer.js"></script>
-
-		<script type="text/javascript" src="../../source/Mesh/babylon.vertexBuffer.js"></script>
-		<script type="text/javascript" src="../../source/Mesh/babylon.subMesh.js"></script>
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.js"></script>
-		<script type="text/javascript" src="../../source/Mesh/babylon.mesh.vertexData.js"></script>
-
-		<script type="text/javascript" src="../../source/Culling/babylon.boundingInfo.js"></script>
-		<script type="text/javascript" src="../../source/Culling/babylon.boundingBox.js"></script>
-		<script type="text/javascript" src="../../source/Culling/babylon.boundingSphere.js"></script>
-
-		<script type="text/javascript" src="../../source/Sprites/babylon.sprite.js"></script>
-		<script type="text/javascript" src="../../source/Sprites/babylon.spriteManager.js"></script>
-
-		<script type="text/javascript" src="../../libs/lil-gui/lil-gui.umd.min.js"></script>
 	</head>
 	<!--
 		展示 collisions 效果, 遇到墙不再运动
@@ -66,6 +14,7 @@
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
+			import "../module.js"
 			import createAxesBox from '../mesh/helper/axes_box_helper.js';
 
 			const canvas = document.getElementById('renderCanvas');
@@ -139,9 +88,16 @@
 
 			const scene = CreateScene(engine);
 
+			const stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
 			engine.runRenderLoop(()=>{
 
 				scene.render();
+
+				stats.update();
 			});
 		</script>
 	</body>

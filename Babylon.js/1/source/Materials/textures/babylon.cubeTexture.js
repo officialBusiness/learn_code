@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {    
     BABYLON.CubeTexture = function (rootUrl, scene, extensions, noMipmap) {

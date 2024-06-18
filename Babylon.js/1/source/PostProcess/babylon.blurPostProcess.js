@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.BlurPostProcess = function (name, direction, blurWidth, ratio, camera, samplingMode, engine, reusable) {

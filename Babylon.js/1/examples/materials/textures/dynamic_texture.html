@@ -7,48 +7,12 @@
 		<link rel="icon" type="image/png" href="../../../../favicon.ico">
 		<title>dynamic_texture</title>
 		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
-
-		<script type="text/javascript" src="../../../source/Tools/babylon.tools.js"></script>
-		<script type="text/javascript" src="../../../source/Tools/babylon.database.js"></script>
-
-		<script type="text/javascript" src="../../../source/Math/babylon.math.js"></script>
-
-		<script type="text/javascript" src="../../../source/PostProcess/babylon.postProcess.js"></script>
-		<script type="text/javascript" src="../../../source/PostProcess/babylon.postProcessManager.js"></script>
-
-		<script type="text/javascript" src="../../../source/Rendering/babylon.renderingManager.js"></script>
-		<script type="text/javascript" src="../../../source/Rendering/babylon.renderingGroup.js"></script>
-
-		<script type="text/javascript" src="../../../source/babylon.engine.js"></script>
-		<script type="text/javascript" src="../../../source/babylon.scene.js"></script>
-		<script type="text/javascript" src="../../../source/babylon.node.js"></script>
-
-		<script type="text/javascript" src="../../../source/Cameras/babylon.camera.js"></script>
-		<script type="text/javascript" src="../../../source/Cameras/babylon.arcRotateCamera.js"></script>
-
-		<script type="text/javascript" src="../../../source/Materials/babylon.effect.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/babylon.material.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/babylon.standardMaterial.js"></script>
-
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.baseTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.texture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.videoTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.cubeTexture.js"></script>
-		<script type="text/javascript" src="../../../source/Materials/textures/babylon.dynamicTexture.js"></script>
-
-		<script type="text/javascript" src="../../../source/Mesh/babylon.vertexBuffer.js"></script>
-		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.js"></script>
-		<script type="text/javascript" src="../../../source/Mesh/babylon.subMesh.js"></script>
-		<script type="text/javascript" src="../../../source/Mesh/babylon.mesh.vertexData.js"></script>
-
-		<script type="text/javascript" src="../../../source/Culling/babylon.boundingInfo.js"></script>
-		<script type="text/javascript" src="../../../source/Culling/babylon.boundingBox.js"></script>
-		<script type="text/javascript" src="../../../source/Culling/babylon.boundingSphere.js"></script>
 	</head>
 	<!-- 简单展示动态纹理效果 -->
 	<body>
 		<canvas id="renderCanvas"></canvas>
 		<script type="module">
+			import "../../module.js"
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -88,11 +52,18 @@
 
 			const { scene, texture } = CreateScene(engine);
 
+			const stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
 	    var startDate = new Date(),
 	    		count = 0;
 
 			engine.runRenderLoop(()=>{
 				scene.render();
+
+				stats.update();
 
         var diff = (new Date() - startDate);
 

@@ -1,9 +1,10 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.Engine = function (canvas, antialias, options) {
+        var that = this;
         this._renderingCanvas = canvas;
 
         options = options || {};
@@ -20,9 +21,22 @@ var BABYLON = BABYLON || {};
             throw new Error("WebGL not supported");
         }
 
+        this._windowIsBackground = false;
+        this._onBlur = function () {
+            that._windowIsBackground = true;
+        };
+
+        this._onFocus = function () {
+            that._windowIsBackground = false;
+        };
+
+        window.addEventListener("blur", this._onBlur);
+        window.addEventListener("focus", this._onFocus);
+
         // Options
         this.forceWireframe = false;
         this.cullBackFaces = true;
+        this.renderEvenInBackground = true;
 
         // Scenes
         this.scenes = [];
@@ -64,9 +78,8 @@ var BABYLON = BABYLON || {};
 
         // Fullscreen
         this.isFullscreen = false;
-        var that = this;
 
-        var onFullscreenChange = function () {
+        this._onFullscreenChange = function () {
             if (document.fullscreen !== undefined) {
                 that.isFullscreen = document.fullscreen;
             } else if (document.mozFullScreen !== undefined) {
@@ -90,15 +103,15 @@ var BABYLON = BABYLON || {};
             }
         };
 
-        document.addEventListener("fullscreenchange", onFullscreenChange, false);
-        document.addEventListener("mozfullscreenchange", onFullscreenChange, false);
-        document.addEventListener("webkitfullscreenchange", onFullscreenChange, false);
-        document.addEventListener("msfullscreenchange", onFullscreenChange, false);
+        document.addEventListener("fullscreenchange", this._onFullscreenChange, false);
+        document.addEventListener("mozfullscreenchange", this._onFullscreenChange, false);
+        document.addEventListener("webkitfullscreenchange", this._onFullscreenChange, false);
+        document.addEventListener("msfullscreenchange", this._onFullscreenChange, false);
 
         // Pointer lock
         this.isPointerLock = false;
 
-        var onPointerLockChange = function () {
+        this._onPointerLockChange = function () {
             that.isPointerLock = (document.mozPointerLockElement === canvas ||
                                   document.webkitPointerLockElement === canvas ||
                                   document.msPointerLockElement === canvas ||
@@ -106,10 +119,10 @@ var BABYLON = BABYLON || {};
             );
         };
 
-        document.addEventListener("pointerlockchange", onPointerLockChange, false);
-        document.addEventListener("mspointerlockchange", onPointerLockChange, false);
-        document.addEventListener("mozpointerlockchange", onPointerLockChange, false);
-        document.addEventListener("webkitpointerlockchange", onPointerLockChange, false);
+        document.addEventListener("pointerlockchange", this._onPointerLockChange, false);
+        document.addEventListener("mspointerlockchange", this._onPointerLockChange, false);
+        document.addEventListener("mozpointerlockchange", this._onPointerLockChange, false);
+        document.addEventListener("webkitpointerlockchange", this._onPointerLockChange, false);
     };
 
     // Properties
@@ -148,21 +161,44 @@ var BABYLON = BABYLON || {};
     };
 
     // Methods
+    BABYLON.Engine.prototype.setDepthFunctionToGreater = function() {
+        this._gl.depthFunc(this._gl.GREATER);
+    };
+
+    BABYLON.Engine.prototype.setDepthFunctionToGreaterOrEqual = function () {
+        this._gl.depthFunc(this._gl.GEQUAL);
+    };
+
+    BABYLON.Engine.prototype.setDepthFunctionToLess = function () {
+        this._gl.depthFunc(this._gl.LESS);
+    };
+
+    BABYLON.Engine.prototype.setDepthFunctionToLessOrEqual = function () {
+        this._gl.depthFunc(this._gl.LEQUAL);
+    };
+
     BABYLON.Engine.prototype.stopRenderLoop = function () {
         this._renderFunction = null;
         this._runningLoop = false;
     };
 
     BABYLON.Engine.prototype._renderLoop = function () {
-        // Start new frame
-        this.beginFrame();
-
-        if (this._renderFunction) {
-            this._renderFunction();
+        var shouldRender = true;
+        if (!this.renderEvenInBackground && this._windowIsBackground) {
+            shouldRender = false;
         }
 
-        // Present
-        this.endFrame();
+        if (shouldRender) {
+            // Start new frame
+            this.beginFrame();
+
+            if (this._renderFunction) {
+                this._renderFunction();
+            }
+
+            // Present
+            this.endFrame();
+        }
 
         if (this._runningLoop) {
             // Register new frame
@@ -252,6 +288,8 @@ var BABYLON = BABYLON || {};
             gl.generateMipmap(gl.TEXTURE_2D);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
+
+        this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, null);
     };
 
     BABYLON.Engine.prototype.flushFramebuffer = function () {
@@ -287,11 +325,14 @@ var BABYLON = BABYLON || {};
 
     BABYLON.Engine.prototype.updateDynamicVertexBuffer = function (vertexBuffer, vertices, length) {
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, vertexBuffer);
-        // Should be (vertices instanceof Float32Array ? vertices : new Float32Array(vertices)) but Chrome raises an Exception in this case :(
-        if (length) {
+        if (length && length != vertices.length) {
             this._gl.bufferSubData(this._gl.ARRAY_BUFFER, 0, new Float32Array(vertices, 0, length));
         } else {
-            this._gl.bufferSubData(this._gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
+            if (vertices instanceof Float32Array) {
+                this._gl.bufferSubData(this._gl.ARRAY_BUFFER, 0, vertices);
+            } else {
+                this._gl.bufferSubData(this._gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
+            }
         }
         
         this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
@@ -368,7 +409,16 @@ var BABYLON = BABYLON || {};
     };
 
     // Shaders
-    BABYLON.Engine.prototype.createEffect = function (baseName, attributesNames, uniformsNames, samplers, defines, optionalDefines) {
+    BABYLON.Engine.prototype._releaseEffect = function (effect) {
+        if (this._compiledEffects[effect._key]) {
+            delete this._compiledEffects[effect._key];
+            if (effect._program) {
+                this._gl.deleteProgram(effect._program);
+            }
+        }
+    };
+
+    BABYLON.Engine.prototype.createEffect = function (baseName, attributesNames, uniformsNames, samplers, defines, optionalDefines, onCompiled, onError) {
         var vertex = baseName.vertexElement || baseName.vertex || baseName;
         var fragment = baseName.fragmentElement || baseName.fragment || baseName;
         
@@ -377,7 +427,8 @@ var BABYLON = BABYLON || {};
             return this._compiledEffects[name];
         }
 
-        var effect = new BABYLON.Effect(baseName, attributesNames, uniformsNames, samplers, this, defines, optionalDefines);
+        var effect = new BABYLON.Effect(baseName, attributesNames, uniformsNames, samplers, this, defines, optionalDefines, onCompiled, onError);
+        effect._key = name;
         this._compiledEffects[name] = effect;
 
         return effect;
@@ -1066,6 +1117,18 @@ var BABYLON = BABYLON || {};
         for (var name in this._compiledEffects.length) {
             this._gl.deleteProgram(this._compiledEffects[name]._program);
         }
+
+        // Events
+        window.removeEventListener("blur", this._onBlur);
+        window.removeEventListener("focus", this._onFocus);
+        document.removeEventListener("fullscreenchange", this._onFullscreenChange);
+        document.removeEventListener("mozfullscreenchange", this._onFullscreenChange);
+        document.removeEventListener("webkitfullscreenchange", this._onFullscreenChange);
+        document.removeEventListener("msfullscreenchange", this._onFullscreenChange);
+        document.removeEventListener("pointerlockchange", this._onPointerLockChange);
+        document.removeEventListener("mspointerlockchange", this._onPointerLockChange);
+        document.removeEventListener("mozpointerlockchange", this._onPointerLockChange);
+        document.removeEventListener("webkitpointerlockchange", this._onPointerLockChange);
     };
 
     // Statics

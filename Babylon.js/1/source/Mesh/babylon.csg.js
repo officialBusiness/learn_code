@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 // Constructive Solid Geometry for BABYLON
 // Based on https://github.com/evanw/csg.js/

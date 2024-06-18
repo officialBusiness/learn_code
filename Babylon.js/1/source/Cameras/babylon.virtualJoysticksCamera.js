@@ -1,4 +1,4 @@
-﻿var BABYLON = BABYLON || {};
+﻿var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.VirtualJoysticksCamera = function (name, position, scene) {

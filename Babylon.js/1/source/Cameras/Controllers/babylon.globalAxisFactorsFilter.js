@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
 	BABYLON.GlobalAxisFactorsFilter = function (scene, target, xFactor, yFactor, zFactor) {

@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.FreeCamera = function (name, position, scene) {
@@ -130,6 +130,10 @@ var BABYLON = BABYLON || {};
         if (isNaN(this.rotation.z)) {
             this.rotation.z = 0;
         }
+    };
+
+    BABYLON.FreeCamera.prototype.getTarget = function () {
+        return this._currentTarget;
     };
 
     // Controls

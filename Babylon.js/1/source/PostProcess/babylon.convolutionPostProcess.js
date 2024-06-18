@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var BABYLON = BABYLON || {};
+var BABYLON = BABYLON || window.BABYLON || {};
 
 (function () {
     BABYLON.ConvolutionPostProcess = function (name, kernel, ratio, camera, samplingMode, engine, reusable) {
