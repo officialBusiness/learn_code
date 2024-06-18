@@ -1,3 +1,3 @@
 
 
-export { downloadFile, MME } from '../../my_tools/my_tools.js';
+export * as MyTools from '../../common_tools/common_tools.js';
