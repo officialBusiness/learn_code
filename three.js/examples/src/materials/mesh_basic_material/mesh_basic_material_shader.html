@@ -4,9 +4,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" href="../../icon.png">
+		<link rel="icon" href="../../../icon.png">
 		<title>mesh_basic_material.shader</title>
-		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
 
@@ -16,14 +16,14 @@
 		<script type="importmap">
 			{
 				"imports": {
-						"three": "../../../source/src/THREE.js"
+						"three": "../../../../source/src/THREE.js"
 				}
 			}
 		</script>
 		<script type="module">
-			import '../../module.js';
+			import '../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls } from '../../jsm/jsm.js';
+			import { OrbitControls } from '../../../jsm/jsm.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -81,7 +81,7 @@
 						value: 1.0
 					},
 					map: {
-						value: new THREE.TextureLoader().load('../../assets/images/logo1.jpg'),
+						value: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
 					},
 					mapTransform: {
 						value: new THREE.Matrix3()
