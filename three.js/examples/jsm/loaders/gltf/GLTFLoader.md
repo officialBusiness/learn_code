@@ -18,11 +18,11 @@
 				_loadNodeShallow( nodeIndex ) {
 					createNodeMesh( nodeIndex ) {
 
-						const nodeDef = json.nodes[ nodeIndex ]
+						const nodeDef = this.json.nodes[ nodeIndex ]
 						nodeDef.mesh
 						loadMesh( meshIndex ) {
 
-							const meshDef = json.meshes[ meshIndex ];
+							const meshDef = this.json.meshes[ meshIndex ];
 							const primitives = meshDef.primitives;
 							for ( let i = 0, il = primitives.length; i < il; i ++ )
 							primitives[ i ].material
@@ -61,6 +61,7 @@
 
 									const attributes = primitiveDef.attributes;
 									for ( const gltfAttributeName in attributes )
+									attributes[ gltfAttributeName ]
 									loadAccessor( accessorIndex ) {
 
 										const accessorDef = this.json.accessors[ accessorIndex ];
