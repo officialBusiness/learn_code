@@ -85,8 +85,57 @@
 
 				const gui = new lil.GUI();
 
+				initObjectGui(gui, batchedMesh, 'batchedMesh');
+
 				initBatchedMeshGui(gui, batchedMesh, boxId, boxMatrix, 'box');
 				initBatchedMeshGui(gui, batchedMesh, sphereId, sphereMatrix, 'sphere');
+			}
+
+			function initObjectGui( gui, object, name ){
+
+				const
+					objectFolder = gui.addFolder(name),
+					angleParam = {
+						x: object.rotation.x / Math.PI * 180,
+						y: object.rotation.y / Math.PI * 180,
+						z: object.rotation.z / Math.PI * 180,
+					};
+
+				objectFolder.add(object.position, 'x', -5, 5).name('position.x').onChange(()=>{
+					object.updateMatrixWorld();
+				});
+				objectFolder.add(object.position, 'y', -5, 5).name('position.y').onChange(()=>{
+					object.updateMatrixWorld();
+				});
+				objectFolder.add(object.position, 'z', -5, 5).name('position.z').onChange(()=>{
+					object.updateMatrixWorld();
+				});
+
+				objectFolder.add(angleParam, 'x', -180, 180).name('rotation.x').onChange(( angle )=>{
+
+					object.rotation.x = angle / 180 * Math.PI;
+					object.updateMatrixWorld();
+				});
+				objectFolder.add(angleParam, 'y',  -180, 180).name('rotation.y').onChange(( angle )=>{
+
+					object.rotation.y = angle / 180 * Math.PI;
+					object.updateMatrixWorld();
+				});
+				objectFolder.add(angleParam, 'z',  -180, 180).name('rotation.z').onChange(( angle )=>{
+
+					object.rotation.z = angle / 180 * Math.PI;
+					object.updateMatrixWorld();
+				});
+
+				objectFolder.add(object.scale, 'x', -3, 3).name('scale.x').onChange(()=>{
+					object.updateMatrixWorld();
+				});
+				objectFolder.add(object.scale, 'y', -3, 3).name('scale.y').onChange(()=>{
+					object.updateMatrixWorld();
+				});
+				objectFolder.add(object.scale, 'z', -3, 3).name('scale.z').onChange(()=>{
+					object.updateMatrixWorld();
+				});
 			}
 
 

@@ -97,7 +97,7 @@
 					param = {
 						position: mesh.position.clone(),
 						rotation: mesh.rotation.clone(),
-						rotation_angle: {
+						rotationAngle: {
 							x: 0, y: 0, z: 0,
 						},
 						scale: mesh.scale.clone(),
@@ -118,13 +118,13 @@
 				matrix4Folder.add( param.position, 'y', -1, 1 ).name('position.y');
 				matrix4Folder.add( param.position, 'z', -1, 1 ).name('position.z');
 
-				matrix4Folder.add( param.rotation_angle, 'x', -180, 180, 1 ).name('rotation_angle.x').onChange(( angle )=>{
+				matrix4Folder.add( param.rotationAngle, 'x', -180, 180, 1 ).name('rotationAngle.x').onChange(( angle )=>{
 					param.rotation.x = angle / 180 * Math.PI;
 				});
-				matrix4Folder.add( param.rotation_angle, 'y', -180, 180, 1 ).name('rotation_angle.x').onChange(( angle )=>{
+				matrix4Folder.add( param.rotationAngle, 'y', -180, 180, 1 ).name('rotationAngle.x').onChange(( angle )=>{
 					param.rotation.y = angle / 180 * Math.PI;
 				});
-				matrix4Folder.add( param.rotation_angle, 'z', -180, 180, 1 ).name('rotation_angle.x').onChange(( angle )=>{
+				matrix4Folder.add( param.rotationAngle, 'z', -180, 180, 1 ).name('rotationAngle.x').onChange(( angle )=>{
 					param.rotation.z = angle / 180 * Math.PI;
 				});
 

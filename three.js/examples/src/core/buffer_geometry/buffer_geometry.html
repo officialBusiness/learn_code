@@ -70,15 +70,15 @@
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
 					map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
-					// envMap: THREE.ImageUtils.loadTextureCube(
-					// 	[
-					// 		"px.jpg", "nx.jpg",
-					// 		"py.jpg", "ny.jpg",
-					// 		"pz.jpg", "nz.jpg"
-					// 	].map((url)=>{
-					// 		 	return "../../../assets/images/cube/Escher/" + url;
-					// 	})
-					// ),
+					envMap: new THREE.CubeTextureLoader().load(
+						[
+							"px.jpg", "nx.jpg",
+							"py.jpg", "ny.jpg",
+							"pz.jpg", "nz.jpg"
+						].map((url)=>{
+							 	return "../../../assets/images/cube/Escher/" + url;
+						})
+					),
 				})
 			);
 
