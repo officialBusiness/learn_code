@@ -1,3 +1,6 @@
+
+// *** prefixVertex ***
+
 #version 300 es
 
 #define attribute in
@@ -89,6 +92,7 @@ attribute vec2 uv;
 
 varying vec3 vViewPosition;
 
+// *** #include <common> ***
 
 #define PI 3.141592653589793
 #define PI2 6.283185307179586
@@ -236,6 +240,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 } // validated
 
+// *** #include <batching_pars_vertex> ***
 
 #ifdef USE_BATCHING
 	attribute float batchId;
@@ -255,6 +260,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 	}
 #endif
 
+// *** #include <uv_pars_vertex> ***
 
 #if defined( USE_UV ) || defined( USE_ANISOTROPY )
 
@@ -400,6 +406,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <displacementmap_pars_vertex> ***
 
 #ifdef USE_DISPLACEMENTMAP
 
@@ -409,6 +416,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <envmap_pars_vertex> ***
 
 #ifdef USE_ENVMAP
 
@@ -431,6 +439,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <color_pars_vertex> ***
 
 #if defined( USE_COLOR_ALPHA )
 
@@ -442,6 +451,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <fog_pars_vertex> ***
 
 #ifdef USE_FOG
 
@@ -449,6 +459,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <normal_pars_vertex> ***
 
 #ifndef FLAT_SHADED
 
@@ -463,6 +474,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <morphtarget_pars_vertex> ***
 
 #ifdef USE_MORPHTARGETS
 
@@ -510,6 +522,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <skinning_pars_vertex> ***
 
 #ifdef USE_SKINNING
 
@@ -536,6 +549,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 #endif
 
 
+// *** #include <shadowmap_pars_vertex> ***
 
 #if 0 > 0
 
@@ -603,6 +617,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <logdepthbuf_pars_vertex> ***
 
 #ifdef USE_LOGDEPTHBUF
 
@@ -611,6 +626,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 #endif
 
+// *** #include <clipping_planes_pars_vertex> ***
 
 #if 0 > 0
 
@@ -621,6 +637,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 void main() {
 
+// *** #include <uv_vertex> ***
 
 #if defined( USE_UV ) || defined( USE_ANISOTROPY )
 
@@ -743,6 +760,7 @@ void main() {
 
 #endif
 
+// *** #include <color_vertex> ***
 
 #if defined( USE_COLOR_ALPHA )
 
@@ -766,6 +784,7 @@ void main() {
 
 #endif
 
+// *** #include <morphinstance_vertex> ***
 
 #ifdef USE_INSTANCING_MORPH
 
@@ -780,6 +799,7 @@ void main() {
 	}
 #endif
 
+// *** #include <morphcolor_vertex> ***
 
 #if defined( USE_MORPHCOLORS ) && defined( MORPHTARGETS_TEXTURE )
 
@@ -804,12 +824,14 @@ void main() {
 
 #endif
 
+// *** #include <batching_vertex> ***
 
 #ifdef USE_BATCHING
 	mat4 batchingMatrix = getBatchingMatrix( batchId );
 #endif
 
 
+// *** #include <beginnormal_vertex> ***
 
 vec3 objectNormal = vec3( normal );
 
@@ -819,6 +841,7 @@ vec3 objectNormal = vec3( normal );
 
 #endif
 
+// *** #include <morphnormal_vertex> ***
 
 #ifdef USE_MORPHNORMALS
 
@@ -846,6 +869,7 @@ vec3 objectNormal = vec3( normal );
 
 #endif
 
+// *** #include <skinbase_vertex> ***
 
 #ifdef USE_SKINNING
 
@@ -856,6 +880,7 @@ vec3 objectNormal = vec3( normal );
 
 #endif
 
+// *** #include <skinnormal_vertex> ***
 
 #ifdef USE_SKINNING
 
@@ -877,6 +902,7 @@ vec3 objectNormal = vec3( normal );
 #endif
 
 
+// *** #include <defaultnormal_vertex> ***
 
 vec3 transformedNormal = objectNormal;
 #ifdef USE_TANGENT
@@ -939,6 +965,7 @@ transformedNormal = normalMatrix * transformedNormal;
 
 #endif
 
+// *** #include <normal_vertex> ***
 
 #ifndef FLAT_SHADED // normal is computed with derivatives when FLAT_SHADED
 
@@ -954,6 +981,7 @@ transformedNormal = normalMatrix * transformedNormal;
 #endif
 
 
+// *** #include <begin_vertex> ***
 
 vec3 transformed = vec3( position );
 
@@ -963,6 +991,7 @@ vec3 transformed = vec3( position );
 
 #endif
 
+// *** #include <morphtarget_vertex> ***
 
 #ifdef USE_MORPHTARGETS
 
@@ -999,6 +1028,7 @@ vec3 transformed = vec3( position );
 
 #endif
 
+// *** #include <skinning_vertex> ***
 
 #ifdef USE_SKINNING
 
@@ -1014,6 +1044,7 @@ vec3 transformed = vec3( position );
 
 #endif
 
+// *** #include <displacementmap_vertex> ***
 
 #ifdef USE_DISPLACEMENTMAP
 
@@ -1021,6 +1052,7 @@ vec3 transformed = vec3( position );
 
 #endif
 
+// *** #include <project_vertex> ***
 
 vec4 mvPosition = vec4( transformed, 1.0 );
 
@@ -1040,6 +1072,7 @@ mvPosition = modelViewMatrix * mvPosition;
 
 gl_Position = projectionMatrix * mvPosition;
 
+// *** #include <logdepthbuf_vertex> ***
 
 #ifdef USE_LOGDEPTHBUF
 
@@ -1048,6 +1081,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 #endif
 
+// *** #include <clipping_planes_vertex> ***
 
 #if 0 > 0
 
@@ -1058,6 +1092,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 	vViewPosition = - mvPosition.xyz;
 
+// *** #include <worldpos_vertex> ***
 
 #if defined( USE_ENVMAP ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP ) || defined ( USE_TRANSMISSION ) || 0 > 0
 
@@ -1079,6 +1114,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 #endif
 
+// *** #include <envmap_vertex> ***
 
 #ifdef USE_ENVMAP
 
@@ -1117,6 +1153,7 @@ gl_Position = projectionMatrix * mvPosition;
 #endif
 
 
+// *** #include <shadowmap_vertex> ***
 
 #if ( defined( USE_SHADOWMAP ) && ( 0 > 0 || 0 > 0 ) ) || ( 0 > 0 )
 
@@ -1160,6 +1197,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 
 
+// *** #include <fog_vertex> ***
 
 #ifdef USE_FOG
 

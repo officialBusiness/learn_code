@@ -1,3 +1,6 @@
+
+// *** prefixFragment ***
+
 #version 300 es
 #define varying in
 layout(location = 0) out highp vec4 pc_fragColor;
@@ -91,6 +94,7 @@ uniform vec3 diffuse;
 uniform vec3 emissive;
 uniform float opacity;
 
+// *** #include <common> ***
 
 #define PI 3.141592653589793
 #define PI2 6.283185307179586
@@ -238,6 +242,7 @@ float F_Schlick( const in float f0, const in float f90, const in float dotVH ) {
 
 } // validated
 
+// *** #include <packing> ***
 
 vec3 packNormalToRGB( const in vec3 normal ) {
 	return normalize( normal ) * 0.5 + 0.5;
@@ -306,6 +311,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 	return ( near * far ) / ( ( far - near ) * depth - far );
 }
 
+// *** #include <dithering_pars_fragment> ***
 
 #ifdef DITHERING
 
@@ -326,6 +332,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <color_pars_fragment> ***
 
 #if defined( USE_COLOR_ALPHA )
 
@@ -337,6 +344,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <uv_pars_fragment> ***
 
 #if defined( USE_UV ) || defined( USE_ANISOTROPY )
 
@@ -456,6 +464,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <map_pars_fragment> ***
 
 #ifdef USE_MAP
 
@@ -463,6 +472,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <alphamap_pars_fragment> ***
 
 #ifdef USE_ALPHAMAP
 
@@ -470,11 +480,13 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <alphatest_pars_fragment> ***
 
 #ifdef USE_ALPHATEST
 	uniform float alphaTest;
 #endif
 
+// *** #include <alphahash_pars_fragment> ***
 
 #ifdef USE_ALPHAHASH
 
@@ -543,6 +555,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <aomap_pars_fragment> ***
 
 #ifdef USE_AOMAP
 
@@ -551,6 +564,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <lightmap_pars_fragment> ***
 
 #ifdef USE_LIGHTMAP
 
@@ -559,6 +573,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <emissivemap_pars_fragment> ***
 
 #ifdef USE_EMISSIVEMAP
 
@@ -566,6 +581,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <envmap_common_pars_fragment> ***
 
 #ifdef USE_ENVMAP
 
@@ -581,6 +597,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <envmap_pars_fragment> ***
 
 #ifdef USE_ENVMAP
 
@@ -602,6 +619,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 
 #endif
 
+// *** #include <fog_pars_fragment> ***
 
 #ifdef USE_FOG
 
@@ -622,6 +640,7 @@ float perspectiveDepthToViewZ( const in float depth, const in float near, const 
 #endif
 
 
+// *** #include <bsdfs> ***
 
 float G_BlinnPhong_Implicit( /* const in float dotNL, const in float dotNV */ ) {
 
@@ -654,6 +673,7 @@ vec3 BRDF_BlinnPhong( const in vec3 lightDir, const in vec3 viewDir, const in ve
 } // validated
 
 
+// *** #include <lights_pars_begin> ***
 
 uniform bool receiveShadow;
 uniform vec3 ambientLightColor;
@@ -882,6 +902,7 @@ float getSpotAttenuation( const in float coneCosine, const in float penumbraCosi
 
 #endif
 
+// *** #include <normal_pars_fragment> ***
 
 #ifndef FLAT_SHADED
 
@@ -896,6 +917,7 @@ float getSpotAttenuation( const in float coneCosine, const in float penumbraCosi
 
 #endif
 
+// *** #include <lights_lambert_pars_fragment> ***
 
 varying vec3 vViewPosition;
 
@@ -924,6 +946,7 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 #define RE_Direct				RE_Direct_Lambert
 #define RE_IndirectDiffuse		RE_IndirectDiffuse_Lambert
 
+// *** #include <shadowmap_pars_fragment> ***
 
 #if 0 > 0
 
@@ -1248,6 +1271,7 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 
 #endif
 
+// *** #include <bumpmap_pars_fragment> ***
 
 #ifdef USE_BUMPMAP
 
@@ -1291,6 +1315,7 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 
 #endif
 
+// *** #include <normalmap_pars_fragment> ***
 
 #ifdef USE_NORMALMAP
 
@@ -1334,6 +1359,7 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 
 #endif
 
+// *** #include <specularmap_pars_fragment> ***
 
 #ifdef USE_SPECULARMAP
 
@@ -1341,6 +1367,7 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 
 #endif
 
+// *** #include <logdepthbuf_pars_fragment> ***
 
 #if defined( USE_LOGDEPTHBUF )
 
@@ -1350,6 +1377,7 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 
 #endif
 
+// *** #include <clipping_planes_pars_fragment> ***
 
 #if 0 > 0
 
@@ -1363,6 +1391,8 @@ void RE_IndirectDiffuse_Lambert( const in vec3 irradiance, const in vec3 geometr
 void main() {
 
 	vec4 diffuseColor = vec4( diffuse, opacity );
+
+// *** #include <clipping_planes_fragment> ***
 
 #if 0 > 0
 
@@ -1411,6 +1441,7 @@ void main() {
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
 
+// *** #include <logdepthbuf_fragment> ***
 
 #if defined( USE_LOGDEPTHBUF )
 
@@ -1420,6 +1451,7 @@ void main() {
 
 #endif
 
+// *** #include <map_fragment> ***
 
 #ifdef USE_MAP
 
@@ -1437,6 +1469,7 @@ void main() {
 
 #endif
 
+// *** #include <color_fragment> ***
 
 #if defined( USE_COLOR_ALPHA )
 
@@ -1448,6 +1481,7 @@ void main() {
 
 #endif
 
+// *** #include <alphamap_fragment> ***
 
 #ifdef USE_ALPHAMAP
 
@@ -1455,6 +1489,7 @@ void main() {
 
 #endif
 
+// *** #include <alphatest_fragment> ***
 
 #ifdef USE_ALPHATEST
 
@@ -1471,6 +1506,7 @@ void main() {
 
 #endif
 
+// *** #include <alphahash_fragment> ***
 
 #ifdef USE_ALPHAHASH
 
@@ -1478,6 +1514,7 @@ void main() {
 
 #endif
 
+// *** #include <specularmap_fragment> ***
 
 float specularStrength;
 
@@ -1492,6 +1529,7 @@ float specularStrength;
 
 #endif
 
+// *** #include <normal_fragment_begin> ***
 
 float faceDirection = gl_FrontFacing ? 1.0 : - 1.0;
 
@@ -1569,6 +1607,7 @@ vec3 nonPerturbedNormal = normal;
 
 
 
+// *** #include <normal_fragment_maps> ***
 
 #ifdef USE_NORMALMAP_OBJECTSPACE
 
@@ -1601,6 +1640,7 @@ vec3 nonPerturbedNormal = normal;
 
 #endif
 
+// *** #include <emissivemap_fragment> ***
 
 #ifdef USE_EMISSIVEMAP
 
@@ -1613,10 +1653,13 @@ vec3 nonPerturbedNormal = normal;
 
 	// accumulation
 
+// *** #include <lights_lambert_fragment> ***
+
 LambertMaterial material;
 material.diffuseColor = diffuseColor.rgb;
 material.specularStrength = specularStrength;
 
+// *** #include <lights_fragment_begin> ***
 
 /**
  * This is a template that can be used to light a material, it uses pluggable
@@ -1743,6 +1786,7 @@ IncidentLight directLight;
 
 #endif
 
+// *** #include <lights_fragment_maps> ***
 
 #if defined( RE_IndirectDiffuse )
 
@@ -1783,6 +1827,7 @@ IncidentLight directLight;
 
 #endif
 
+// *** #include <lights_fragment_end> ***
 
 #if defined( RE_IndirectDiffuse )
 
@@ -1798,6 +1843,8 @@ IncidentLight directLight;
 
 
 	// modulation
+
+// *** #include <aomap_fragment> ***
 
 #ifdef USE_AOMAP
 
@@ -1827,6 +1874,7 @@ IncidentLight directLight;
 
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;
 
+// *** #include <envmap_fragment> ***
 
 #ifdef USE_ENVMAP
 
@@ -1889,6 +1937,7 @@ IncidentLight directLight;
 
 #endif
 
+// *** #include <opaque_fragment> ***
 
 #ifdef OPAQUE
 diffuseColor.a = 1.0;
@@ -1900,6 +1949,7 @@ diffuseColor.a *= material.transmissionAlpha;
 
 gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 
+// *** #include <tonemapping_fragment> ***
 
 #if defined( TONE_MAPPING )
 
@@ -1907,9 +1957,11 @@ gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 
 #endif
 
+// *** #include <colorspace_fragment> ***
 
 gl_FragColor = linearToOutputTexel( gl_FragColor );
 
+// *** #include <fog_fragment> ***
 
 #ifdef USE_FOG
 
@@ -1927,6 +1979,7 @@ gl_FragColor = linearToOutputTexel( gl_FragColor );
 
 #endif
 
+// *** #include <premultiplied_alpha_fragment> ***
 
 #ifdef PREMULTIPLIED_ALPHA
 
@@ -1935,6 +1988,7 @@ gl_FragColor = linearToOutputTexel( gl_FragColor );
 
 #endif
 
+// *** #include <dithering_fragment> ***
 
 #ifdef DITHERING
 
