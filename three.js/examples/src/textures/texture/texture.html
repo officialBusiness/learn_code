@@ -41,7 +41,7 @@
 
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 10000 );
 
 			camera.position.z = 6;
 			// camera.rotation.x = -Math.PI / 2;
@@ -52,6 +52,9 @@
 
 			const imageCanvas = document.createElement( "canvas" ),
 				context = imageCanvas.getContext( "2d" );
+
+			// const width = imageCanvas.width = 300;
+			// const height = imageCanvas.height = 300;
 
 			const width = imageCanvas.width = 2;
 			const height = imageCanvas.height = 2;
@@ -66,7 +69,7 @@
 			context.fillStyle = "#00f";
 			context.fillRect( 0, height / 2, width / 2, height);
 
-			const texture = new THREE.Texture( imageCanvas, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping );
+			const texture = new THREE.Texture( imageCanvas, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping );
 
 			texture.needsUpdate = true;
 			texture.repeat.set( 10, 10 );

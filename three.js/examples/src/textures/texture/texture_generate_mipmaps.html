@@ -10,6 +10,7 @@
 	</head>
 	<!--
 
+		WebGLTextures.js 把 _gl.generateMipmap( target ); 注释了, 再把 generateMipmaps 设为 true ,就会有一半纹理消失的情况，不知道为什么
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -34,7 +35,7 @@
 
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
 
-			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 100 );
+			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 1, 1000 );
 
 			camera.position.z = 6;
 			// camera.rotation.x = -Math.PI / 2;
@@ -117,6 +118,10 @@
 				textureFolder.add( texture, 'generateMipmaps').onChange(change);
 				textureFolder.add( texture, 'minFilter', MinificationFilters ).onChange(change);
 				textureFolder.add( texture, 'magFilter', MagnificationFilters ).onChange(change);
+
+
+				textureFolder.add( texture.repeat, 'x', 1, 20, 1 );
+				textureFolder.add( texture.repeat, 'y', 1, 20, 1 );
 			}
 
 			loop();

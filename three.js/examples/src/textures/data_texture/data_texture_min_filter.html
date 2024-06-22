@@ -51,13 +51,23 @@
 
 			for( let i = 1; i <= width; i++ ){
 				for( let j = 1; j <= height; j++ ){
-					if( i % 2 === 0 && j % 2 === 0 ){
+					// if( i % 2 === 0 && j % 2 === 0 ){
+					// 	colorArr.push(255, 0, 0, 255);
+					// }else if( i % 2 === 0 && j % 2 === 1 ){
+					// 	colorArr.push(0, 255, 0, 255);
+					// }else if( i % 2 === 1 && j % 2 === 0 ){
+					// 	colorArr.push(0, 0, 255, 255);
+					// }else if( i % 2 === 1 && j % 2 === 1 ){
+					// 	colorArr.push(255, 0, 0, 255);
+					// }
+
+					if( i <= width / 2 && j <= height / 2 ){
 						colorArr.push(255, 0, 0, 255);
-					}else if( i % 2 === 0 && j % 2 === 1 ){
+					}else if( i > width / 2 && j <= height / 2 ){
 						colorArr.push(0, 255, 0, 255);
-					}else if( i % 2 === 1 && j % 2 === 0 ){
+					}else if( i <= width / 2 && j > height / 2 ){
 						colorArr.push(0, 0, 255, 255);
-					}else if( i % 2 === 1 && j % 2 === 1 ){
+					}else if( i > width / 2 && j > height / 2 ){
 						colorArr.push(255, 0, 0, 255);
 					}
 				}
