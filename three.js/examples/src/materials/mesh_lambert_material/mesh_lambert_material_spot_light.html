@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../../icon.png">
-		<title>mesh_lambert_material</title>
+		<title>mesh_lambert_material_spot_light</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
@@ -80,15 +80,30 @@
 
 			const baiGuGu = new THREE.TextureLoader().load('../../../assets/images/logo1.jpg');
 
-			const heightMap = new THREE.TextureLoader().load('../../../assets/images/heightMap.png');
-
 			const meshLambertMaterial = new THREE.MeshLambertMaterial({
-				emissive: new THREE.Color( 0xffffff ),
+				// emissive: new THREE.Color( 0xffffff ),
 				emissiveMap: baiGuGu,
-				displacementMap: heightMap,
-				displacementScale: 0,
-				displacementBias: 0,
-			})
+				map: baiGuGu,
+				// envMap: new THREE.CubeTextureLoader().load(
+				// 	[
+				// 		"px.jpg", "nx.jpg",
+				// 		"py.jpg", "ny.jpg",
+				// 		"pz.jpg", "nz.jpg"
+				// 	].map((url)=>{
+				// 		 	return "../../../assets/images/cube/skybox/" + url;
+				// 	}),
+				// )
+			});
+
+			const spotLight = new THREE.SpotLight( 0xffffff );
+			spotLight.position.set( 0, 0, 5 );
+
+			spotLight.position.set( 0, 0, 1 );
+
+			scene.add( spotLight );
+
+			// const helper = new THREE.SpotLightHelper( spotLight );
+			// scene.add( helper );
 
 			const mesh = new THREE.Mesh( plane, meshLambertMaterial );
 
@@ -100,20 +115,62 @@
 			document.body.appendChild( stats.domElement );
 
 
+			const
+				materialSide = {
+					FrontSide: THREE.FrontSide,
+					BackSide: THREE.BackSide,
+					DoubleSide: THREE.DoubleSide,
+				};
+
 			initGui();
 			function initGui(){
 
 				const gui = new lil.GUI();
 
 				initMeshLambertMaterialGui( gui, meshLambertMaterial, 'meshLambertMaterial' );
+
+				initSpotLightGui( gui, spotLight, 'spotLight' );
 			}
 
 			function initMeshLambertMaterialGui(gui, material, name){
 
 				const materialFolder = gui.addFolder(name);
 
-				materialFolder.add( material, 'displacementScale', 0, 3 );
-				materialFolder.add( material, 'displacementBias', 0, 1 );
+				materialFolder.add( material, 'side', materialSide );
+
+				materialFolder.addColor( material, 'color' );
+				materialFolder.addColor( material, 'emissive' );
+
+			}
+
+			function initSpotLightGui(gui, spotLight, name){
+
+				const
+					spotLightFolder = gui.addFolder(name),
+					param = {
+						angle: spotLight.angle / Math.PI * 180,
+					};
+
+				spotLightFolder.addColor( spotLight, 'color' );
+
+				spotLightFolder.add( param, 'angle', -180, 180 ).onChange((data)=>{
+
+					spotLight.angle = data / 180 * Math.PI;
+				});
+
+				spotLightFolder.add( spotLight, 'decay', 0, 5 );
+
+				spotLightFolder.add( spotLight, 'distance', 0, 5);
+
+				spotLightFolder.add( spotLight, 'intensity', 0, 5 );
+
+				spotLightFolder.add( spotLight, 'penumbra', 0, 1 );
+
+				spotLightFolder.add( spotLight, 'power', 0, 5 );
+
+				spotLightFolder.add( spotLight.position, 'x', -20, 20 );
+				spotLightFolder.add( spotLight.position, 'y', -20, 20 );
+				spotLightFolder.add( spotLight.position, 'z', -20, 20 );
 			}
 
 			loop();
