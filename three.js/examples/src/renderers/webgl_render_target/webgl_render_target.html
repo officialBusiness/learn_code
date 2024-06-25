@@ -64,7 +64,7 @@
 			targetScene.add(cubeMesh);
 
 			const rtTexture = new THREE.WebGLRenderTarget(
-				window.innerWidth, window.innerHeight
+				canvas.clientWidth, canvas.clientHeight
 			);
 
 			const plane = new THREE.PlaneGeometry(2, 2);

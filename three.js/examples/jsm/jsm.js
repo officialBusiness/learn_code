@@ -27,3 +27,4 @@ export { ShaderPass } from '../../source/examples/jsm/postprocessing/ShaderPass.
 export { UnrealBloomPass } from '../../source/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 export { FXAAShader } from '../../source/examples/jsm/shaders/FXAAShader.js';
+export { LuminosityHighPassShader } from '../../source/examples/jsm/shaders/LuminosityHighPassShader.js';
