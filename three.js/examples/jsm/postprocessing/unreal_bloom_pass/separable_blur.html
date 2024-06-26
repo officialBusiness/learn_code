@@ -72,7 +72,7 @@
 				2, 0
 			] ), 2 ) );
 
-			const kernelRadius = 3;
+			const kernelRadius = 11;
 
 			const fullScreenQuad = new THREE.Mesh( fullscreenTriangleGeometry, new THREE.RawShaderMaterial( {
 					defines: {
@@ -83,7 +83,7 @@
 							value: rtTexture.texture
 						},
 						invSize: {
-							value: new THREE.Vector2( 0.5, 0.5 )
+							value: new THREE.Vector2( 1 / canvas.clientWidth, 1 / canvas.clientHeight )
 						}, // inverse texture size
 						direction: {
 							value: new THREE.Vector2( 1.0, 0.0 )

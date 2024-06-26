@@ -198,6 +198,43 @@
 				} );
 			}
 
+			const mapShader = new THREE.RawShaderMaterial({
+				uniforms: {
+					map: {
+						value: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
+					},
+				},
+
+				vertexShader: `
+					precision mediump float;
+
+					attribute vec3 position;
+					attribute vec2 uv;
+
+					varying vec2 vUv;
+
+					void main() {
+						vUv = uv;
+
+						gl_Position = vec4( position, 1.0 );
+					}
+				`,
+
+				fragmentShader: `
+					precision mediump float;
+
+					varying vec2 vUv;
+
+					uniform sampler2D map;
+
+					void main() {
+
+						vec4 color = texture2D( map, vUv );
+
+						gl_FragColor = color;
+					}`
+			})
+
 
 			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -208,18 +245,21 @@
 			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
 			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
 
+			renderer.setScissorTest( true );
+			const widthStep = canvas.clientWidth / 5;
+			const heightStep = canvas.clientHeight / 2;
+
 			loop();
 			function loop() {
+
+				renderer.setViewport( 0 , 0, canvas.clientWidth, canvas.clientHeight );
 
 				renderer.setRenderTarget(rtTexture);
 				renderer.render( scene, camera );
 				renderer.setRenderTarget(null);
 
-				// renderer.render( fullScreenQuad, camera );
 
 				let inputRenderTarget = rtTexture;
-
-				// renderer.setRenderTarget( null );
 
 				for ( let i = 0; i < nMips; i ++ ) {
 
@@ -233,12 +273,31 @@
 
 					separableBlurMaterials[ i ].uniforms.colorTexture.value = renderTargetsHorizontal[ i ].texture;
 					separableBlurMaterials[ i ].uniforms.direction.value = BlurDirectionY;
-					if( i < nMips - 1 ){
-						renderer.setRenderTarget( renderTargetsVertical[ i ] );
-					}else{
-						renderer.setRenderTarget( null );
-					}
+
+					renderer.setRenderTarget( renderTargetsVertical[ i ] );
 					renderer.clear();
+					renderer.render( fullScreenQuad, camera );
+
+					inputRenderTarget = renderTargetsVertical[ i ];
+				}
+
+				renderer.setRenderTarget( null );
+
+
+				fullScreenQuad.material = mapShader;
+
+				for ( let i = 0; i < nMips; i ++ ) {
+
+					mapShader.uniforms.map.value = renderTargetsHorizontal[ i ].texture;
+
+					renderer.setScissor( widthStep * i , heightStep, widthStep, heightStep );
+					renderer.setViewport( widthStep * i , heightStep, widthStep, heightStep );
+					renderer.render( fullScreenQuad, camera );
+
+					mapShader.uniforms.map.value = renderTargetsVertical[ i ].texture;
+
+					renderer.setScissor( widthStep * i , 0, widthStep, heightStep );
+					renderer.setViewport( widthStep * i , 0, widthStep, heightStep );
 					renderer.render( fullScreenQuad, camera );
 				}
 
