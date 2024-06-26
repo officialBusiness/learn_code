@@ -33,8 +33,11 @@
 				canvas,
 				antialias: true
 			});
+			renderer.setPixelRatio( window.devicePixelRatio );
 
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+			const pixelRatio = renderer.getPixelRatio();
 
 
 			const camera = new THREE.PerspectiveCamera( 75, canvas.clientWidth / canvas.clientHeight, 0.1, 20 );
@@ -70,7 +73,7 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-			const widthStep = canvas.clientWidth / 5;
+			const widthStep = canvas.clientWidth / 2;
 			const heightStep = canvas.clientHeight / 2;
 
 			loop( 0 );

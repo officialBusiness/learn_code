@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../../icon.png">
-		<title>separable_blur_mips</title>
+		<title>separable_blur_mips_composite</title>
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
@@ -23,7 +23,7 @@
 		<script type="module">
 			import '../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls, LuminosityHighPassShader } from '../../jsm.js';
+			import { OrbitControls } from '../../jsm.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -33,6 +33,8 @@
 			});
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+			const pixelRatio = renderer.getPixelRatio();
 
 			const camera = new THREE.PerspectiveCamera(
 				75, canvas.clientWidth / canvas.clientHeight,
@@ -56,7 +58,7 @@
 			scene.add(cubeMesh);
 
 			const rtTexture = new THREE.WebGLRenderTarget(
-				canvas.clientWidth, canvas.clientHeight
+				canvas.clientWidth * pixelRatio, canvas.clientHeight * pixelRatio
 			);
 
 			const fullscreenTriangleGeometry = new THREE.BufferGeometry();
@@ -79,8 +81,8 @@
 			const renderTargetsHorizontal = [];
 			const renderTargetsVertical = [];
 			const nMips = 5;
-			let resx = Math.round( canvas.clientWidth / 2 );
-			let resy = Math.round( canvas.clientHeight / 2 );
+			let resx = Math.round( canvas.clientWidth * pixelRatio / 2 );
+			let resy = Math.round( canvas.clientHeight * pixelRatio / 2 );
 
 			for ( let i = 0; i < nMips; i ++ ) {
 
@@ -103,14 +105,14 @@
 
 			const separableBlurMaterials = [];
 			const kernelSizeArray = [ 3, 5, 7, 9, 11 ];
-			resx = Math.round( canvas.clientWidth / 2 );
-			resy = Math.round( canvas.clientHeight / 2 );
+			resx = Math.round( canvas.clientWidth * pixelRatio / 2 );
+			resy = Math.round( canvas.clientHeight * pixelRatio / 2 );
 
 			for ( let i = 0; i < nMips; i ++ ) {
 
 				separableBlurMaterials.push( getSeperableBlurMaterial( kernelSizeArray[ i ] ) );
 
-				separableBlurMaterials[ i ].uniforms[ 'invSize' ].value = new THREE.Vector2( 1 / resx, 1 / resy );
+				separableBlurMaterials[ i ].uniforms.invSize.value = new THREE.Vector2( 1 / resx, 1 / resy );
 
 				resx = Math.round( resx / 2 );
 				resy = Math.round( resy / 2 );
@@ -198,13 +200,46 @@
 				} );
 			}
 
-			const mapShader = new THREE.RawShaderMaterial({
-				uniforms: {
-					map: {
-						value: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
-					},
-				},
 
+			const compositeShader = new THREE.RawShaderMaterial({
+				defines: {
+					NUM_MIPS: nMips
+				},
+				uniforms: {
+					blurTexture1: {
+						value: renderTargetsVertical[ 0 ].texture,
+					},
+					blurTexture2: {
+						value: renderTargetsVertical[ 1 ].texture,
+					},
+					blurTexture3: {
+						value: renderTargetsVertical[ 2 ].texture,
+					},
+					blurTexture4: {
+						value: renderTargetsVertical[ 3 ].texture,
+					},
+					blurTexture5: {
+						value: renderTargetsVertical[ 4 ].texture,
+					},
+					bloomStrength: {
+						value: 1.0
+					},
+					bloomFactors: {
+						value: [ 1.0, 0.8, 0.6, 0.4, 0.2 ]
+					},
+					bloomTintColors: {
+						value: [
+							new THREE.Color( 0xffffff ),
+							new THREE.Color( 0xffffff ),
+							new THREE.Color( 0xffffff ),
+							new THREE.Color( 0xffffff ),
+							new THREE.Color( 0xffffff )
+						],
+					},
+					bloomRadius: {
+						value: 0.0
+					}
+				},
 				vertexShader: `
 					precision mediump float;
 
@@ -213,27 +248,45 @@
 
 					varying vec2 vUv;
 
-					void main() {
+					void main(void) {
+
 						vUv = uv;
 
-						gl_Position = vec4( position, 1.0 );
+						gl_Position = vec4( position.xyz, 1.0 );
 					}
 				`,
-
 				fragmentShader: `
 					precision mediump float;
 
+					uniform sampler2D blurTexture1;
+					uniform sampler2D blurTexture2;
+					uniform sampler2D blurTexture3;
+					uniform sampler2D blurTexture4;
+					uniform sampler2D blurTexture5;
+
+					uniform float bloomStrength;
+					uniform float bloomRadius;
+					uniform float bloomFactors[NUM_MIPS];
+					uniform vec3 bloomTintColors[NUM_MIPS];
+
 					varying vec2 vUv;
 
-					uniform sampler2D map;
+					float lerpBloomFactor(const in float factor) {
+						float mirrorFactor = 1.2 - factor;
+						return mix(factor, mirrorFactor, bloomRadius);
+					}
 
 					void main() {
-
-						vec4 color = texture2D( map, vUv );
-
-						gl_FragColor = color;
-					}`
-			})
+						gl_FragColor = bloomStrength * (
+							lerpBloomFactor(bloomFactors[0]) * vec4(bloomTintColors[0], 1.0) * texture2D(blurTexture1, vUv) +
+							lerpBloomFactor(bloomFactors[1]) * vec4(bloomTintColors[1], 1.0) * texture2D(blurTexture2, vUv) +
+							lerpBloomFactor(bloomFactors[2]) * vec4(bloomTintColors[2], 1.0) * texture2D(blurTexture3, vUv) +
+							lerpBloomFactor(bloomFactors[3]) * vec4(bloomTintColors[3], 1.0) * texture2D(blurTexture4, vUv) +
+							lerpBloomFactor(bloomFactors[4]) * vec4(bloomTintColors[4], 1.0) * texture2D(blurTexture5, vUv)
+						);
+					}
+				`,
+			});
 
 
 			const stats = new Stats();
@@ -242,17 +295,48 @@
 			document.body.appendChild( stats.domElement );
 
 
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				initCompositePassGui( gui, compositeShader, 'composite' );
+			}
+
+			function initCompositePassGui( gui, material, name ){
+
+				const
+					compositePassFolder = gui.addFolder( name ),
+					uniforms = material.uniforms,
+					onChange = ()=>{
+						// material.needsUpdate = true;
+					};
+
+				compositePassFolder.add( uniforms.bloomStrength, 'value', 0, 2 ).name('bloomStrength');
+				compositePassFolder.add( uniforms.bloomRadius, 'value', 0, 5 ).name('bloomRadius');
+
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '0' ).name('bloomTintColor1');
+				compositePassFolder.add( uniforms.bloomFactors.value, [0], 0, 1 ).name('bloomFactors1')
+
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '1' ).name('bloomTintColor2');
+				compositePassFolder.add( uniforms.bloomFactors.value, [1], 0, 1 ).name('bloomFactors2')
+
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '2' ).name('bloomTintColor3');
+				compositePassFolder.add( uniforms.bloomFactors.value, [2], 0, 1 ).name('bloomFactors3')
+
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '3' ).name('bloomTintColor4');
+				compositePassFolder.add( uniforms.bloomFactors.value, [3], 0, 1 ).name('bloomFactors4')
+
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '4' ).name('bloomTintColor5');
+				compositePassFolder.add( uniforms.bloomFactors.value, [4], 0, 1 ).name('bloomFactors5');
+			}
+
 			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
 			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
 
-			renderer.setScissorTest( true );
-			const widthStep = canvas.clientWidth / 5;
-			const heightStep = canvas.clientHeight / 2;
 
 			loop();
 			function loop() {
-
-				renderer.setViewport( 0 , 0, canvas.clientWidth, canvas.clientHeight );
 
 				renderer.setRenderTarget(rtTexture);
 				renderer.render( scene, camera );
@@ -284,22 +368,10 @@
 				renderer.setRenderTarget( null );
 
 
-				fullScreenQuad.material = mapShader;
+				fullScreenQuad.material = compositeShader;
 
-				for ( let i = 0; i < nMips; i ++ ) {
-
-					mapShader.uniforms.map.value = renderTargetsHorizontal[ i ].texture;
-
-					renderer.setScissor( widthStep * i , heightStep, widthStep, heightStep );
-					renderer.setViewport( widthStep * i , heightStep, widthStep, heightStep );
-					renderer.render( fullScreenQuad, camera );
-
-					mapShader.uniforms.map.value = renderTargetsVertical[ i ].texture;
-
-					renderer.setScissor( widthStep * i , 0, widthStep, heightStep );
-					renderer.setViewport( widthStep * i , 0, widthStep, heightStep );
-					renderer.render( fullScreenQuad, camera );
-				}
+				renderer.clear();
+				renderer.render( fullScreenQuad, camera );
 
 
 				stats.update();

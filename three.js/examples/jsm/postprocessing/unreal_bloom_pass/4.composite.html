@@ -23,7 +23,7 @@
 		<script type="module">
 			import '../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls, LuminosityHighPassShader } from '../../jsm.js';
+			import { OrbitControls } from '../../jsm.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -33,6 +33,8 @@
 			});
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+			const pixelRatio = renderer.getPixelRatio();
 
 			const camera = new THREE.PerspectiveCamera(
 				75, canvas.clientWidth / canvas.clientHeight,
@@ -56,7 +58,7 @@
 			scene.add(cubeMesh);
 
 			const rtTexture = new THREE.WebGLRenderTarget(
-				canvas.clientWidth, canvas.clientHeight
+				canvas.clientWidth * pixelRatio, canvas.clientHeight * pixelRatio
 			);
 
 			const fullscreenTriangleGeometry = new THREE.BufferGeometry();
@@ -186,22 +188,20 @@
 				compositePassFolder.add( uniforms.bloomStrength, 'value', 0, 2 ).name('bloomStrength');
 				compositePassFolder.add( uniforms.bloomRadius, 'value', 0, 5 ).name('bloomRadius');
 
-				compositePassFolder.addColor( uniforms.bloomTintColors.value, '0' ).name('blurTexture1');
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '0' ).name('bloomTintColor1');
 				compositePassFolder.add( uniforms.bloomFactors.value, [0], 0, 1 ).name('bloomFactors1')
 
-				compositePassFolder.addColor( uniforms.bloomTintColors.value, '1' ).name('blurTexture2');
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '1' ).name('bloomTintColor2');
 				compositePassFolder.add( uniforms.bloomFactors.value, [1], 0, 1 ).name('bloomFactors2')
 
-				compositePassFolder.addColor( uniforms.bloomTintColors.value, '2' ).name('blurTexture3');
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '2' ).name('bloomTintColor3');
 				compositePassFolder.add( uniforms.bloomFactors.value, [2], 0, 1 ).name('bloomFactors3')
 
-				compositePassFolder.addColor( uniforms.bloomTintColors.value, '3' ).name('blurTexture4');
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '3' ).name('bloomTintColor4');
 				compositePassFolder.add( uniforms.bloomFactors.value, [3], 0, 1 ).name('bloomFactors4')
 
-				compositePassFolder.addColor( uniforms.bloomTintColors.value, '4' ).name('blurTexture5');
-				compositePassFolder.add( uniforms.bloomFactors.value, [4], 0, 1 ).name('bloomFactors5')
-
-
+				compositePassFolder.addColor( uniforms.bloomTintColors.value, '4' ).name('bloomTintColor5');
+				compositePassFolder.add( uniforms.bloomFactors.value, [4], 0, 1 ).name('bloomFactors5');
 			}
 
 

@@ -9,7 +9,11 @@
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
-		原理不太懂, 先放下
+		后处理流程:
+			1. 根据亮度阈值取色
+			2. 对取色部分进行模糊处理
+			3. 对模糊的帧渲染进行叠加
+			4. 和原始渲染结果进行叠加
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -74,23 +78,15 @@
 
 				render( renderer, writeBuffer, readBuffer, deltaTime, maskActive ){
 
-					const oldAutoClear = renderer.autoClear;
-					renderer.autoClear = false;
 
 					renderer.setRenderTarget( this.renderToScreen ? null : readBuffer );
 
-					if ( this.clear === true ) {
-
-						renderer.clear( renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil );
-					}
-
+					renderer.clear(true, true, true);
 					renderer.render( scene, camera );
-
-					renderer.autoClear = oldAutoClear;
 				}
 			});
 
-			const unrealBloomPass = new UnrealBloomPass( new THREE.Vector2( canvas.clientWidth, canvas.clientHeight ), 1.5, 0.4, 0.85 );
+			const unrealBloomPass = new UnrealBloomPass( new THREE.Vector2( canvas.clientWidth, canvas.clientHeight ), 1, 0, 0.85 );
 			composer.addPass( unrealBloomPass );
 
 
@@ -116,7 +112,7 @@
 
 				unrealBloomFolder.add( unrealBloomPass, 'strength', 0.0, 3 );
 
-				unrealBloomFolder.add( unrealBloomPass, 'radius', 0.0, 1.0 ).step( 0.01 );
+				unrealBloomFolder.add( unrealBloomPass, 'radius', 0.0, 5.0 ).step( 0.01 );
 			}
 
 
