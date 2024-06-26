@@ -4,9 +4,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" href="../../../icon.png">
-		<title>luminosity_high_pass_shader</title>
-		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link rel="icon" href="../../../../icon.png">
+		<title>gl_frag_coord</title>
+		<link href="../../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
 
@@ -16,14 +16,14 @@
 		<script type="importmap">
 			{
 				"imports": {
-						"three": "../../../../source/src/THREE.js"
+						"three": "../../../../../source/src/THREE.js"
 				}
 			}
 		</script>
 		<script type="module">
-			import '../../../module.js';
+			import '../../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls, LuminosityHighPassShader } from '../../jsm.js';
+			import { OrbitControls, LuminosityHighPassShader } from '../../../../jsm/jsm.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -49,7 +49,7 @@
 				new THREE.BoxGeometry(1, 1, 1),
 				new THREE.MeshBasicMaterial({
 					color: 0xffffff,
-					map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
+					map: new THREE.TextureLoader().load('../../../../assets/images/logo1.jpg'),
 				})
 			);
 
@@ -78,17 +78,11 @@
 						value: rtTexture.texture,
 						// value: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
 					},
-					luminosityThreshold: {
-						value: 0.85
+					point: {
+						value: new THREE.Vector2(0, 0)
 					},
-					smoothWidth: {
-						value: 0.01
-					},
-					defaultColor: {
-						value: new THREE.Color( 0x000000 )
-					},
-					defaultOpacity: {
-						value: 1.0
+					radius: {
+						value: 10.0,
 					}
 				},
 				vertexShader: `
@@ -110,10 +104,8 @@
 					precision mediump float;
 
 					uniform	sampler2D	map;
-					uniform vec3 defaultColor;
-					uniform float defaultOpacity;
-					uniform float luminosityThreshold;
-					uniform float smoothWidth;
+					uniform vec2 point;
+					uniform float radius;
 
 					varying vec2 vUv;
 
@@ -121,22 +113,27 @@
 
 						vec4 texel = texture2D( map, vUv );
 
-						// 亮度计算, 曾经最流行的方法
-						vec3 luma = vec3( 0.299, 0.587, 0.114 );
-						float v = dot( texel.xyz, luma );
-
-						vec4 outputColor = vec4( defaultColor.rgb, defaultOpacity );
-
-						float alpha = smoothstep( luminosityThreshold, luminosityThreshold + smoothWidth, v );
-
-						gl_FragColor = mix( outputColor, texel, alpha );
-
-						// gl_FragColor = vec4( 0.299, 0.587, 0.114, 1.0);
-
-						// gl_FragColor = texel;
+						gl_FragColor =
+							distance(gl_FragCoord.xy, point) <= radius ? vec4(1.0, 0.0, 0.0, 1.0) :
+							texel;
 					}
 				`,
 			}) );
+
+
+			function onPointerDown( event ) {
+
+				if( event.button !== 0 ){
+					return ;
+				}
+
+				const pixelRatio = renderer.getPixelRatio();
+				const x = event.clientX * pixelRatio;
+				const y = (canvas.clientHeight - event.clientY) * pixelRatio;
+
+				fullScreenQuad.material.uniforms.point.value.set( x, y );
+			}
+			window.addEventListener( 'pointerdown', onPointerDown );
 
 
 			const stats = new Stats();
@@ -144,28 +141,13 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-
 			initGui();
 			function initGui(){
 
 				const gui = new lil.GUI();
 
-				initLuminosityHighPassGui( gui, fullScreenQuad.material.uniforms, 'luminosityHighPass' );
+				gui.add( fullScreenQuad.material.uniforms.radius, 'value', 0, 600, 0.01 ).name('radius');
 			}
-
-			function initLuminosityHighPassGui( gui, uniforms, name ){
-
-				const luminosityHighPassFolder = gui.addFolder( name );
-
-				luminosityHighPassFolder.addColor( uniforms.defaultColor, 'value' ).name('defaultColor');
-
-				luminosityHighPassFolder.add( uniforms.defaultOpacity, 'value', 0, 1 ).name('defaultOpacity');
-
-				luminosityHighPassFolder.add( uniforms.luminosityThreshold, 'value', 0, 1 ).name('luminosityThreshold');
-
-				luminosityHighPassFolder.add( uniforms.smoothWidth, 'value', 0, 10 ).name('smoothWidth');
-			}
-
 
 			loop();
 			function loop() {
