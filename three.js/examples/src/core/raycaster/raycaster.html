@@ -121,8 +121,8 @@
 					return ;
 				}
 				// 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
-				pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				pointer.x = ( event.clientX / canvas.clientWidth ) * 2 - 1;
+				pointer.y = - ( event.clientY / canvas.clientHeight ) * 2 + 1;
 
 				// 通过摄像机和鼠标位置更新射线
 				raycaster.setFromCamera( pointer, camera );
@@ -139,7 +139,7 @@
 					console.log('无接触点');
 				}
 			}
-			window.addEventListener( 'pointerdown', onPointerDown );
+			canvas.addEventListener( 'pointerdown', onPointerDown );
 
 
 			const stats = new Stats();

@@ -20,6 +20,7 @@ export { Water as Water2 } from '../../source/examples/jsm/objects/Water2.js';
 
 export { BloomPass } from '../../source/examples/jsm/postprocessing/BloomPass.js';
 export { EffectComposer } from '../../source/examples/jsm/postprocessing/EffectComposer.js';
+export { OutlinePass } from '../../source/examples/jsm/postprocessing/OutlinePass.js';
 export { OutputPass } from '../../source/examples/jsm/postprocessing/OutputPass.js';
 export { Pass, FullScreenQuad } from '../../source/examples/jsm/postprocessing/Pass.js';
 export { RenderPass } from '../../source/examples/jsm/postprocessing/RenderPass.js';
