@@ -186,6 +186,9 @@
 				resy = Math.round( resy / 2 );
 			}
 
+			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
+			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
+
 			function getSeperableBlurMaterial( kernelRadius ){
 
 				const coefficients = [];
@@ -422,9 +425,6 @@
 				compositePassFolder.addColor( uniforms.bloomTintColors.value, '4' ).name('bloomTintColor5');
 				compositePassFolder.add( uniforms.bloomFactors.value, [4], 0, 1 ).name('bloomFactors5');
 			}
-
-			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
-			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
 
 
 			loop();

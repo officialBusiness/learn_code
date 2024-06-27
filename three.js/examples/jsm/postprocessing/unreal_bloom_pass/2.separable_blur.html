@@ -76,6 +76,9 @@
 
 			const kernelRadius = 11;
 
+			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
+			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
+
 			const fullScreenQuad = new THREE.Mesh( fullscreenTriangleGeometry, new THREE.RawShaderMaterial( {
 					defines: {
 						KERNEL_RADIUS: kernelRadius
@@ -184,8 +187,6 @@
 				gui.add( uniforms.direction.value, 'y', 0, 1 ).name('direction.y');
 			}
 
-			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
-			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
 
 			loop();
 			function loop() {

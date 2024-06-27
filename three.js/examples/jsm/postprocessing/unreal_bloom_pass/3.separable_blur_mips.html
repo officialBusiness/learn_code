@@ -118,6 +118,9 @@
 				resy = Math.round( resy / 2 );
 			}
 
+			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
+			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
+
 			function getSeperableBlurMaterial( kernelRadius ){
 
 				const coefficients = [];
@@ -243,9 +246,6 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
-
-			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
-			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
 
 			renderer.setScissorTest( true );
 			const widthStep = canvas.clientWidth / 5;
