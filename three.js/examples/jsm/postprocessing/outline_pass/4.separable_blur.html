@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="../../../icon.png">
+		<title>separable_blur</title>
+		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<!--
+
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../../source/src/THREE.js"
+				}
+			}
+		</script>
+		<script type="module">
+			import '../../../module.js';
+			import * as THREE from 'three';
+			import { OrbitControls, EffectComposer, OutlinePass } from '../../jsm.js';
+			import {
+				createOutlinePassScene,
+				OutlinePassTools
+			} from './outline_pass_tools.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
+				antialias: true
+			});
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+			renderer.setClearColor( 0xffffff, 1 );
+
+			const pixelRatio = renderer.getPixelRatio();
+
+			const camera = new THREE.PerspectiveCamera(
+				75, canvas.clientWidth / canvas.clientHeight,
+				1, 100
+			);
+
+			camera.position.z = 10;
+
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+			const scene = new THREE.Scene();
+
+
+			const outlinePassScene = createOutlinePassScene();
+
+			scene.add( outlinePassScene );
+
+
+			const outlinePassTools = new OutlinePassTools( scene, camera, [ outlinePassScene.children[1] ] )
+
+			const passRenderTargetWidth = canvas.clientWidth * pixelRatio;
+			const passRenderTargetHeight = canvas.clientHeight * pixelRatio;
+
+
+			const depthMaterial = new THREE.MeshDepthMaterial({
+				side: THREE.DoubleSide,
+				depthPacking: THREE.RGBADepthPacking,
+				blending: THREE.NoBlending,
+			});
+
+
+			const renderTargetDepthBuffer = new THREE.WebGLRenderTarget( passRenderTargetWidth, passRenderTargetHeight, { type: THREE.HalfFloatType } );
+			renderTargetDepthBuffer.texture.name = 'OutlinePass.depth';
+			renderTargetDepthBuffer.texture.generateMipmaps = false;
+
+
+			const rtTexture = new THREE.WebGLRenderTarget(
+				canvas.clientWidth * pixelRatio, canvas.clientHeight * pixelRatio
+			);
+
+			const fullscreenTriangleGeometry = new THREE.BufferGeometry();
+
+			fullscreenTriangleGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [
+				- 1, 3, 0,
+				- 1, - 1, 0,
+				3, - 1, 0
+			] ), 3 ) );
+			fullscreenTriangleGeometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( [
+				0, 2,
+				0, 0,
+				2, 0
+			] ), 2 ) );
+
+			const maxRadius = 4;
+
+			const fullScreenQuad = new THREE.Mesh( fullscreenTriangleGeometry,  new THREE.RawShaderMaterial({
+					defines: {
+						'MAX_RADIUS': maxRadius,
+					},
+					uniforms: {
+						colorTexture: {
+							value: rtTexture.texture
+						},
+						texSize: {
+							value: new THREE.Vector2( canvas.clientWidth, canvas.clientHeight )
+						},
+						direction: {
+							value: new THREE.Vector2( 1.0, 0.0 )
+						},
+						kernelRadius: {
+							value: 1.0
+						}
+					},
+					vertexShader: `
+						precision mediump float;
+
+						attribute vec3 position;
+						attribute vec2 uv;
+
+						varying vec2 vUv;
+
+						void main() {
+							vUv = uv;
+
+							gl_Position = vec4( position, 1.0 );
+						}
+					`,
+					fragmentShader: `
+						precision mediump float;
+
+						varying vec2 vUv;
+						uniform sampler2D colorTexture;
+						uniform vec2 texSize;
+						uniform vec2 direction;
+						uniform float kernelRadius;
+
+						float gaussianPdf(in float x, in float sigma) {
+							return 0.39894 * exp( -0.5 * x * x/( sigma * sigma))/sigma;
+						}
+
+						void main() {
+							vec2 invSize = 1.0 / texSize;
+
+							float sigma = kernelRadius/2.0;
+							float weightSum = gaussianPdf(0.0, sigma);
+							vec4 diffuseSum = texture2D( colorTexture, vUv) * weightSum;
+							vec2 delta = direction * invSize * kernelRadius/float(MAX_RADIUS);
+							vec2 uvOffset = delta;
+							for( int i = 1; i <= MAX_RADIUS; i ++ ) {
+								float x = kernelRadius * float(i) / float(MAX_RADIUS);
+								float w = gaussianPdf(x, sigma);
+								vec4 sample1 = texture2D( colorTexture, vUv + uvOffset);
+								vec4 sample2 = texture2D( colorTexture, vUv - uvOffset);
+								diffuseSum += ((sample1 + sample2) * w);
+								weightSum += (2.0 * w);
+								uvOffset += delta;
+							}
+							gl_FragColor = diffuseSum/weightSum;
+						}
+					`
+				})
+			);
+
+
+			const stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
+			const
+				depthPacking = {
+					BasicDepthPacking: THREE.BasicDepthPacking,
+					RGBADepthPacking: THREE.RGBADepthPacking,
+				}
+
+			initGui();
+			function initGui(){
+
+				const
+					gui = new lil.GUI(),
+					material = fullScreenQuad.material,
+					uniforms = material.uniforms;
+
+				gui.add( uniforms.kernelRadius, 'value', 0, 1, 0.01 ).name('kernelRadius');
+
+				gui.add( uniforms.texSize.value, 'x', 0, canvas.clientWidth, 0.01 ).name('texSize.x');
+				gui.add( uniforms.texSize.value, 'y', 0, canvas.clientHeight, 0.01 ).name('texSize.y');
+
+				gui.add( uniforms.direction.value, 'x', 0, 1 ).name('direction.x');
+				gui.add( uniforms.direction.value, 'y', 0, 1 ).name('direction.y');
+			}
+
+
+			loop();
+			function loop() {
+
+				renderer.setRenderTarget(rtTexture);
+				renderer.render( scene, camera );
+				renderer.setRenderTarget(null);
+
+				renderer.render( fullScreenQuad, camera );
+
+				stats.update();
+
+				requestAnimationFrame(loop)
+			}
+		</script>
+	</body>
+</html>

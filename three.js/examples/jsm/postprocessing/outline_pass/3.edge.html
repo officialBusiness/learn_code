@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="../../../icon.png">
+		<title>edge</title>
+		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<!--
+
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="importmap">
+			{
+				"imports": {
+						"three": "../../../../source/src/THREE.js"
+				}
+			}
+		</script>
+		<script type="module">
+			import '../../../module.js';
+			import * as THREE from 'three';
+			import { OrbitControls } from '../../jsm.js';
+
+			const canvas = document.getElementById('renderCanvas');
+
+			const renderer = new THREE.WebGLRenderer({
+				canvas,
+				antialias: true
+			});
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+
+			const pixelRatio = renderer.getPixelRatio();
+
+			const camera = new THREE.PerspectiveCamera(
+				75, canvas.clientWidth / canvas.clientHeight,
+				1, 100
+			);
+
+			camera.position.z = 2;
+
+			const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+			const scene = new THREE.Scene();
+
+			const cubeMesh = new THREE.Mesh(
+				new THREE.BoxGeometry(1, 1, 1),
+				new THREE.MeshBasicMaterial({
+					color: 0xffffff,
+					map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
+				})
+			);
+
+			scene.add(cubeMesh);
+
+			const rtTexture = new THREE.WebGLRenderTarget(
+				canvas.clientWidth * pixelRatio, canvas.clientHeight * pixelRatio
+			);
+
+			const fullscreenTriangleGeometry = new THREE.BufferGeometry();
+
+			fullscreenTriangleGeometry.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( [
+				- 1, 3, 0,
+				- 1, - 1, 0,
+				3, - 1, 0
+			] ), 3 ) );
+			fullscreenTriangleGeometry.setAttribute( 'uv', new THREE.BufferAttribute( new Float32Array( [
+				0, 2,
+				0, 0,
+				2, 0
+			] ), 2 ) );
+
+			const kernelRadius = 11;
+
+			const BlurDirectionX = new THREE.Vector2( 1.0, 0.0 );
+			const BlurDirectionY = new THREE.Vector2( 0.0, 1.0 );
+
+			const fullScreenQuad = new THREE.Mesh( fullscreenTriangleGeometry, new THREE.RawShaderMaterial({
+				uniforms: {
+					maskTexture: {
+						value: rtTexture.texture,
+					},
+					texSize: {
+						value: new THREE.Vector2( rtTexture.width, rtTexture.height )
+					},
+					visibleEdgeColor: {
+						value: new THREE.Color( 1.0, 1.0, 1.0 )
+					},
+					hiddenEdgeColor: {
+						value: new THREE.Color( 0.1, 0.04, 0.02 ),
+					}
+				},
+				vertexShader: `
+					precision mediump float;
+
+					attribute vec3 position;
+					attribute vec2 uv;
+
+					varying vec2 vUv;
+
+					void main() {
+						vUv = uv;
+
+						gl_Position = vec4( position, 1.0 );
+					}
+				`,
+				fragmentShader: `
+					precision mediump float;
+
+					varying vec2 vUv;
+
+					uniform sampler2D maskTexture;
+					uniform vec2 texSize;
+					uniform vec3 visibleEdgeColor;
+					uniform vec3 hiddenEdgeColor;
+
+					void main() {
+
+						vec2 invSize = 1.0 / texSize;
+						vec4 uvOffset = vec4(1.0, 0.0, 0.0, 1.0) * vec4(invSize, invSize);
+						vec4 c1 = texture2D( maskTexture, vUv + uvOffset.xy);
+						vec4 c2 = texture2D( maskTexture, vUv - uvOffset.xy);
+						vec4 c3 = texture2D( maskTexture, vUv + uvOffset.yw);
+						vec4 c4 = texture2D( maskTexture, vUv - uvOffset.yw);
+						// . c3 .
+						// c1 0 c2
+						// . c4 .
+
+						float diff1 = (c1.r - c2.r)*0.5;// 水平 r 差
+						float diff2 = (c3.r - c4.r)*0.5;// 竖直 r 差
+						float d = length( vec2(diff1, diff2) );
+						float a1 = min(c1.g, c2.g);
+						float a2 = min(c3.g, c4.g);
+						float visibilityFactor = min(a1, a2);
+						vec3 edgeColor = 1.0 - visibilityFactor > 0.001 ? visibleEdgeColor : hiddenEdgeColor;
+
+						gl_FragColor = vec4(edgeColor, 1.0) * vec4(d);
+
+						// vec4 c = texture2D( maskTexture, vUv);
+						// gl_FragColor =
+						// 	d > 0.0 ?
+						// 		vec4(edgeColor, 1.0) * vec4(d) :
+
+						// 		c.r > 0.0 ? vec4(1.0, 1.0, 1.0, 1.0) :
+						// 		c.g > 0.0 ? vec4(0.0, 1.0, 1.0, 1.0) : vec4(0.0, 0.0, 1.0, 1.0);
+					}
+				`
+			}) );
+
+
+
+			const stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
+
+			initGui();
+			function initGui(){
+
+				const gui = new lil.GUI();
+
+				initEdgeDetectionMaterialGui( gui, fullScreenQuad.material, 'edgeDetectionMaterial' );
+			}
+
+			function initEdgeDetectionMaterialGui(gui, material, name){
+
+				const edgeDetectionMaterialFolder = gui.addFolder( name );
+
+				edgeDetectionMaterialFolder.addColor( material.uniforms.visibleEdgeColor, 'value' ).name('visibleEdgeColor');
+				edgeDetectionMaterialFolder.addColor( material.uniforms.hiddenEdgeColor, 'value' ).name('hiddenEdgeColor');
+			}
+
+
+			loop();
+			function loop() {
+
+				renderer.setRenderTarget(rtTexture);
+				renderer.render( scene, camera );
+				renderer.setRenderTarget(null);
+
+				renderer.render( fullScreenQuad, camera );
+
+				stats.update();
+
+				requestAnimationFrame(loop)
+			}
+		</script>
+	</body>
+</html>

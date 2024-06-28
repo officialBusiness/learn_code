@@ -9,11 +9,19 @@
 		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
-		流程: (来源于 OutlinePass 注释)
-			1.在深度缓冲区中绘制非选定对象, 使所选对象可见, 更新纹理矩阵进行深度比较, 通过比较非选中对象的深度缓冲，使非选中对象不可见，并只绘制选中的对象
-			2. 下采样到一半的分辨率
-			3. 应用边缘检测通过
-			4. 在半分辨率上应用模糊
+		流程: (来源于 OutlinePass 英文注释, 机翻)
+			1. 在深度缓冲区中绘制非选定对象, 使所选对象可见
+			2. 更新纹理矩阵进行深度比较, 通过比较非选中对象的深度缓冲，使非选中对象不可见，并只绘制选中的对象
+			3. 下采样到一半的分辨率
+			4. 应用边缘检测通过
+			5. 在半分辨率上应用模糊
+
+		自己总结的流程:
+			1. 用深度材质 RGBADepthPacking 渲染未选中的模型
+			2. 用 prepareMaskMaterial 渲染选中模型, 同时和之前的渲染结果进行处理, 选的模型, 未被遮挡的部分为 (0,0,1), 遮挡的部分为 (0,1,1), 背景为白色
+			3. 渲染结果再次帧渲染, 长宽为之前的 1/2, 为原来 1/4 分辨率
+			4. 高斯模糊
+			5. 和原图混合
 	-->
 	<body>
 		<canvas id="renderCanvas"></canvas>
@@ -28,7 +36,7 @@
 			import '../../../module.js';
 			import * as THREE from 'three';
 			import { OrbitControls, EffectComposer, OutlinePass } from '../../jsm.js';
-			import createOutlinePassScene from './create_outline_pass_scene.js';
+			import { createOutlinePassScene } from './outline_pass_tools.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -38,6 +46,7 @@
 			});
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+			// renderer.setClearColor( 0xffffff, 1 );
 
 			const camera = new THREE.PerspectiveCamera(
 				75, canvas.clientWidth / canvas.clientHeight,
@@ -50,17 +59,9 @@
 
 			const scene = new THREE.Scene();
 
-			// const cubeMesh = new THREE.Mesh(
-			// 	new THREE.BoxGeometry(1, 1, 1),
-			// 	new THREE.MeshBasicMaterial({
-			// 		color: 0xffffff,
-			// 		map: new THREE.TextureLoader().load('../../../assets/images/logo1.jpg'),
-			// 	})
-			// );
+			const outlinePassScene = createOutlinePassScene();
 
-			// scene.add(cubeMesh);
-
-			scene.add( createOutlinePassScene() );
+			scene.add( outlinePassScene );
 
 			const composer = new EffectComposer( renderer );
 
@@ -90,7 +91,7 @@
 
 			const outlinePass = new OutlinePass(  new THREE.Vector2( canvas.clientWidth, canvas.clientHeight ), scene, camera );
 
-			// outlinePass.selectedObjects = [cubeMesh];
+			outlinePass.selectedObjects = [ outlinePassScene.children[1] ];
 
 			const textureLoader = new THREE.TextureLoader();
 			textureLoader.load( '../../../assets/images/logo.jpeg', function ( texture ) {
@@ -160,20 +161,25 @@
 
 				outlinePassFolder.addColor( outlinePass, 'visibleEdgeColor' );
 				outlinePassFolder.addColor( outlinePass, 'hiddenEdgeColor' );
-
-
 			}
 
+
+			renderer.setScissorTest( true );
 
 			loop();
 			function loop() {
 
+				renderer.setScissor( 0, 0, canvas.clientWidth, canvas.clientHeight );
+				renderer.setViewport( 0, 0, canvas.clientWidth, canvas.clientHeight );
+
 				composer.render();
 
-				// renderer.render( scene, camera );
+				renderer.setScissor( 0, 0, canvas.clientWidth / 4, canvas.clientHeight / 4 );
+				renderer.setViewport( 0, 0, canvas.clientWidth / 4, canvas.clientHeight / 4 );
+
+				renderer.render( scene, camera );
 
 				stats.update();
-
 				requestAnimationFrame(loop)
 			}
 		</script>
