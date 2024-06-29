@@ -14,6 +14,7 @@ export { GLTFLoader } from '../../source/examples/jsm/loaders/GLTFLoader.js';
 export { HDRCubeTextureLoader } from '../../source/examples/jsm/loaders/HDRCubeTextureLoader.js';
 export { OBJLoader } from '../../source/examples/jsm/loaders/OBJLoader.js';
 
+export { ReflectorForSSRPass } from '../../source/examples/jsm/objects/ReflectorForSSRPass.js';
 export { Water } from '../../source/examples/jsm/objects/Water.js';
 export { Water as Water2 } from '../../source/examples/jsm/objects/Water2.js';
 
@@ -25,7 +26,9 @@ export { OutputPass } from '../../source/examples/jsm/postprocessing/OutputPass.
 export { Pass, FullScreenQuad } from '../../source/examples/jsm/postprocessing/Pass.js';
 export { RenderPass } from '../../source/examples/jsm/postprocessing/RenderPass.js';
 export { ShaderPass } from '../../source/examples/jsm/postprocessing/ShaderPass.js';
+export { SSRPass } from '../../source/examples/jsm/postprocessing/SSRPass.js';
 export { UnrealBloomPass } from '../../source/examples/jsm/postprocessing/UnrealBloomPass.js';
+
 
 export { FXAAShader } from '../../source/examples/jsm/shaders/FXAAShader.js';
 export { LuminosityHighPassShader } from '../../source/examples/jsm/shaders/LuminosityHighPassShader.js';
