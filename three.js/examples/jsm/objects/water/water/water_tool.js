@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import { Water } from '../../jsm.js';
-import { createWaterScene } from './create_scene.water.js';
+import { Water } from '../../../jsm.js';
+import { createWaterScene } from '../create_scene.water.js';
 
 export class WaterTool extends THREE.Object3D {
 
@@ -128,7 +128,7 @@ export function getDemoScene( camera ){
 		{
 			textureWidth: 512,
 			textureHeight: 512,
-			waterNormals: new THREE.TextureLoader().load( '../textures/waternormals.jpg', function ( texture ) {
+			waterNormals: new THREE.TextureLoader().load( '../../textures/waternormals.jpg', function ( texture ) {
 
 				texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 			} ),

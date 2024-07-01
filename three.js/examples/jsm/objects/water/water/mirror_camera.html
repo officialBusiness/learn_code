@@ -4,9 +4,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" href="../../../icon.png">
-		<title>mirror_sampler</title>
-		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link rel="icon" href="../../../../icon.png">
+		<title>mirror_camera</title>
+		<link href="../../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
 
@@ -16,16 +16,17 @@
 		<script type="importmap">
 			{
 				"imports": {
-						"three": "../../../../source/src/THREE.js"
+						"three": "../../../../../source/src/THREE.js"
 				}
 			}
 		</script>
 		<script type="module">
-			import '../../../module.js';
+			import '../../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls, Water } from '../../jsm.js';
-			import { createWaterScene } from './create_scene.water.js';
+			import { OrbitControls, Water } from '../../../jsm.js';
+			import { createWaterScene } from '../create_scene.water.js';
 			import { WaterTool, getDemoScene } from './water_tool.js';
+			import CameraModel from '../../../../src/cameras/camera_model.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -44,6 +45,17 @@
 			camera.position.z = 6;
 
 			const orbitControls = new OrbitControls(camera, renderer.domElement);
+
+
+			const observeCamera = new THREE.PerspectiveCamera(
+				75, canvas.clientWidth / canvas.clientHeight,
+				1, 10000
+			);
+
+			observeCamera.position.z = 6;
+
+			const observeOrbitControls = new OrbitControls(observeCamera, renderer.domElement);
+
 
 			const scene = new THREE.Scene();
 
@@ -64,6 +76,9 @@
 						},
 						textureMatrix: {
 							value: waterTool.textureMatrix,
+						},
+						isMirrorCoord: {
+							value: true,
 						}
 					},
 					vertexShader: `
@@ -79,11 +94,13 @@
 						uniform mat4 textureMatrix;
 
 						varying vec4 mirrorCoord;
+						varying vec2 vUv;
 
 						void main(void) {
+							vUv = uv;
 
 							mirrorCoord = modelMatrix * vec4( position, 1.0 );
-							// worldPosition = mirrorCoord.xyzw;
+
 							mirrorCoord = textureMatrix * mirrorCoord;
 
 							gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4( position, 1.0 );
@@ -93,12 +110,14 @@
 						precision mediump float;
 
 						uniform sampler2D mirrorSampler;
+						uniform bool isMirrorCoord;
 
 						varying vec4 mirrorCoord;
+						varying vec2 vUv;
 
 						void main() {
 
-							vec3 reflectionSample = vec3( texture2D( mirrorSampler, mirrorCoord.xy / mirrorCoord.w ) );
+							vec3 reflectionSample = vec3( texture2D( mirrorSampler, isMirrorCoord ? ( mirrorCoord.xy / mirrorCoord.w) : vUv ) );
 
 							gl_FragColor = vec4(reflectionSample, 1.0);
 						}
@@ -114,7 +133,13 @@
 			waterTool.matrixWorld = water.matrixWorld;
 
 
-			const [ demoScene, demoWater ] = getDemoScene( camera );
+			const mirrorCameraModel = new CameraModel( waterTool.mirrorCamera );
+
+			scene.add( mirrorCameraModel );
+
+			const cameraModel = new CameraModel( camera );
+
+			scene.add( cameraModel );
 
 
 			const stats = new Stats();
@@ -122,18 +147,34 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
+			const param = {
+				isMirrorCoord: true,
+				cameraVisible: false,
+				isObserve: false,
+			}
 
 			initGui();
 			function initGui(){
 
 				const gui = new lil.GUI();
 
+				gui.add( param, 'isMirrorCoord' ).onChange(( isMirrorCoord )=>{
+					water.material.uniforms.isMirrorCoord.value = isMirrorCoord;
+				});
+
+				gui.add( param, 'cameraVisible' );
+
+				gui.add( param, 'isObserve' ).onChange(( isObserve )=>{
+
+					observeOrbitControls.enabled = isObserve;
+					orbitControls.enabled = !isObserve;
+				});
 			}
 
 			renderer.setScissorTest( true );
 
 			const widthStep = canvas.clientWidth / 2;
-			const heightStep = canvas.clientHeight;
+			const heightStep = canvas.clientHeight / 2;
 
 			loop( 0 );
 			function loop( time ) {
@@ -141,8 +182,12 @@
 				orbitControls.update();
 				waterTool.update( camera );
 
-				renderer.setScissor( 0, 0, widthStep, heightStep );
-				renderer.setViewport( 0, 0, widthStep, heightStep );
+				mirrorCameraModel.update( waterTool.mirrorCamera );
+				cameraModel.update( camera );
+
+				// render
+				renderer.setScissor( 0, heightStep, widthStep, heightStep );
+				renderer.setViewport( 0, heightStep, widthStep, heightStep );
 
 				renderer.setRenderTarget( mirrorSampler );
 				renderer.render( waterScene, waterTool.mirrorCamera );
@@ -150,14 +195,26 @@
 
 				renderer.render( scene, camera );
 
+
+				renderer.setScissor( widthStep, heightStep, widthStep, heightStep );
+				renderer.setViewport( widthStep, heightStep, widthStep, heightStep );
+
+				mirrorCameraModel.visible = true;
+				renderer.render( scene, observeCamera );
+				mirrorCameraModel.visible = false;
+
+
+				renderer.setScissor( 0, 0, widthStep, heightStep );
+				renderer.setViewport( 0, 0, widthStep, heightStep );
+
+				renderer.render( scene, waterTool.mirrorCamera )
+
 				renderer.setScissor( widthStep, 0, widthStep, heightStep );
 				renderer.setViewport( widthStep, 0, widthStep, heightStep );
 
-				time /= 1000;
-
-				demoWater.material.uniforms[ 'time' ].value += 1.0 / 60.0;
-
-				renderer.render( demoScene, camera );
+				cameraModel.visible = true;
+				renderer.render( scene, observeCamera );
+				cameraModel.visible = false;
 
 				stats.update();
 
