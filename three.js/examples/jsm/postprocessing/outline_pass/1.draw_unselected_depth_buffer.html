@@ -24,7 +24,7 @@
 			import '../../../module.js';
 			import * as THREE from 'three';
 			import { OrbitControls, EffectComposer, OutlinePass } from '../../jsm.js';
-			import { createOutlinePassScene, OutlinePassTools } from './outline_pass_tools.js';
+			import { createOutlinePassScene, OutlinePassTool } from './outline_pass_tool.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -51,7 +51,7 @@
 
 			scene.add( outlinePassScene );
 
-			const outlinePassTools = new OutlinePassTools( scene, camera, [ outlinePassScene.children[1] ] )
+			const outlinePassTools = new OutlinePassTool( scene, camera, [ outlinePassScene.children[1] ] )
 
 			outlinePassTools.changeVisibilityOfSelectedObjects( false );
 

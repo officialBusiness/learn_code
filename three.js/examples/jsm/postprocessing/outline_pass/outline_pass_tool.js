@@ -71,7 +71,7 @@ export function createOutlinePassScene(){
 	return group;
 }
 
-export class OutlinePassTools {
+export class OutlinePassTool {
 	constructor(scene, camera, selectedObjects){
 
 		this.renderScene = scene;

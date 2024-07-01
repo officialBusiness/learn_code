@@ -4,9 +4,9 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
-		<link rel="icon" href="../../icon.png">
+		<link rel="icon" href="../../../icon.png">
 		<title>water</title>
-		<link href="../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
 
@@ -16,14 +16,16 @@
 		<script type="importmap">
 			{
 				"imports": {
-						"three": "../../../source/src/THREE.js"
+						"three": "../../../../source/src/THREE.js"
 				}
 			}
 		</script>
 		<script type="module">
-			import '../../module.js';
+			import '../../../module.js';
 			import * as THREE from 'three';
-			import { OrbitControls, Water } from '../jsm.js';
+			import { OrbitControls, Water } from '../../jsm.js';
+			import { createWaterScene } from './create_scene.water.js';
+			import { getDemoScene } from './water_tool.js';
 
 			const canvas = document.getElementById('renderCanvas');
 
@@ -39,45 +41,11 @@
 				1, 10000
 			);
 
-			camera.position.z = 6;
+			camera.position.y = 6;
 
 			const orbitControls = new OrbitControls(camera, renderer.domElement);
 
-			const scene = new THREE.Scene();
-
-
-			scene.add( new THREE.AmbientLight( 0xff0000 ) );
-
-			const	box = new THREE.Mesh(
-				new THREE.BoxGeometry( 1, 1, 1 ),
-				new THREE.MeshStandardMaterial( { roughness: 0 } )
-			);
-			scene.add( box );
-
-			scene.add( new THREE.AxesHelper(20) );
-
-			const waterGeometry = new THREE.PlaneGeometry( 10, 10 );
-
-			const water = new Water(
-				waterGeometry,
-				{
-					textureWidth: 512,
-					textureHeight: 512,
-					waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
-
-						texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-					} ),
-					sunDirection: new THREE.Vector3(),
-					sunColor: 0xffffff,
-					waterColor: 0x001e0f,
-					distortionScale: 3.7,
-					fog: scene.fog !== undefined
-				}
-			);
-
-			water.position.y = 1;
-			water.rotation.x = Math.PI * - 0.5;
-			scene.add( water );
+			const [ scene, water ] = getDemoScene( camera );
 
 			const stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -121,10 +89,6 @@
 			function loop( time ) {
 
 				time /= 1000;
-
-				box.position.y = Math.sin( time ) * 2 + 1;
-				box.rotation.x = time * 0.5;
-				box.rotation.z = time * 0.5;
 
 				water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 

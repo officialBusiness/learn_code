@@ -107,7 +107,7 @@ export default class CameraModel extends Mesh{
   }
 
   update(camera){
-    camera.updateProjectionMatrix();
+
     _projectionMatrixInverse.copy(camera.projectionMatrixInverse);
 
     camera.updateWorldMatrix(false, false);

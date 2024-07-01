@@ -26,8 +26,8 @@
 			import { OrbitControls, EffectComposer, OutlinePass } from '../../jsm.js';
 			import {
 				createOutlinePassScene,
-				OutlinePassTools
-			} from './outline_pass_tools.js';
+				OutlinePassTool
+			} from './outline_pass_tool.js';
 			import getPrepareMaskUnit from './outline_pass_units/prepare_mask.js';
 			import getEdgeDetectionUnit from './outline_pass_units/edge_detection.js';
 			import getMapRawShaderMaterial from './outline_pass_units/map_shader.js';
@@ -80,7 +80,7 @@
 			const fullScreenQuad = new THREE.Mesh( fullscreenTriangleGeometry,  null );
 
 
-			const outlinePassTools = new OutlinePassTools( scene, camera, [ outlinePassScene.children[1] ] )
+			const outlinePassTools = new OutlinePassTool( scene, camera, [ outlinePassScene.children[1] ] )
 
 
 			const depthMaterial = new THREE.MeshDepthMaterial({

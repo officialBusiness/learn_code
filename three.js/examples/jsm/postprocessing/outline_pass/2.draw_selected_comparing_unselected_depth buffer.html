@@ -26,8 +26,8 @@
 			import { OrbitControls, EffectComposer, OutlinePass } from '../../jsm.js';
 			import {
 				createOutlinePassScene,
-				OutlinePassTools
-			} from './outline_pass_tools.js';
+				OutlinePassTool
+			} from './outline_pass_tool.js';
 			import getPrepareMaskUnit from './outline_pass_units/prepare_mask.js';
 
 			const canvas = document.getElementById('renderCanvas');
@@ -59,7 +59,7 @@
 			scene.add( outlinePassScene );
 
 
-			const outlinePassTools = new OutlinePassTools( scene, camera, [ outlinePassScene.children[1] ] )
+			const outlinePassTools = new OutlinePassTool( scene, camera, [ outlinePassScene.children[1] ] )
 
 			const passRenderTargetWidth = canvas.clientWidth * pixelRatio;
 			const passRenderTargetHeight = canvas.clientHeight * pixelRatio;
