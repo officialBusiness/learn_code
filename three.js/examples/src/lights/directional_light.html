@@ -64,7 +64,6 @@
 			ground.rotation.x = -Math.PI / 2;
 			ground.position.y = -1;
 
-			ground.receiveShadow = true;
 			scene.add( ground );
 
 
@@ -78,21 +77,11 @@
 			);
 
 			sphere.position.set( 2, 2, 2 );
-			sphere.castShadow = true;
 
 
 			scene.add( sphere );
 
 			const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-
-			directionalLight.castShadow = true;
-
-			directionalLight.shadow.mapSize.width = 512; // default
-			directionalLight.shadow.mapSize.height = 512; // default
-			directionalLight.shadowDarkness = 0.5;
-			directionalLight.shadow.camera.near = 0.5; // default
-			directionalLight.shadow.camera.far = 500; // default
-
 			scene.add( directionalLight );
 
 			const directionalLightHelper = new THREE.DirectionalLightHelper( directionalLight );

@@ -58,6 +58,7 @@
 
 			// texture project
 			const projCamera = new THREE.PerspectiveCamera(35, canvas.clientWidth / canvas.clientHeight / 2, 0.01, 20);
+			// const projCamera = new THREE.OrthographicCamera(- 5, 5, 3, - 4, -5, 20);
 			projCamera.position.set(0, 0, 10);
 
 			const cameraHelper = new THREE.CameraHelper(projCamera);
@@ -124,6 +125,7 @@
 								gl_FragColor = vec4(baseColor, 1.0);
 							}
 
+							// gl_FragColor = vec4( texc.xy, 0.0, 1.0 );
 						}`,
 					// side: THREE.FrontSide
 				})

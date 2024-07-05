@@ -81,7 +81,7 @@
 			const baiGuGu = new THREE.TextureLoader().load('../../../assets/images/logo1.jpg');
 
 			const meshLambertMaterial = new THREE.MeshLambertMaterial({
-				// emissive: new THREE.Color( 0xffffff ),
+				emissive: new THREE.Color( 0x1a1a1a ),
 				emissiveMap: baiGuGu,
 				map: baiGuGu,
 				// envMap: new THREE.CubeTextureLoader().load(
@@ -96,8 +96,8 @@
 			});
 
 			const spotLight = new THREE.SpotLight( 0xffffff );
-			spotLight.position.set( 0, 0, 5 );
 
+			spotLight.angle = Math.PI / 6;
 			spotLight.position.set( 0, 0, 1 );
 
 			scene.add( spotLight );

@@ -73,12 +73,15 @@
 			stats.domElement.style.top = '0px';
 			document.body.appendChild( stats.domElement );
 
+			renderer.setScissorTest( true );
+
 			const widthStep = canvas.clientWidth / 2;
 			const heightStep = canvas.clientHeight / 2;
 
 			loop( 0 );
 			function loop( time ) {
 
+				renderer.setScissor( 0, 0, widthStep, heightStep );
 				renderer.setViewport( 0, 0, widthStep, heightStep );
 				renderer.render( scene, camera );
 
