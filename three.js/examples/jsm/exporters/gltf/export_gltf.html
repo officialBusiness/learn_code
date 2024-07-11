@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 		<link rel="icon" href="../../../icon.png">
 		<title>export_gltf</title>
-		<link href="../../../default_css.css" rel="stylesheet" type="text/css"/>
+		<link href="../../../../../_utils/default_css.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<!--
 
@@ -21,7 +21,7 @@
 			}
 		</script>
 		<script type="module">
-			import { MyTools } from '../../../module.js';
+			import { _Utils } from '../../../module.js';
 			import * as THREE from 'three';
 			import { OrbitControls, GLTFExporter } from '../../jsm.js';
 
@@ -55,7 +55,7 @@
 				exporter.parse( model, function(glb){
 
 
-					MyTools.downloadFile(filename, glb, MyTools.MME.gltfBinary)
+					_Utils.downloadFile(filename, glb, _Utils.MME.gltfBinary)
 				}, function(error){
 					console.log( 'An error happened', error );
 				}, {

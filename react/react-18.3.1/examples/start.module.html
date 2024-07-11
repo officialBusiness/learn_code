@@ -41,6 +41,31 @@
 			*/
 
 			const root = ReactDOM.createRoot(rootNode);
+			// ReactDOMRoot: {
+			// 	_internalRoot = FiberRootNode: {
+			// 		current: FiberNode: {
+			// 			stateNode: 指向包含自身的 FiberRootNode,
+			// 			memoizedState: {
+			// 				element: initialChildren,
+			// 				isDehydrated: hydrate,
+			// 				cache: null, // not enabled yet
+			// 				transitions: null,
+			// 				pendingSuspenseBoundaries: null,
+			// 			},
+			// 			updateQueue: {
+			// 				baseState: fiber.memoizedState, 指向包含自身的 FiberNode,
+			// 				firstBaseUpdate: null,
+			// 				lastBaseUpdate: null,
+			// 				shared: {
+			// 					pending: null,
+			// 					interleaved: null,
+			// 					lanes: NoLanes,
+			// 				},
+			// 				effects: null,
+			// 			}
+			// 		}
+			// 	}
+			// }
 
 			root.render( App );
 		</script>
