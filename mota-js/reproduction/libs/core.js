@@ -150,35 +150,35 @@ core.prototype.init = function (dom, statusBar, canvas, images, sounds, coreData
     core.loader(function () {
         console.log(core.material);
         // core.playGame();
-        // core.showStartAnimate(function() {});
+        core.showStartAnimate(function() {});
     });
 }
 
-// core.prototype.showStartAnimate = function (callback) {
-//     core.dom.startPanel.style.opacity=1;
-//     core.dom.startPanel.style.display="block";
-//     core.dom.startTop.style.opacity=1;
-//     core.dom.startTop.style.display="block";
-//     core.dom.startButtonGroup.style.display = 'none';
-//     core.dom.startButtons.style.display = 'block';
-//     core.dom.levelChooseButtons.style.display = 'none';
-//     core.status.played = false;
-//     core.clearStatus();
-//     core.clearMap('all');
+core.prototype.showStartAnimate = function (callback) {
+    core.dom.startPanel.style.opacity=1;
+    core.dom.startPanel.style.display="block";
+    core.dom.startTop.style.opacity=1;
+    core.dom.startTop.style.display="block";
+    core.dom.startButtonGroup.style.display = 'none';
+    core.dom.startButtons.style.display = 'block';
+    core.dom.levelChooseButtons.style.display = 'none';
+    core.status.played = false;
+    core.clearStatus();
+    core.clearMap('all');
 
-//     var opacityVal = 1;
-//     var startAnimate = window.setInterval(function () {
-//         opacityVal -= 0.03;
-//         if (opacityVal < 0) {
-//             clearInterval(startAnimate);
-//             core.dom.startTop.style.display = 'none';
-//             // core.playGame();
-//             core.dom.startButtonGroup.style.display = 'block';
-//             if (core.isset(callback)) callback();
-//         }
-//         core.dom.startTop.style.opacity = opacityVal;
-//     }, 20);
-// }
+    var opacityVal = 1;
+    var startAnimate = window.setInterval(function () {
+        opacityVal -= 0.03;
+        if (opacityVal < 0) {
+            clearInterval(startAnimate);
+            core.dom.startTop.style.display = 'none';
+            // core.playGame();
+            core.dom.startButtonGroup.style.display = 'block';
+            if (core.isset(callback)) callback();
+        }
+        core.dom.startTop.style.opacity = opacityVal;
+    }, 20);
+}
 
 // core.prototype.hideStartAnimate = function (callback) {
 //     var opacityVal = 1;
@@ -298,15 +298,15 @@ core.prototype.loadSoundItem = function (toLoadList) {
 // }
 
 
-// core.prototype.clearStatus = function() {
-//     // 停止各个Timeout和Interval
-//     for (var i in core.interval) {
-//         clearInterval(core.interval[i]);
-//     }
-//     core.status = {};
-//     core.clearStatusBar();
-//     core.resize(main.dom.body.clientWidth, main.dom.body.clientHeight);
-// }
+core.prototype.clearStatus = function() {
+    // 停止各个Timeout和Interval
+    for (var i in core.interval) {
+        clearInterval(core.interval[i]);
+    }
+    core.status = {};
+    core.clearStatusBar();
+    core.resize(main.dom.body.clientWidth, main.dom.body.clientHeight);
+}
 
 // core.prototype.resetStatus = function(hero, hard, floorId, maps) {
 
@@ -1404,16 +1404,16 @@ core.prototype.loadSoundItem = function (toLoadList) {
 //     }
 // }
 
-// core.prototype.clearMap = function (map, x, y, width, height) {
-//     if (map == 'all') {
-//         for (var m in core.canvas) {
-//             core.canvas[m].clearRect(0, 0, 416, 416);
-//         }
-//     }
-//     else {
-//         core.canvas[map].clearRect(x, y, width, height);
-//     }
-// }
+core.prototype.clearMap = function (map, x, y, width, height) {
+    if (map == 'all') {
+        for (var m in core.canvas) {
+            core.canvas[m].clearRect(0, 0, 416, 416);
+        }
+    }
+    else {
+        core.canvas[map].clearRect(x, y, width, height);
+    }
+}
 
 // core.prototype.fillText = function (map, text, x, y, style, font) {
 //     if (core.isset(style)) {
@@ -2725,16 +2725,16 @@ core.prototype.isset = function (val) {
 // }
 
 
-// ////// 状态栏相关 //////
+////// 状态栏相关 //////
 
-// core.prototype.clearStatusBar = function() {
-//     var statusList = ['floor', 'hp', 'atk', 'def', /*'mdef',*/ 'money', 'experience', 'yellowKey', 'blueKey', 'redKey', 'hard'];
-//     statusList.forEach(function (e) {
-//         core.statusBar[e].innerHTML = "";
-//     });
-//     core.statusBar.image.book.style.opacity = 0.3;
-//     core.statusBar.image.fly.style.opacity = 0.3;
-// }
+core.prototype.clearStatusBar = function() {
+    var statusList = ['floor', 'hp', 'atk', 'def', /*'mdef',*/ 'money', 'experience', 'yellowKey', 'blueKey', 'redKey', 'hard'];
+    statusList.forEach(function (e) {
+        core.statusBar[e].innerHTML = "";
+    });
+    core.statusBar.image.book.style.opacity = 0.3;
+    core.statusBar.image.fly.style.opacity = 0.3;
+}
 
 // /**
 //  * 更新状态栏
