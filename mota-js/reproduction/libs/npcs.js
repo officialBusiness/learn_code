@@ -1,20 +1,20 @@
-// function npcs() {
+function npcs() {
 
-// }
+}
 
-// npcs.prototype.init = function () {
-//     this.npcs = {
-//         'npc1': {'id': 'npc1', 'name': '神秘老人', 'icon': 'magician'},
-//         'npc2': {'id': 'npc2', 'name': '神秘老人', 'icon': 'magician'},
-//         'npc3': {'id': 'npc3', 'name': '神秘老人', 'icon': 'womanMagician'},
-//         'npc4': {'id': 'npc4', 'name': '神秘老人', 'icon': 'womanMagician'},
-//     }
-// }
+npcs.prototype.init = function () {
+    this.npcs = {
+        'npc1': {'id': 'npc1', 'name': '神秘老人', 'icon': 'magician'},
+        'npc2': {'id': 'npc2', 'name': '神秘老人', 'icon': 'magician'},
+        'npc3': {'id': 'npc3', 'name': '神秘老人', 'icon': 'womanMagician'},
+        'npc4': {'id': 'npc4', 'name': '神秘老人', 'icon': 'womanMagician'},
+    }
+}
 
-// npcs.prototype.getNpcs = function (npcId) {
-//     if (npcId == undefined) return this.npcs;
-//     return this.npcs[npcId];
-// }
+npcs.prototype.getNpcs = function (npcId) {
+    if (npcId == undefined) return this.npcs;
+    return this.npcs[npcId];
+}
 
 // npcs.prototype.getEffect = function (npcid, times) {
 //     switch (npcid) {
@@ -68,4 +68,4 @@
 //     return [];
 // }
 
-// main.instance.npcs = new npcs();
+main.instance.npcs = new npcs();

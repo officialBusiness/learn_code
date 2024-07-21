@@ -1,15 +1,15 @@
-// /**
-//  * ui.js：负责所有和UI界面相关的绘制
-//  * 包括：
-//  * 自动寻路、怪物手册、楼传器、存读档、菜单栏、NPC对话事件、等等
-//  */
-// function ui() {}
+/**
+ * ui.js：负责所有和UI界面相关的绘制
+ * 包括：
+ * 自动寻路、怪物手册、楼传器、存读档、菜单栏、NPC对话事件、等等
+ */
+function ui() {}
 
-// // 初始化UI
-// ui.prototype.init = function () {
-// }
+// 初始化UI
+ui.prototype.init = function () {
+}
 
-// main.instance.ui = new ui();
+main.instance.ui = new ui();
 
 
 // /**
