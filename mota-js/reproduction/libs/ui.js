@@ -12,21 +12,21 @@ ui.prototype.init = function () {
 main.instance.ui = new ui();
 
 
-// /**
-//  * 关闭一切UI窗口
-//  * @param clearData 是否同时清掉data层
-//  */
-// ui.prototype.closePanel = function (clearData) {
-//     core.status.boxAnimateObjs = [];
-//     core.setBoxAnimate(core.firstData.animateSpeed);
-//     core.clearMap('ui', 0, 0, 416, 416);
-//     core.setAlpha('ui', 1.0);
-//     if (core.isset(clearData) && clearData)
-//         core.clearMap('data', 0, 0, 416, 416);
-//     core.unLockControl();
-//     core.status.event.data = null;
-//     core.status.event.id = null;
-// }
+/**
+ * 关闭一切UI窗口
+ * @param clearData 是否同时清掉data层
+ */
+ui.prototype.closePanel = function (clearData) {
+    core.status.boxAnimateObjs = [];
+    core.setBoxAnimate(core.firstData.animateSpeed);
+    core.clearMap('ui', 0, 0, 416, 416);
+    core.setAlpha('ui', 1.0);
+    if (core.isset(clearData) && clearData)
+        core.clearMap('data', 0, 0, 416, 416);
+    core.unLockControl();
+    core.status.event.data = null;
+    core.status.event.id = null;
+}
 
 
 /**

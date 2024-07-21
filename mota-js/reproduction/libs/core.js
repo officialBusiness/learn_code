@@ -486,21 +486,21 @@ core.prototype.clearStatus = function() {
 
 // }
 
-// core.prototype.ondown = function (x ,y) {
-//     if (!core.status.played || core.status.lockControl) {
-//         core.onclick(x, y, []);
-//         return;
-//     }
-//     core.status.holdingPath=1;
-//     core.status.mouseOutCheck =1;
-//     window.setTimeout(core.clearStepPostfix);
-//     core.saveCanvas('ui');
-//     core.clearMap('ui', 0, 0, 416,416);
-//     var pos={'x':x,'y':y}
-//     core.status.stepPostfix=[];
-//     core.status.stepPostfix.push(pos);
-//     core.fillPosWithPoint(pos);
-// }
+core.prototype.ondown = function (x ,y) {
+    if (!core.status.played || core.status.lockControl) {
+        core.onclick(x, y, []);
+        return;
+    }
+    core.status.holdingPath=1;
+    core.status.mouseOutCheck =1;
+    window.setTimeout(core.clearStepPostfix);
+    core.saveCanvas('ui');
+    core.clearMap('ui', 0, 0, 416,416);
+    var pos={'x':x,'y':y}
+    core.status.stepPostfix=[];
+    core.status.stepPostfix.push(pos);
+    core.fillPosWithPoint(pos);
+}
 
 // core.prototype.onmove = function (x ,y) {
 //     if (core.status.holdingPath==0){return;}
@@ -544,247 +544,247 @@ core.prototype.clearStatus = function() {
 //     }
 // }
 
-// core.prototype.getClickLoc = function (x, y) {
+core.prototype.getClickLoc = function (x, y) {
 
-//     if (!core.isset(core.position.canvas.top)) return null;
+    if (!core.isset(core.position.canvas.top)) return null;
 
-//     var statusBar = {'x': 0, 'y': 0};
-//     var size = 32;
-//     size = size * core.position.scale;
+    var statusBar = {'x': 0, 'y': 0};
+    var size = 32;
+    size = size * core.position.scale;
 
-//     switch (core.position.screenMode) {// 这里的3是指statusBar和游戏画布之间的白线宽度
-//         case 'vertical':
-//             statusBar.x = 0;
-//             statusBar.y = core.position.statusBar.height + 3;
-//             break;
-//         case 'horizontal':
-//             statusBar.x = core.position.statusBar.width + 3;
-//             console.log(core.position.statusBar.width)
-//             statusBar.y = 0;
-//             break;
-//         case 'bigScreen':
-//             statusBar.x = core.position.statusBar.width + 3;
-//             statusBar.y = 0;
-//             break;
-//     }
-//     var left = core.dom.gameGroup.offsetLeft + statusBar.x;
-//     var top = core.dom.gameGroup.offsetTop + statusBar.y;
-//     var loc={'x': x - left, 'y': y - top, 'size': size};
-//     return loc;
-// }
+    switch (core.position.screenMode) {// 这里的3是指statusBar和游戏画布之间的白线宽度
+        case 'vertical':
+            statusBar.x = 0;
+            statusBar.y = core.position.statusBar.height + 3;
+            break;
+        case 'horizontal':
+            statusBar.x = core.position.statusBar.width + 3;
+            console.log(core.position.statusBar.width)
+            statusBar.y = 0;
+            break;
+        case 'bigScreen':
+            statusBar.x = core.position.statusBar.width + 3;
+            statusBar.y = 0;
+            break;
+    }
+    var left = core.dom.gameGroup.offsetLeft + statusBar.x;
+    var top = core.dom.gameGroup.offsetTop + statusBar.y;
+    var loc={'x': x - left, 'y': y - top, 'size': size};
+    return loc;
+}
 
-// core.prototype.onclick = function (x, y, stepPostfix) {
-//     // console.log("Click: (" + x + "," + y + ")");
+core.prototype.onclick = function (x, y, stepPostfix) {
+    // console.log("Click: (" + x + "," + y + ")");
 
-//     // 非游戏屏幕内
-//     if (x<0 || y<0 || x>12 || y>12) return;
+    // 非游戏屏幕内
+    if (x<0 || y<0 || x>12 || y>12) return;
 
-//     // 寻路
-//     if (!core.status.lockControl) {
-//         core.setAutomaticRoute(x, y, stepPostfix);
-//         return;
-//     }
+    // 寻路
+    if (!core.status.lockControl) {
+        core.setAutomaticRoute(x, y, stepPostfix);
+        return;
+    }
 
-//     // 怪物手册
-//     if (core.status.event.id == 'book') {
-//         core.events.clickBook(x,y);
-//         return;
-//     }
+    // 怪物手册
+    if (core.status.event.id == 'book') {
+        core.events.clickBook(x,y);
+        return;
+    }
 
-//     // 楼层飞行器
-//     if (core.status.event.id == 'fly') {
-//         core.events.clickFly(x,y);
-//         return;
-//     }
+    // 楼层飞行器
+    if (core.status.event.id == 'fly') {
+        core.events.clickFly(x,y);
+        return;
+    }
 
-//     // 设置
-//     if (core.status.event.id == 'settings') {
-//         core.events.clickSettings(x,y);
-//         return;
-//     }
+    // 设置
+    if (core.status.event.id == 'settings') {
+        core.events.clickSettings(x,y);
+        return;
+    }
 
-//     // 商店
-//     if (core.status.event.id == 'shop') {
-//         core.events.clickShop(x,y);
-//         return;
-//     }
+    // 商店
+    if (core.status.event.id == 'shop') {
+        core.events.clickShop(x,y);
+        return;
+    }
 
-//     // 快捷商店
-//     if (core.status.event.id == 'selectShop') {
-//         core.events.clickSelectShop(x,y);
-//         return;
-//     }
+    // 快捷商店
+    if (core.status.event.id == 'selectShop') {
+        core.events.clickSelectShop(x,y);
+        return;
+    }
 
-//     // 工具栏
-//     if (core.status.event.id == 'toolbox') {
-//         core.events.clickToolbox(x,y);
-//         return;
-//     }
+    // 工具栏
+    if (core.status.event.id == 'toolbox') {
+        core.events.clickToolbox(x,y);
+        return;
+    }
 
-//     // 存读档
-//     if (core.status.event.id == 'save' || core.status.event.id == 'load') {
-//         core.events.clickSL(x,y);
-//         return;
-//     }
+    // 存读档
+    if (core.status.event.id == 'save' || core.status.event.id == 'load') {
+        core.events.clickSL(x,y);
+        return;
+    }
 
-//     // 选项
-//     if (core.status.event.id == 'confirmBox') {
-//         if ((x == 4 || x == 5) && y == 7 && core.isset(core.status.event.data.yes))
-//             core.status.event.data.yes();
-//         if ((x == 7 || x == 8) && y == 7 && core.isset(core.status.event.data.no))
-//             core.status.event.data.no();
-//         return;
-//     }
+    // 选项
+    if (core.status.event.id == 'confirmBox') {
+        if ((x == 4 || x == 5) && y == 7 && core.isset(core.status.event.data.yes))
+            core.status.event.data.yes();
+        if ((x == 7 || x == 8) && y == 7 && core.isset(core.status.event.data.no))
+            core.status.event.data.no();
+        return;
+    }
 
-//     // 关于
-//     if (core.status.event.id == 'about') {
-//         if (core.isPlaying())
-//             core.ui.closePanel(false);
-//         else
-//             core.showStartAnimate();
-//         return;
-//     }
+    // 关于
+    if (core.status.event.id == 'about') {
+        if (core.isPlaying())
+            core.ui.closePanel(false);
+        else
+            core.showStartAnimate();
+        return;
+    }
 
-//     // 纯文本
-//     if (core.status.event.id == 'text') {
-//         core.drawText();
-//         return;
-//     }
+    // 纯文本
+    if (core.status.event.id == 'text') {
+        core.drawText();
+        return;
+    }
 
-//     // NPC
-//     if (core.status.event.id == 'npc') {
-//         core.events.clickNPC(x,y);
-//         return;
-//     }
+    // NPC
+    if (core.status.event.id == 'npc') {
+        core.events.clickNPC(x,y);
+        return;
+    }
 
-//     // 同步存档
-//     if (core.status.event.id == 'syncSave') {
-//         if (x>=4 && x<=8) {
-//             if (y==5) {
-//                 core.ui.drawConfirmBox("你确定要将本地存档同步到服务器吗？", function(){
-//                     // console.log("同步存档...");
-//                     core.ui.drawWaiting("正在同步，请稍后...");
+    // 同步存档
+    if (core.status.event.id == 'syncSave') {
+        if (x>=4 && x<=8) {
+            if (y==5) {
+                core.ui.drawConfirmBox("你确定要将本地存档同步到服务器吗？", function(){
+                    // console.log("同步存档...");
+                    core.ui.drawWaiting("正在同步，请稍后...");
 
-//                     var formData = new FormData();
-//                     formData.append('type', 'save');
-//                     var saves = [];
-//                     for (var i=1;i<=180;i++) {
-//                         var data = core.getLocalStorage("save"+i, null);
-//                         if (core.isset(data)) {
-//                             saves.push(data);
-//                         }
-//                     }
-//                     var save_text = JSON.stringify(saves);
-//                     formData.append('data', save_text);
+                    var formData = new FormData();
+                    formData.append('type', 'save');
+                    var saves = [];
+                    for (var i=1;i<=180;i++) {
+                        var data = core.getLocalStorage("save"+i, null);
+                        if (core.isset(data)) {
+                            saves.push(data);
+                        }
+                    }
+                    var save_text = JSON.stringify(saves);
+                    formData.append('data', save_text);
 
-//                     // send
-//                     var xhr = new XMLHttpRequest();
-//                     xhr.open("POST", "../sync.php");
-//                     xhr.timeout = 1000;
-//                     xhr.onload = function(e) {
-//                         if (xhr.status==200) {
-//                             // console.log("同步成功。");
-//                             var response = JSON.parse(xhr.response);
-//                             if (response.code<0) {
-//                                 core.drawText("出错啦！\n无法同步存档到服务器。");
-//                             }
-//                             else {
-//                                 core.drawText("同步成功！\n\n您的存档编号： "+response.code+"\n您的存档密码： "+response.msg+"\n\n请牢记以上两个信息（如截图等），在从服务器\n同步存档时使用。")
-//                             }
-//                         }
-//                         else {
-//                             core.drawText("出错啦！\n无法同步存档到服务器。");
-//                         }
-//                     };
-//                     xhr.ontimeout = function(e) {
-//                         console.log(e);
-//                         core.drawText("出错啦！\n无法同步存档到服务器。");
-//                     }
-//                     xhr.onerror = function(e) {
-//                         console.log(e);
-//                         core.drawText("出错啦！\n无法同步存档到服务器。");
-//                     }
-//                     xhr.send(formData);
-//                 }, function() {
-//                     core.ui.drawSyncSave();
-//                 })
-//             }
-//             if (y==6) {
-//                 core.ui.drawConfirmBox("你确定要从服务器加载存档吗？\n该操作将覆盖所有本地存档且不可逆！", function(){
-//                     var id = prompt("请输入存档编号：");
-//                     if (id==null || id=="") {
-//                         core.ui.drawSyncSave(); return;
-//                     }
-//                     var password = prompt("请输入存档密码：");
-//                     if (password==null || password=="") {
-//                         core.ui.drawSyncSave(); return;
-//                     }
-//                     core.ui.drawWaiting("正在同步，请稍后...");
+                    // send
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "../sync.php");
+                    xhr.timeout = 1000;
+                    xhr.onload = function(e) {
+                        if (xhr.status==200) {
+                            // console.log("同步成功。");
+                            var response = JSON.parse(xhr.response);
+                            if (response.code<0) {
+                                core.drawText("出错啦！\n无法同步存档到服务器。");
+                            }
+                            else {
+                                core.drawText("同步成功！\n\n您的存档编号： "+response.code+"\n您的存档密码： "+response.msg+"\n\n请牢记以上两个信息（如截图等），在从服务器\n同步存档时使用。")
+                            }
+                        }
+                        else {
+                            core.drawText("出错啦！\n无法同步存档到服务器。");
+                        }
+                    };
+                    xhr.ontimeout = function(e) {
+                        console.log(e);
+                        core.drawText("出错啦！\n无法同步存档到服务器。");
+                    }
+                    xhr.onerror = function(e) {
+                        console.log(e);
+                        core.drawText("出错啦！\n无法同步存档到服务器。");
+                    }
+                    xhr.send(formData);
+                }, function() {
+                    core.ui.drawSyncSave();
+                })
+            }
+            if (y==6) {
+                core.ui.drawConfirmBox("你确定要从服务器加载存档吗？\n该操作将覆盖所有本地存档且不可逆！", function(){
+                    var id = prompt("请输入存档编号：");
+                    if (id==null || id=="") {
+                        core.ui.drawSyncSave(); return;
+                    }
+                    var password = prompt("请输入存档密码：");
+                    if (password==null || password=="") {
+                        core.ui.drawSyncSave(); return;
+                    }
+                    core.ui.drawWaiting("正在同步，请稍后...");
 
-//                     var formData = new FormData();
-//                     formData.append('type', 'load');
-//                     formData.append('id', id);
-//                     formData.append('password', password);
+                    var formData = new FormData();
+                    formData.append('type', 'load');
+                    formData.append('id', id);
+                    formData.append('password', password);
 
-//                     // send
-//                     var xhr = new XMLHttpRequest();
-//                     xhr.open("POST", "../sync.php");
-//                     xhr.timeout = 1000;
-//                     xhr.onload = function(e) {
-//                         if (xhr.status==200) {
-//                             // console.log("同步成功。");
-//                             var response = JSON.parse(xhr.response);
-//                             switch (response.code) {
-//                                 case 0:
-//                                     // 成功
-//                                     var data=JSON.parse(response.msg);
-//                                     // console.log(data);
-//                                     for (var i=1;i<=180;i++) {
-//                                         if (i<=data.length) {
-//                                             core.setLocalStorage("save"+i, data[i-1]);
-//                                         }
-//                                         else {
-//                                             core.removeLocalStorage("save"+i);
-//                                         }
-//                                     }
-//                                     core.drawText("同步成功！\n你的本地所有存档均已被覆盖。");
-//                                     break;
-//                                 case -1:
-//                                     core.drawText("出错啦！\n存档编号"+id+"不存在！");
-//                                     break;
-//                                 case -2:
-//                                     core.drawText("出错啦！\n存档密码错误！");
-//                                     break;
-//                                 default:
-//                                     core.drawText("出错啦！\n无法从服务器同步存档。");
-//                                     break;
-//                             }
+                    // send
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "../sync.php");
+                    xhr.timeout = 1000;
+                    xhr.onload = function(e) {
+                        if (xhr.status==200) {
+                            // console.log("同步成功。");
+                            var response = JSON.parse(xhr.response);
+                            switch (response.code) {
+                                case 0:
+                                    // 成功
+                                    var data=JSON.parse(response.msg);
+                                    // console.log(data);
+                                    for (var i=1;i<=180;i++) {
+                                        if (i<=data.length) {
+                                            core.setLocalStorage("save"+i, data[i-1]);
+                                        }
+                                        else {
+                                            core.removeLocalStorage("save"+i);
+                                        }
+                                    }
+                                    core.drawText("同步成功！\n你的本地所有存档均已被覆盖。");
+                                    break;
+                                case -1:
+                                    core.drawText("出错啦！\n存档编号"+id+"不存在！");
+                                    break;
+                                case -2:
+                                    core.drawText("出错啦！\n存档密码错误！");
+                                    break;
+                                default:
+                                    core.drawText("出错啦！\n无法从服务器同步存档。");
+                                    break;
+                            }
 
-//                         }
-//                         else {
-//                             core.drawText("出错啦！\n无法从服务器同步存档。");
-//                         }
-//                     };
-//                     xhr.ontimeout = function(e) {
-//                         console.log(e);
-//                         core.drawText("出错啦！\n无法从服务器同步存档。");
-//                     }
-//                     xhr.onerror = function(e) {
-//                         console.log(e);
-//                         core.drawText("出错啦！\n无法从服务器同步存档。");
-//                     }
-//                     xhr.send(formData);
-//                 }, function() {
-//                     core.ui.drawSyncSave();
-//                 })
-//             }
-//         }
-//         if (x>=5 && x<=7 && y==7) {
-//             core.ui.drawSettings(false);
-//         }
-//     }
+                        }
+                        else {
+                            core.drawText("出错啦！\n无法从服务器同步存档。");
+                        }
+                    };
+                    xhr.ontimeout = function(e) {
+                        console.log(e);
+                        core.drawText("出错啦！\n无法从服务器同步存档。");
+                    }
+                    xhr.onerror = function(e) {
+                        console.log(e);
+                        core.drawText("出错啦！\n无法从服务器同步存档。");
+                    }
+                    xhr.send(formData);
+                }, function() {
+                    core.ui.drawSyncSave();
+                })
+            }
+        }
+        if (x>=5 && x<=7 && y==7) {
+            core.ui.drawSettings(false);
+        }
+    }
 
-// }
+}
 
 // core.prototype.onmousewheel = function (direct) {
 //     // 楼层飞行器
@@ -795,7 +795,7 @@ core.prototype.clearStatus = function() {
 //     }
 // }
 
-// /////////// 键盘、鼠标事件相关 END ///////////
+/////////// 键盘、鼠标事件相关 END ///////////
 
 
 
@@ -1870,16 +1870,16 @@ core.prototype.setFillStyle = function (map, style) {
 //     }, speed / 2);
 // }
 
-// core.prototype.setBoxAnimate = function (speed) {
-//     clearInterval(core.interval.boxAnimate);
-//     if (core.status.boxAnimateObjs.length > 0) {
-//         var background = core.canvas.ui.createPattern(core.material.ground, "repeat");
-//         core.drawBoxAnimate(background);
-//         core.interval.boxAnimate = setInterval(function () {
-//             core.drawBoxAnimate(background);
-//         }, speed);
-//     }
-// }
+core.prototype.setBoxAnimate = function (speed) {
+    clearInterval(core.interval.boxAnimate);
+    if (core.status.boxAnimateObjs.length > 0) {
+        var background = core.canvas.ui.createPattern(core.material.ground, "repeat");
+        core.drawBoxAnimate(background);
+        core.interval.boxAnimate = setInterval(function () {
+            core.drawBoxAnimate(background);
+        }, speed);
+    }
+}
 
 // core.prototype.drawBoxAnimate = function (background) {
 //     for (var a = 0; a < core.status.boxAnimateObjs.length; a++) {
@@ -2629,9 +2629,9 @@ core.prototype.lockControl = function () {
     core.status.lockControl = true;
 }
 
-// core.prototype.unLockControl = function () {
-//     core.status.lockControl = false;
-// }
+core.prototype.unLockControl = function () {
+    core.status.lockControl = false;
+}
 
 core.prototype.isset = function (val) {
     if (val == undefined || val == null) {

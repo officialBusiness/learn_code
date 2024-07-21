@@ -178,15 +178,15 @@ main.init();
 //     }catch (e) {}
 // }
 
-// main.dom.data.onmousedown = function (e) {
-//     try {
-//         e.stopPropagation();
-//         var loc = main.core.getClickLoc(e.clientX, e.clientY);
-//         if (loc == null) return;
-//         var x = parseInt(loc.x / loc.size), y = parseInt(loc.y / loc.size);
-//         main.core.ondown(x, y);
-//     } catch (e) {}
-// }
+main.dom.data.onmousedown = function (e) {
+    try {
+        e.stopPropagation();
+        var loc = main.core.getClickLoc(e.clientX, e.clientY);
+        if (loc == null) return;
+        var x = parseInt(loc.x / loc.size), y = parseInt(loc.y / loc.size);
+        main.core.ondown(x, y);
+    } catch (e) {}
+}
 
 // main.dom.data.onmousemove = function (e) {
 //     try {
