@@ -800,11 +800,11 @@ core.prototype.onclick = function (x, y, stepPostfix) {
 
 
 
-// /////////// 寻路代码相关 ///////////
+/////////// 寻路代码相关 ///////////
 
-// core.prototype.clearAutomaticRouteNode = function (x, y) {
-//     core.canvas.ui.clearRect(x * 32 + 5, y * 32 + 5, 27, 27);
-// }
+core.prototype.clearAutomaticRouteNode = function (x, y) {
+    core.canvas.ui.clearRect(x * 32 + 5, y * 32 + 5, 27, 27);
+}
 
 core.prototype.stopAutomaticRoute = function () {
     if (!core.status.played) {
@@ -1253,18 +1253,18 @@ core.prototype.stopHero = function () {
     core.status.heroStop = true;
 }
 
-// core.prototype.drawHero = function (direction, x, y, status, offsetX, offsetY) {
-//     offsetX = offsetX || 0;
-//     offsetY = offsetY || 0;
-//     core.clearAutomaticRouteNode(x, y);
-//     var heroIcon = core.material.icons.heros[core.status.hero.id][direction];
-//     x = x * heroIcon.size;
-//     y = y * heroIcon.size;
-//     core.canvas.hero.clearRect(x - 32, y - 32, 96, 96);
-//     core.canvas.hero.drawImage(core.material.images.heros, heroIcon.loc[status] * heroIcon.size, heroIcon.loc.iconLoc * heroIcon.size, heroIcon.size, heroIcon.size, x + offsetX, y + offsetY, heroIcon.size, heroIcon.size);
-// }
+core.prototype.drawHero = function (direction, x, y, status, offsetX, offsetY) {
+    offsetX = offsetX || 0;
+    offsetY = offsetY || 0;
+    core.clearAutomaticRouteNode(x, y);
+    var heroIcon = core.material.icons.heros[core.status.hero.id][direction];
+    x = x * heroIcon.size;
+    y = y * heroIcon.size;
+    core.canvas.hero.clearRect(x - 32, y - 32, 96, 96);
+    core.canvas.hero.drawImage(core.material.images.heros, heroIcon.loc[status] * heroIcon.size, heroIcon.loc.iconLoc * heroIcon.size, heroIcon.size, heroIcon.size, x + offsetX, y + offsetY, heroIcon.size, heroIcon.size);
+}
 
-// /////////// 自动行走 & 行走控制 END ///////////
+/////////// 自动行走 & 行走控制 END ///////////
 
 
 
@@ -1892,21 +1892,21 @@ core.prototype.setBoxAnimate = function (speed) {
 //     }
 // }
 
-// core.prototype.setHeroLoc = function (itemName, itemVal) {
-//     if (itemVal == '++') {
-//         core.status.hero.loc[itemName]++;
-//         return;
-//     }
-//     else if (itemVal == '--') {
-//         core.status.hero.loc[itemName]--;
-//         return;
-//     }
-//     core.status.hero.loc[itemName] = itemVal;
-// }
+core.prototype.setHeroLoc = function (itemName, itemVal) {
+    if (itemVal == '++') {
+        core.status.hero.loc[itemName]++;
+        return;
+    }
+    else if (itemVal == '--') {
+        core.status.hero.loc[itemName]--;
+        return;
+    }
+    core.status.hero.loc[itemName] = itemVal;
+}
 
-// core.prototype.getHeroLoc = function (itemName) {
-//     return core.status.hero.loc[itemName];
-// }
+core.prototype.getHeroLoc = function (itemName) {
+    return core.status.hero.loc[itemName];
+}
 
 /**
  * 更新显伤
