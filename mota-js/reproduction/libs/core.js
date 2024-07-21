@@ -180,18 +180,18 @@ core.prototype.showStartAnimate = function (callback) {
     }, 20);
 }
 
-// core.prototype.hideStartAnimate = function (callback) {
-//     var opacityVal = 1;
-//     var startAnimate = window.setInterval(function () {
-//         opacityVal -= 0.03;
-//         if (opacityVal < 0) {
-//             clearInterval(startAnimate);
-//             core.dom.startPanel.style.display = 'none';
-//             callback();
-//         }
-//         core.dom.startPanel.style.opacity = opacityVal;
-//     }, 20);
-// }
+core.prototype.hideStartAnimate = function (callback) {
+    var opacityVal = 1;
+    var startAnimate = window.setInterval(function () {
+        opacityVal -= 0.03;
+        if (opacityVal < 0) {
+            clearInterval(startAnimate);
+            core.dom.startPanel.style.display = 'none';
+            callback();
+        }
+        core.dom.startPanel.style.opacity = opacityVal;
+    }, 20);
+}
 
 core.prototype.setStartProgressVal = function (val) {
     core.dom.startTopProgress.style.width = val + '%';
@@ -806,18 +806,18 @@ core.prototype.clearStatus = function() {
 //     core.canvas.ui.clearRect(x * 32 + 5, y * 32 + 5, 27, 27);
 // }
 
-// core.prototype.stopAutomaticRoute = function () {
-//     if (!core.status.played) {
-//         return;
-//     }
-//     core.stopAutoHeroMove();
-//     core.status.automaticRouting = false;
-//     core.status.automaticRouted = false;
-//     core.status.autoStepRoutes = [];
-//     core.status.automaticRoutingTemp = {'destX': 0, 'destY': 0, 'moveStep': []};
-//     if (core.status.moveStepBeforeStop.length==0)
-//         core.canvas.ui.clearRect(0, 0, 416, 416);
-// }
+core.prototype.stopAutomaticRoute = function () {
+    if (!core.status.played) {
+        return;
+    }
+    core.stopAutoHeroMove();
+    core.status.automaticRouting = false;
+    core.status.automaticRouted = false;
+    core.status.autoStepRoutes = [];
+    core.status.automaticRoutingTemp = {'destX': 0, 'destY': 0, 'moveStep': []};
+    if (core.status.moveStepBeforeStop.length==0)
+        core.canvas.ui.clearRect(0, 0, 416, 416);
+}
 
 // core.prototype.continueAutomaticRoute = function () {
 //     //此函数只应由events.afterOpenDoor和events.afterBattle调用
@@ -1415,32 +1415,32 @@ core.prototype.clearMap = function (map, x, y, width, height) {
     }
 }
 
-// core.prototype.fillText = function (map, text, x, y, style, font) {
-//     if (core.isset(style)) {
-//         core.setFillStyle(map, style);
-//     }
-//     if (core.isset(font)) {
-//         core.setFont(map, font);
-//     }
-//     core.canvas[map].fillText(text, x, y);
-// }
+core.prototype.fillText = function (map, text, x, y, style, font) {
+    if (core.isset(style)) {
+        core.setFillStyle(map, style);
+    }
+    if (core.isset(font)) {
+        core.setFont(map, font);
+    }
+    core.canvas[map].fillText(text, x, y);
+}
 
-// core.prototype.fillRect = function (map, x, y, width, height, style) {
-//     if (core.isset(style)) {
-//         core.setFillStyle(map, style);
-//     }
-//     core.canvas[map].fillRect(x, y, width, height);
-// }
+core.prototype.fillRect = function (map, x, y, width, height, style) {
+    if (core.isset(style)) {
+        core.setFillStyle(map, style);
+    }
+    core.canvas[map].fillRect(x, y, width, height);
+}
 
-// core.prototype.strokeRect = function (map, x, y, width, height, style, lineWidth) {
-//     if (core.isset(style)) {
-//         core.setStrokeStyle(map, style);
-//     }
-//     if (core.isset(lineWidth)) {
-//         core.setLineWidth(map, lineWidth);
-//     }
-//     core.canvas[map].strokeRect(x, y, width, height);
-// }
+core.prototype.strokeRect = function (map, x, y, width, height, style, lineWidth) {
+    if (core.isset(style)) {
+        core.setStrokeStyle(map, style);
+    }
+    if (core.isset(lineWidth)) {
+        core.setLineWidth(map, lineWidth);
+    }
+    core.canvas[map].strokeRect(x, y, width, height);
+}
 
 // core.prototype.drawBlock = function (map, image, cutX, cutY, x, y, size, zoom, clear) {
 //     zoom = zoom || 1;
@@ -1450,18 +1450,18 @@ core.prototype.clearMap = function (map, x, y, width, height) {
 //     core.canvas[map].drawImage(core.material.images[image], cutX * size, cutY * size, size, size, x * size, y * size, size * zoom, size * zoom);
 // }
 
-// core.prototype.setFont = function (map, font) {
-//     core.canvas[map].font = font;
-// }
+core.prototype.setFont = function (map, font) {
+    core.canvas[map].font = font;
+}
 
-// core.prototype.setLineWidth = function (map, lineWidth) {
-//     if (map == 'all') {
-//         for (var m in core.canvas) {
-//             core.canvas[m].lineWidth = lineWidth;
-//         }
-//     }
-//     core.canvas[map].lineWidth = lineWidth;
-// }
+core.prototype.setLineWidth = function (map, lineWidth) {
+    if (map == 'all') {
+        for (var m in core.canvas) {
+            core.canvas[m].lineWidth = lineWidth;
+        }
+    }
+    core.canvas[map].lineWidth = lineWidth;
+}
 
 // core.prototype.saveCanvas = function (map) {
 //     core.canvas[map].save();
@@ -1480,25 +1480,25 @@ core.prototype.clearMap = function (map, x, y, width, height) {
 //     core.canvas[map].globalAlpha = opacity;
 // }
 
-// core.prototype.setStrokeStyle = function (map, style) {
-//     if (map == 'all') {
-//         for (var m in core.canvas) {
-//             core.canvas[m].strokeStyle = style;
-//         }
-//     }
-//     else {
-//         core.canvas[map].strokeStyle = style;
-//     }
-// }
+core.prototype.setStrokeStyle = function (map, style) {
+    if (map == 'all') {
+        for (var m in core.canvas) {
+            core.canvas[m].strokeStyle = style;
+        }
+    }
+    else {
+        core.canvas[map].strokeStyle = style;
+    }
+}
 
-// core.prototype.setAlpha = function (map, alpha) {
-//     if (map == 'all') {
-//         for (var m in core.canvas) {
-//             core.canvas[m].globalAlpha = alpha;
-//         }
-//     }
-//     else core.canvas[map].globalAlpha = alpha;
-// }
+core.prototype.setAlpha = function (map, alpha) {
+    if (map == 'all') {
+        for (var m in core.canvas) {
+            core.canvas[m].globalAlpha = alpha;
+        }
+    }
+    else core.canvas[map].globalAlpha = alpha;
+}
 
 // core.prototype.setOpacity = function (map, opacity) {
 //     if (map == 'all') {
@@ -1509,16 +1509,16 @@ core.prototype.clearMap = function (map, x, y, width, height) {
 //     else core.canvas[map].canvas.style.opacity = opacity;
 // }
 
-// core.prototype.setFillStyle = function (map, style) {
-//     if (map == 'all') {
-//         for (var m in core.canvas) {
-//             core.canvas[m].fillStyle = style;
-//         }
-//     }
-//     else {
-//         core.canvas[map].fillStyle = style;
-//     }
-// }
+core.prototype.setFillStyle = function (map, style) {
+    if (map == 'all') {
+        for (var m in core.canvas) {
+            core.canvas[m].fillStyle = style;
+        }
+    }
+    else {
+        core.canvas[map].fillStyle = style;
+    }
+}
 
 // /**
 //  * 地图绘制
@@ -2100,45 +2100,45 @@ core.prototype.clearMap = function (map, x, y, width, height) {
 //     }, 30);
 // }
 
-// core.prototype.drawText = function (contents, callback) {
-//     if (core.isset(contents)) {
-//         if (typeof contents == 'string') {
-//             contents = [{'content': contents}];
-//         }
-//         else if (contents instanceof Object && core.isset(contents.content)) {
-//             contents = [contents];
-//         }
-//         else if (!(contents instanceof Array)) {
-//             core.drawTip("出错了");
-//             console.log(contents);
-//             return;
-//         }
+core.prototype.drawText = function (contents, callback) {
+    if (core.isset(contents)) {
+        if (typeof contents == 'string') {
+            contents = [{'content': contents}];
+        }
+        else if (contents instanceof Object && core.isset(contents.content)) {
+            contents = [contents];
+        }
+        else if (!(contents instanceof Array)) {
+            core.drawTip("出错了");
+            console.log(contents);
+            return;
+        }
 
-//         core.status.event = {'id': 'text', 'data': {'list': contents, 'callback': callback}};
-//         core.lockControl();
+        core.status.event = {'id': 'text', 'data': {'list': contents, 'callback': callback}};
+        core.lockControl();
 
-//         // wait the hero to stop
-//         core.stopAutomaticRoute();
-//         setTimeout(function() {
-//             core.drawText();
-//         }, 30);
-//         return;
-//     }
+        // wait the hero to stop
+        core.stopAutomaticRoute();
+        setTimeout(function() {
+            core.drawText();
+        }, 30);
+        return;
+    }
 
-//     if (core.status.event.data.list.length==0) {
-//         var callback = core.status.event.data.callback;
-//         core.ui.closePanel(false);
-//         if (core.isset(callback)) callback();
-//         return;
-//     }
+    if (core.status.event.data.list.length==0) {
+        var callback = core.status.event.data.callback;
+        core.ui.closePanel(false);
+        if (core.isset(callback)) callback();
+        return;
+    }
 
-//     var data=core.status.event.data.list.shift();
-//     if (typeof data == 'string')
-//         core.ui.drawTextBox(data);
-//     else
-//         core.ui.drawTextBox(data.content, data.id);
-//     // core.drawTextBox(content);
-// }
+    var data=core.status.event.data.list.shift();
+    if (typeof data == 'string')
+        core.ui.drawTextBox(data);
+    else
+        core.ui.drawTextBox(data.content, data.id);
+    // core.drawTextBox(content);
+}
 
 // /////////// 地图相关 END ///////////
 
@@ -2625,9 +2625,9 @@ core.prototype.clone = function (data) {
 //     return false;
 // }
 
-// core.prototype.lockControl = function () {
-//     core.status.lockControl = true;
-// }
+core.prototype.lockControl = function () {
+    core.status.lockControl = true;
+}
 
 // core.prototype.unLockControl = function () {
 //     core.status.lockControl = false;

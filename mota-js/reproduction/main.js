@@ -276,21 +276,21 @@ main.init();
 //         main.core.ui.drawSettings(true);
 // }
 
-// main.dom.playGame.onclick = function () {
-//     main.dom.startButtons.style.display='none';
+main.dom.playGame.onclick = function () {
+    main.dom.startButtons.style.display='none';
 
-//     /**
-//      * 如果点击“开始游戏”直接开始游戏而不是进入难度选择页面，则将下面这个改成true
-//      */
-//     var startGameNow = false;
+    /**
+     * 如果点击“开始游戏”直接开始游戏而不是进入难度选择页面，则将下面这个改成true
+     */
+    var startGameNow = false;
 
-//     if (startGameNow) {
-//         core.events.startGame();
-//     }
-//     else {
-//         main.dom.levelChooseButtons.style.display='block';
-//     }
-// }
+    if (startGameNow) {
+        core.events.startGame();
+    }
+    else {
+        main.dom.levelChooseButtons.style.display='block';
+    }
+}
 
 // main.dom.loadGame.onclick = function() {
 //     main.core.load();
@@ -300,14 +300,14 @@ main.init();
 //     main.core.ui.drawAbout();
 // }
 
-// main.dom.easyLevel.onclick = function() {
-//     core.events.startGame('Easy');
-// }
+main.dom.easyLevel.onclick = function() {
+    core.events.startGame('Easy');
+}
 
-// main.dom.normalLevel.onclick = function () {
-//     core.events.startGame('Normal');
-// }
+main.dom.normalLevel.onclick = function () {
+    core.events.startGame('Normal');
+}
 
-// main.dom.hardLevel.onclick = function () {
-//     core.events.startGame('Gard');
-// }
+main.dom.hardLevel.onclick = function () {
+    core.events.startGame('Gard');
+}

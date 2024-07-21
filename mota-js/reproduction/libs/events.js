@@ -57,18 +57,18 @@ events.prototype.getEvents = function (eventName) {
 
 main.instance.events = new events();
 
-// /**
-//  * 游戏开始事件
-//  * @param hard 难度
-//  */
-// events.prototype.startGame = function (hard) {
+/**
+ * 游戏开始事件
+ * @param hard 难度
+ */
+events.prototype.startGame = function (hard) {
 
-//     core.hideStartAnimate(function() {
-//         core.drawText(core.firstData.startText, function() {
-//             core.startGame(hard);
-//         });
-//     })
-// }
+    core.hideStartAnimate(function() {
+        core.drawText(core.firstData.startText, function() {
+            core.startGame(hard);
+        });
+    })
+}
 
 // ////// 走到某位置时触发事件 //////
 // events.prototype.blockEvent = function (data) {

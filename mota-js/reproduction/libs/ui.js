@@ -29,85 +29,85 @@ main.instance.ui = new ui();
 // }
 
 
-// /**
-//  * 绘制对话框
-//  * @param content
-//  * @param id
-//  */
-// ui.prototype.drawTextBox = function(content, id) {
+/**
+ * 绘制对话框
+ * @param content
+ * @param id
+ */
+ui.prototype.drawTextBox = function(content, id) {
 
-//     core.lockControl();
+    core.lockControl();
 
-//     if (core.status.event.id == null)
-//         core.status.event.id = 'text';
+    if (core.status.event.id == null)
+        core.status.event.id = 'text';
 
-//     var background = core.canvas.ui.createPattern(core.material.ground, "repeat");
-//     var contents = content.split('\n');
+    var background = core.canvas.ui.createPattern(core.material.ground, "repeat");
+    var contents = content.split('\n');
 
-//     core.clearMap('ui', 0, 0, 416, 416);
+    core.clearMap('ui', 0, 0, 416, 416);
 
-//     var height = 416 - 10 - Math.min(416-24*(contents.length+1)-65, 250);
-//     var left=10, top = (416-height)/2, right = 416 - 2*left, bottom = height;
+    var height = 416 - 10 - Math.min(416-24*(contents.length+1)-65, 250);
+    var left=10, top = (416-height)/2, right = 416 - 2*left, bottom = height;
 
-//     // var left = 97, top = 64, right = 416 - 2 * left, bottom = 416 - 2 * top;
-//     core.setAlpha('ui', 0.85);
-//     core.fillRect('ui', left, top, right, bottom, '#000000');
-//     core.setAlpha('ui', 1);
-//     core.strokeRect('ui', left - 1, top - 1, right + 1, bottom + 1, '#FFFFFF', 2);
+    // var left = 97, top = 64, right = 416 - 2 * left, bottom = 416 - 2 * top;
+    core.setAlpha('ui', 0.85);
+    core.fillRect('ui', left, top, right, bottom, '#000000');
+    core.setAlpha('ui', 1);
+    core.strokeRect('ui', left - 1, top - 1, right + 1, bottom + 1, '#FFFFFF', 2);
 
-//     // 名称
-//     core.canvas.ui.textAlign = "left";
+    // 名称
+    core.canvas.ui.textAlign = "left";
 
-//     var content_left = left + 25, content_top = top + 35;
-//     if (core.isset(id)) {
+    var content_left = left + 25, content_top = top + 35;
+    if (core.isset(id)) {
 
-//         content_left = left+63;
-//         content_top = top+57;
+        content_left = left+63;
+        content_top = top+57;
 
-//         var name, image, cls;
-//         // 动画
-//         core.strokeRect('ui', left + 15 - 1, top + 40 - 1, 34, 34, '#FFD700', 2);
+        var name, image, cls;
+        // 动画
+        core.strokeRect('ui', left + 15 - 1, top + 40 - 1, 34, 34, '#FFD700', 2);
 
-//         if (id == 'hero') {
-//             core.fillText('ui', core.status.hero.name, left + 63, top + 30, '#FFD700', 'bold 22px Verdana');
-//             core.status.boxAnimateObjs = [];
-//             core.setBoxAnimate(core.firstData.animateSpeed);
-//             core.clearMap('ui', left + 15, top + 40, 32, 32);
-//             core.fillRect('ui', left + 15, top + 40, 32, 32, background);
-//             var heroIcon = core.material.icons.heros[core.status.hero.id]['down'];
-//             core.canvas.ui.drawImage(core.material.images.heros, heroIcon.loc['stop'] * heroIcon.size, heroIcon.loc.iconLoc * heroIcon.size, heroIcon.size, heroIcon.size, left+15, top+40, 32, 32);
-//         }
-//         else {
-//             var name = null, image = null, icon = null;
-//             if (core.material.npcs.hasOwnProperty(id)) {
-//                 name = core.material.npcs[id].name;
-//                 image = core.material.images.npcs;
-//                 icon = core.material.icons.npcs[core.material.npcs[id].icon];
-//             }
-//             else if (core.material.enemys.hasOwnProperty(id)) {
-//                 name = core.material.enemys[id].name;
-//                 image = core.material.images.enemys;
-//                 icon = core.material.icons.enemys[id];
-//             }
-//             if (name != null) {
-//                 core.fillText('ui', name, left + 63, top + 30, '#FFD700', 'bold 22px Verdana');
-//                 core.status.boxAnimateObjs = [];
-//                 core.status.boxAnimateObjs.push({
-//                     'bgx': left + 15, 'bgy': top + 40, 'bgsize': 32,
-//                     'image': image, 'x': left + 15, 'y': top + 40, 'icon': icon
-//                 });
-//                 core.setBoxAnimate(core.firstData.animateSpeed);
-//             }
-//         }
-//     }
+        if (id == 'hero') {
+            core.fillText('ui', core.status.hero.name, left + 63, top + 30, '#FFD700', 'bold 22px Verdana');
+            core.status.boxAnimateObjs = [];
+            core.setBoxAnimate(core.firstData.animateSpeed);
+            core.clearMap('ui', left + 15, top + 40, 32, 32);
+            core.fillRect('ui', left + 15, top + 40, 32, 32, background);
+            var heroIcon = core.material.icons.heros[core.status.hero.id]['down'];
+            core.canvas.ui.drawImage(core.material.images.heros, heroIcon.loc['stop'] * heroIcon.size, heroIcon.loc.iconLoc * heroIcon.size, heroIcon.size, heroIcon.size, left+15, top+40, 32, 32);
+        }
+        else {
+            var name = null, image = null, icon = null;
+            if (core.material.npcs.hasOwnProperty(id)) {
+                name = core.material.npcs[id].name;
+                image = core.material.images.npcs;
+                icon = core.material.icons.npcs[core.material.npcs[id].icon];
+            }
+            else if (core.material.enemys.hasOwnProperty(id)) {
+                name = core.material.enemys[id].name;
+                image = core.material.images.enemys;
+                icon = core.material.icons.enemys[id];
+            }
+            if (name != null) {
+                core.fillText('ui', name, left + 63, top + 30, '#FFD700', 'bold 22px Verdana');
+                core.status.boxAnimateObjs = [];
+                core.status.boxAnimateObjs.push({
+                    'bgx': left + 15, 'bgy': top + 40, 'bgsize': 32,
+                    'image': image, 'x': left + 15, 'y': top + 40, 'icon': icon
+                });
+                core.setBoxAnimate(core.firstData.animateSpeed);
+            }
+        }
+    }
 
-//     for (var i=0;i<contents.length;i++) {
-//         core.fillText('ui', contents[i], content_left, content_top, '#FFFFFF', '16px Verdana');
-//         content_top+=24;
-//     }
+    for (var i=0;i<contents.length;i++) {
+        core.fillText('ui', contents[i], content_left, content_top, '#FFFFFF', '16px Verdana');
+        content_top+=24;
+    }
 
-//     core.fillText('ui', '<点击任意位置继续>', 270, top+height-13, '#CCCCCC', '13px Verdana');
-// }
+    core.fillText('ui', '<点击任意位置继续>', 270, top+height-13, '#CCCCCC', '13px Verdana');
+}
 
 // /**
 //  * 绘制确认/取消警告
