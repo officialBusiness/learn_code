@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="../logo.png">
+		<title>draw_text_box</title>
+		<link href="../../_utils/default_css.css" rel="stylesheet" type="text/css"/>
+	</head>
+	<!--
+
+	-->
+	<body>
+		<canvas id="renderCanvas"></canvas>
+		<script type="module">
+
+
+			const canvas = document.getElementById('renderCanvas');
+
+			const width = canvas.width = canvas.clientWidth;
+			const height = canvas.height = canvas.clientHeight;
+
+			const ctx = canvas.getContext('2d');
+
+			// ctx.globalAlpha = 1.0;
+		  ctx.fillStyle = '#000000';
+			ctx.fillRect(0, 0, width, height);
+			// ctx.clearRect(0, 0, width, height);
+
+	    ctx.globalAlpha = 0.85;
+	    ctx.fillStyle = '#000000';
+	    ctx.fillRect(10, 130, 396, 156);
+
+	    ctx.globalAlpha = 1;
+	    ctx.strokeStyle = "#FFFFFF";
+	    ctx.lineWidth = 2;
+	    ctx.strokeRect(9, 129, 397, 157);
+
+			ctx.textAlign = "left";
+
+			ctx.fillStyle = '#FFFFFF';
+			ctx.font = '16px Verdana';
+			ctx.fillText('测试', 35, 165);
+
+			ctx.fillStyle = '#CCCCCC';
+			ctx.font = '13px Verdana';
+			ctx.fillText('<点击任意位置继续>', 270, 273);
+		</script>
+	</body>
+</html>
