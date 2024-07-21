@@ -1,148 +1,148 @@
-// function main() {
-//     this.dom = {
-//         'body': document.body,
-//         'gameGroup': document.getElementById('gameGroup'),
-//         'mainTips': document.getElementById('mainTips'),
-//         'musicBtn': document.getElementById('musicBtn'),
-//         'startPanel': document.getElementById('startPanel'),
-//         'startTop': document.getElementById('startTop'),
-//         'startTopProgressBar': document.getElementById('startTopProgressBar'),
-//         'startTopProgress': document.getElementById('startTopProgress'),
-//         'startTopLoadTips': document.getElementById('startTopLoadTips'),
-//         'startBackground': document.getElementById('startBackground'),
-//         'startButtonGroup': document.getElementById('startButtonGroup'),
-//         'floorMsgGroup': document.getElementById('floorMsgGroup'),
-//         'logoLabel': document.getElementById('logoLabel'),
-//         'versionLabel': document.getElementById('versionLabel'),
-//         'floorNameLabel': document.getElementById('floorNameLabel'),
-//         'statusBar': document.getElementById('statusBar'),
-//         'toolBar': document.getElementById('toolBar'),
-//         'gameCanvas': document.getElementsByClassName('gameCanvas'),
-//         'startButtons': document.getElementById('startButtons'),
-//         'playGame': document.getElementById('playGame'),
-//         'loadGame': document.getElementById('loadGame'),
-//         'aboutGame': document.getElementById('aboutGame'),
-//         'levelChooseButtons': document.getElementById('levelChooseButtons'),
-//         'easyLevel': document.getElementById('easyLevel'),
-//         'normalLevel': document.getElementById('normalLevel'),
-//         'hardLevel': document.getElementById('hardLevel'),
-//         'data': document.getElementById('data'),
-//         'statusLabels': document.getElementsByClassName('statusLabel')
-//     };
-//     // console.log('加载游戏容器和开始界面dom对象完成 如下');
-//     // console.log(this.dom);
-//     this.loadList = [
-//         'items', 'icons', 'maps', 'enemys', 'events',
-//         'npcs', 'data', 'ui', 'core'
-//     ];
-//     // console.log('加载js文件列表加载完成' + this.loadList);
-//     this.images = [
-//         'animates', 'enemys', 'heros', 'items', 'npcs', 'terrains'
-//     ];
-//     this.sounds = {
-//         'mp3': ['bgm-loop', 'floor'],
-//         'ogg': ['attack', 'door', 'item']
-//     }
-//     this.statusBar = {
-//         'image': {
-//             'floor': document.getElementById('img-floor'),
-//             'hp': document.getElementById("img-hp"),
-//             'atk': document.getElementById("img-atk"),
-//             'def': document.getElementById("img-def"),
-//             'mdef': document.getElementById("img-mdef"),
-//             'money': document.getElementById("img-money"),
-//             'experience': document.getElementById("img-experience"),
-//             'book': document.getElementById("img-book"),
-//             'fly': document.getElementById("img-fly"),
-//             'toolbox': document.getElementById("img-toolbox"),
-//             'shop': document.getElementById("img-shop"),
-//             'save': document.getElementById("img-save"),
-//             'load': document.getElementById("img-load"),
-//             'settings': document.getElementById("img-settings")
-//         },
-//         'floor': document.getElementById('floor'),
-//         'hp': document.getElementById('hp'),
-//         'atk': document.getElementById('atk'),
-//         'def': document.getElementById("def"),
-//         'mdef': document.getElementById('mdef'),
-//         'money': document.getElementById("money"),
-//         'experience': document.getElementById("experience"),
-//         'yellowKey': document.getElementById("yellowKey"),
-//         'blueKey': document.getElementById("blueKey"),
-//         'redKey': document.getElementById("redKey"),
-//         'poison': document.getElementById('poison'),
-//         'weak':document.getElementById('weak'),
-//         'curse': document.getElementById('curse'),
-//         'hard': document.getElementById("hard")
-//     }
-//     this.floorIds = [
-//         "MT1"
-//     ]
-//     this.floors = {}
-//     this.instance = {};
-//     this.canvas = {};
-// }
+function main() {
+    this.dom = {
+        'body': document.body,
+        'gameGroup': document.getElementById('gameGroup'),
+        'mainTips': document.getElementById('mainTips'),
+        'musicBtn': document.getElementById('musicBtn'),
+        'startPanel': document.getElementById('startPanel'),
+        'startTop': document.getElementById('startTop'),
+        'startTopProgressBar': document.getElementById('startTopProgressBar'),
+        'startTopProgress': document.getElementById('startTopProgress'),
+        'startTopLoadTips': document.getElementById('startTopLoadTips'),
+        'startBackground': document.getElementById('startBackground'),
+        'startButtonGroup': document.getElementById('startButtonGroup'),
+        'floorMsgGroup': document.getElementById('floorMsgGroup'),
+        'logoLabel': document.getElementById('logoLabel'),
+        'versionLabel': document.getElementById('versionLabel'),
+        'floorNameLabel': document.getElementById('floorNameLabel'),
+        'statusBar': document.getElementById('statusBar'),
+        'toolBar': document.getElementById('toolBar'),
+        'gameCanvas': document.getElementsByClassName('gameCanvas'),
+        'startButtons': document.getElementById('startButtons'),
+        'playGame': document.getElementById('playGame'),
+        'loadGame': document.getElementById('loadGame'),
+        'aboutGame': document.getElementById('aboutGame'),
+        'levelChooseButtons': document.getElementById('levelChooseButtons'),
+        'easyLevel': document.getElementById('easyLevel'),
+        'normalLevel': document.getElementById('normalLevel'),
+        'hardLevel': document.getElementById('hardLevel'),
+        'data': document.getElementById('data'),
+        'statusLabels': document.getElementsByClassName('statusLabel')
+    };
+    // console.log('加载游戏容器和开始界面dom对象完成 如下');
+    // console.log(this.dom);
+    this.loadList = [
+        'items', 'icons', 'maps', 'enemys', 'events',
+        'npcs', 'data', 'ui', 'core'
+    ];
+    // console.log('加载js文件列表加载完成' + this.loadList);
+    this.images = [
+        'animates', 'enemys', 'heros', 'items', 'npcs', 'terrains'
+    ];
+    this.sounds = {
+        'mp3': ['bgm-loop', 'floor'],
+        'ogg': ['attack', 'door', 'item']
+    }
+    this.statusBar = {
+        'image': {
+            'floor': document.getElementById('img-floor'),
+            'hp': document.getElementById("img-hp"),
+            'atk': document.getElementById("img-atk"),
+            'def': document.getElementById("img-def"),
+            'mdef': document.getElementById("img-mdef"),
+            'money': document.getElementById("img-money"),
+            'experience': document.getElementById("img-experience"),
+            'book': document.getElementById("img-book"),
+            'fly': document.getElementById("img-fly"),
+            'toolbox': document.getElementById("img-toolbox"),
+            'shop': document.getElementById("img-shop"),
+            'save': document.getElementById("img-save"),
+            'load': document.getElementById("img-load"),
+            'settings': document.getElementById("img-settings")
+        },
+        'floor': document.getElementById('floor'),
+        'hp': document.getElementById('hp'),
+        'atk': document.getElementById('atk'),
+        'def': document.getElementById("def"),
+        'mdef': document.getElementById('mdef'),
+        'money': document.getElementById("money"),
+        'experience': document.getElementById("experience"),
+        'yellowKey': document.getElementById("yellowKey"),
+        'blueKey': document.getElementById("blueKey"),
+        'redKey': document.getElementById("redKey"),
+        'poison': document.getElementById('poison'),
+        'weak':document.getElementById('weak'),
+        'curse': document.getElementById('curse'),
+        'hard': document.getElementById("hard")
+    }
+    this.floorIds = [
+        "MT1"
+    ]
+    this.floors = {}
+    this.instance = {};
+    this.canvas = {};
+}
 
-// main.prototype.init = function () {
-//     for (var i = 0; i < main.dom.gameCanvas.length; i++) {
-//         main.canvas[main.dom.gameCanvas[i].id] = main.dom.gameCanvas[i].getContext('2d');
-//     }
-//     main.loader(function () {
-//         var coreData = {};
-//         for (i = 0; i < main.loadList.length; i++) {
-//             var name = main.loadList[i];
-//             // end with ".min"
-//             if (name.indexOf(".min")==name.length-4)
-//                 name=name.substring(0, name.length-4);
-//             if (name === 'core') {
-//                 continue;
-//             }
-//             main[name].init(main.dom);
-//             coreData[name] = main[name];
-//         }
-//         main.core.init(main.dom, main.statusBar, main.canvas, main.images, main.sounds, coreData);
-//         main.core.resize(main.dom.body.clientWidth, main.dom.body.clientHeight);
-//     });
-// }
+main.prototype.init = function () {
+    for (var i = 0; i < main.dom.gameCanvas.length; i++) {
+        main.canvas[main.dom.gameCanvas[i].id] = main.dom.gameCanvas[i].getContext('2d');
+    }
+    main.loader(function () {
+        var coreData = {};
+        for (i = 0; i < main.loadList.length; i++) {
+            var name = main.loadList[i];
+            // end with ".min"
+            if (name.indexOf(".min")==name.length-4)
+                name=name.substring(0, name.length-4);
+            if (name === 'core') {
+                continue;
+            }
+            main[name].init(main.dom);
+            coreData[name] = main[name];
+        }
+        main.core.init(main.dom, main.statusBar, main.canvas, main.images, main.sounds, coreData);
+        main.core.resize(main.dom.body.clientWidth, main.dom.body.clientHeight);
+    });
+}
 
-// main.prototype.loader = function (callback) {
-//     var instanceNum = 0;
-//     for (var i = 0; i < main.loadList.length; i++) {
-//         main.loadMod(main.loadList[i], function (modName) {
-//             instanceNum = 0;
-//             main.setMainTipsText(modName + '.js 加载完毕');
-//             for (var key in main.instance) {
-//                 instanceNum++;
-//             }
-//             if (instanceNum === main.loadList.length) {
-//                 delete main.instance;
-//                 main.dom.mainTips.style.display = 'none';
-//                 callback();
-//             }
-//         });
-//     }
-// }
+main.prototype.loader = function (callback) {
+    var instanceNum = 0;
+    for (var i = 0; i < main.loadList.length; i++) {
+        main.loadMod(main.loadList[i], function (modName) {
+            instanceNum = 0;
+            main.setMainTipsText(modName + '.js 加载完毕');
+            for (var key in main.instance) {
+                instanceNum++;
+            }
+            if (instanceNum === main.loadList.length) {
+                delete main.instance;
+                main.dom.mainTips.style.display = 'none';
+                callback();
+            }
+        });
+    }
+}
 
-// main.prototype.loadMod = function (modName, callback) {
-//     var script = document.createElement('script');
-//     var name = modName;
-//     // end with ".min"
-//     if (name.indexOf(".min")==name.length-4)
-//         name=name.substring(0, name.length-4);
-//     script.src = 'libs/' + modName + '.js';
-//     main.dom.body.appendChild(script);
-//     script.onload = function () {
-//         main[name] = main.instance[name];
-//         callback(name);
-//     }
-// }
+main.prototype.loadMod = function (modName, callback) {
+    var script = document.createElement('script');
+    var name = modName;
+    // end with ".min"
+    if (name.indexOf(".min")==name.length-4)
+        name=name.substring(0, name.length-4);
+    script.src = 'libs/' + modName + '.js';
+    main.dom.body.appendChild(script);
+    script.onload = function () {
+        main[name] = main.instance[name];
+        callback(name);
+    }
+}
 
-// main.prototype.setMainTipsText = function (text) {
-//     main.dom.mainTips.innerHTML = text;
-// }
+main.prototype.setMainTipsText = function (text) {
+    main.dom.mainTips.innerHTML = text;
+}
 
-// var main = new main();
-// main.init();
+var main = new main();
+main.init();
 
 // window.onresize = function () {
 //     try {
