@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+		<link rel="icon" href="../logo.png">
+		<title>play_audio</title>
+		<link href="../../_utils/default_css.css" rel="stylesheet" type="text/css"/>
+		<script type="text/javascript" src="../../_utils/lil-gui/dist/lil-gui.umd.min.js"></script>
+	</head>
+	<!--
+
+	-->
+	<body>
+
+		<script type="module">
+
+
+			const bgm = new Audio();
+
+			bgm.preload = 'none';
+			bgm.src = '../reproduction/sounds/bgm.mp3';
+			bgm.loop = 'loop';
+
+
+			const gui = new lil.GUI();
+			const param = {
+				bgmPlay(){
+
+					bgm.play();
+				},
+				bgmPause(){
+
+					bgm.pause();
+				},
+				paramLoop: true
+			}
+
+			gui.add( param, 'bgmPlay' );
+			gui.add( param, 'bgmPause' );
+			gui.add( param, 'paramLoop' ).onChange(( val )=>{
+
+				if( val ){
+					bgm.loop = true;
+				}else{
+
+					bgm.loop = false;
+				}
+			});
+
+		</script>
+	</body>
+</html>

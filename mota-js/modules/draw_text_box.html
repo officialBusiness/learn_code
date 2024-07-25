@@ -23,29 +23,44 @@
 
 			const ctx = canvas.getContext('2d');
 
-			// ctx.globalAlpha = 1.0;
-		  ctx.fillStyle = '#000000';
-			ctx.fillRect(0, 0, width, height);
-			// ctx.clearRect(0, 0, width, height);
+			function drawTextBox( content, id ){
 
-	    ctx.globalAlpha = 0.85;
-	    ctx.fillStyle = '#000000';
-	    ctx.fillRect(10, 130, 396, 156);
+				var contents = content.split('\n');
 
-	    ctx.globalAlpha = 1;
-	    ctx.strokeStyle = "#FFFFFF";
-	    ctx.lineWidth = 2;
-	    ctx.strokeRect(9, 129, 397, 157);
+				ctx.fillStyle = '#000000';
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-			ctx.textAlign = "left";
+				var height = 416 - 10 - Math.min(416-24*(contents.length+1)-65, 250);
+				var left=10, top = (416-height)/2, right = 416 - 2*left, bottom = height;
 
-			ctx.fillStyle = '#FFFFFF';
-			ctx.font = '16px Verdana';
-			ctx.fillText('测试', 35, 165);
+				ctx.globalAlpha = 0.85;
+				ctx.fillStyle = '#000000';
+				ctx.fillRect(left, top, right, bottom);
 
-			ctx.fillStyle = '#CCCCCC';
-			ctx.font = '13px Verdana';
-			ctx.fillText('<点击任意位置继续>', 270, 273);
+				ctx.globalAlpha = 1;
+				ctx.strokeStyle = "#FFFFFF";
+				ctx.lineWidth = 2;
+				ctx.strokeRect(left - 1, top - 1, right + 1, bottom + 1);
+
+				ctx.textAlign = "left";
+
+				var content_left = left + 25, content_top = top + 35;
+
+				for (var i=0;i<contents.length;i++) {
+
+						ctx.fillStyle = '#FFFFFF';
+						ctx.font = '16px Verdana';
+						ctx.fillText(contents[i], content_left, content_top);
+						content_top+=24;
+				}
+
+				ctx.fillStyle = '#CCCCCC';
+				ctx.font = '13px Verdana';
+				ctx.fillText('<点击任意位置继续>', 270, top+height-13);
+			}
+
+
+			drawTextBox('（系统提示）本塔快捷键如下：\n\n[↑][↓][←][→]    移动\n[X]    怪物手册\n[G]    楼层传送器\n[T]    工具栏\n[K]    快捷商店\n[S/L]    存/读档\n[ESC]    菜单栏\n同时也可以点击状态栏中的图标进行操作。')
 		</script>
 	</body>
 </html>
