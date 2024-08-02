@@ -166,17 +166,17 @@ main.init();
 //     return false;
 // }
 
-// document.onmousemove = function() {
-//     try {
-//         main.core.loadSound();
-//     }catch (e) {}
-// }
+document.onmousemove = function() {
+    try {
+        main.core.loadSound();
+    }catch (e) {}
+}
 
-// document.ontouchstart = function() {
-//     try {
-//         main.core.loadSound();
-//     }catch (e) {}
-// }
+document.ontouchstart = function() {
+    try {
+        main.core.loadSound();
+    }catch (e) {}
+}
 
 main.dom.data.onmousedown = function (e) {
     try {

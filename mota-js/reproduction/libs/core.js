@@ -2653,15 +2653,15 @@ core.prototype.playSound = function (soundName, soundType) {
     core.musicStatus.playedSound.play();
 }
 
-// core.prototype.playBgm = function (bgmName, bgmType) {
-//     if (core.musicStatus.isIOS || !core.musicStatus.loaded) return;
-//     if (core.isset(core.musicStatus.playedBgm)) {
-//         core.musicStatus.playedBgm.pause();
-//     }
-//     core.musicStatus.playedBgm = core.material.sounds[bgmType][bgmName];
-//     if (core.musicStatus.soundStatus)
-//         core.musicStatus.playedBgm.play();
-// }
+core.prototype.playBgm = function (bgmName, bgmType) {
+    if (core.musicStatus.isIOS || !core.musicStatus.loaded) return;
+    if (core.isset(core.musicStatus.playedBgm)) {
+        core.musicStatus.playedBgm.pause();
+    }
+    core.musicStatus.playedBgm = core.material.sounds[bgmType][bgmName];
+    if (core.musicStatus.soundStatus)
+        core.musicStatus.playedBgm.play();
+}
 
 // core.prototype.changeSoundStatus = function () {
 //     if (core.musicStatus.soundStatus) {
