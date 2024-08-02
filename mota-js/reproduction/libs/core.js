@@ -291,11 +291,11 @@ core.prototype.loadSoundItem = function (toLoadList) {
     item.load();
 }
 
-// core.prototype.isPlaying = function() {
-//     if (core.isset(core.status.played) && core.status.played)
-//         return true;
-//     return false;
-// }
+core.prototype.isPlaying = function() {
+    if (core.isset(core.status.played) && core.status.played)
+        return true;
+    return false;
+}
 
 
 core.prototype.clearStatus = function() {
@@ -366,48 +366,48 @@ core.prototype.startGame = function (hard, callback) {
 
 
 
-// /////////// 键盘、鼠标事件相关 ///////////
+/////////// 键盘、鼠标事件相关 ///////////
 
-// core.prototype.keyDown = function(e) {
-// 	if(!core.status.played) {
-// 		return;
-// 	}
-// 	if(core.status.automaticRouting || core.status.automaticRouted) {
-// 		core.stopAutomaticRoute();
-// 	}
-// 	if (core.status.lockControl) {
-//         if (core.status.event.id == 'book') {
-//             if (e.keyCode==37) core.ui.drawEnemyBook(core.status.event.data - 1);
-//             else if (e.keyCode==39) core.ui.drawEnemyBook(core.status.event.data + 1);
-//             return;
-//         }
-//         if (core.status.event.id == 'fly') {
-//             if (e.keyCode==38) core.ui.drawFly(core.status.event.data+1);
-//             else if (e.keyCode==40) core.ui.drawFly(core.status.event.data-1);
-//             return;
-//         }
-//         if (core.status.event.id == 'save' || core.status.event.id == 'load') {
-//             if (e.keyCode==37) core.ui.drawSLPanel(core.status.event.data-1);
-//             else if (e.keyCode==39) core.ui.drawSLPanel(core.status.event.data+1);
-//             return;
-//         }
-// 	    return;
-//     }
-// 	switch(e.keyCode) {
-// 		case 37:
-// 			core.moveHero('left');
-// 		break;
-// 		case 38:
-// 			core.moveHero('up');
-// 		break;
-// 		case 39:
-// 			core.moveHero('right');
-// 		break;
-// 		case 40:
-// 			core.moveHero('down');
-// 		break;
-// 	}
-// }
+core.prototype.keyDown = function(e) {
+	if(!core.status.played) {
+		return;
+	}
+	if(core.status.automaticRouting || core.status.automaticRouted) {
+		core.stopAutomaticRoute();
+	}
+	if (core.status.lockControl) {
+        if (core.status.event.id == 'book') {
+            if (e.keyCode==37) core.ui.drawEnemyBook(core.status.event.data - 1);
+            else if (e.keyCode==39) core.ui.drawEnemyBook(core.status.event.data + 1);
+            return;
+        }
+        if (core.status.event.id == 'fly') {
+            if (e.keyCode==38) core.ui.drawFly(core.status.event.data+1);
+            else if (e.keyCode==40) core.ui.drawFly(core.status.event.data-1);
+            return;
+        }
+        if (core.status.event.id == 'save' || core.status.event.id == 'load') {
+            if (e.keyCode==37) core.ui.drawSLPanel(core.status.event.data-1);
+            else if (e.keyCode==39) core.ui.drawSLPanel(core.status.event.data+1);
+            return;
+        }
+	    return;
+    }
+	switch(e.keyCode) {
+		case 37:
+			core.moveHero('left');
+		break;
+		case 38:
+			core.moveHero('up');
+		break;
+		case 39:
+			core.moveHero('right');
+		break;
+		case 40:
+			core.moveHero('down');
+		break;
+	}
+}
 
 // core.prototype.keyUp = function(e) {
 // 	if(!core.status.played) {
@@ -1075,149 +1075,149 @@ core.prototype.stopAutoHeroMove = function () {
 //     core.moveHero(direction);
 // }
 
-// core.prototype.setHeroMoveInterval = function (direction, x, y, callback) {
-//     if (core.status.heroMoving) {
-//         return;
-//     }
-//     core.status.heroMoving = true;
-//     var moveStep = 0;
-//     core.interval.heroMoveInterval = window.setInterval(function () {
-//         switch (direction) {
-//             case 'up':
-//                 moveStep -= 4;
-//                 if (moveStep == -4 || moveStep == -8 || moveStep == -12 || moveStep == -16) {
-//                     core.drawHero(direction, x, y, 'leftFoot', 0, moveStep);
-//                 }
-//                 else if (moveStep == -20 || moveStep == -24 || moveStep == -28 || moveStep == -32) {
-//                     core.drawHero(direction, x, y, 'rightFoot', 0, moveStep);
-//                 }
-//                 if (moveStep == -32) {
-//                     core.setHeroLoc('y', '--');
-//                     core.moveOneStep();
-//                     if (core.status.heroStop) {
-//                         core.drawHero(direction, x, y - 1, 'stop');
-//                     }
-//                     if (core.isset(callback)) {
-//                         callback();
-//                     }
-//                 }
-//                 break;
-//             case 'left':
-//                 moveStep -= 4;
-//                 if (moveStep == -4 || moveStep == -8 || moveStep == -12 || moveStep == -16) {
-//                     core.drawHero(direction, x, y, 'leftFoot', moveStep);
-//                 }
-//                 else if (moveStep == -20 || moveStep == -24 || moveStep == -28 || moveStep == -32) {
-//                     core.drawHero(direction, x, y, 'rightFoot', moveStep);
-//                 }
-//                 if (moveStep == -32) {
-//                     core.setHeroLoc('x', '--');
-//                     core.moveOneStep();
-//                     if (core.status.heroStop) {
-//                         core.drawHero(direction, x - 1, y, 'stop');
-//                     }
-//                     if (core.isset(callback)) {
-//                         callback();
-//                     }
-//                 }
-//                 break;
-//             case 'down':
-//                 moveStep+=4;
-//                 if(moveStep == 4 || moveStep == 8 || moveStep == 12 || moveStep == 16) {
-//                     core.drawHero(direction, x, y, 'leftFoot', 0, moveStep);
-//                 }
-//                 else if(moveStep == 20 || moveStep == 24 ||moveStep == 28 || moveStep == 32) {
-//                     core.drawHero(direction, x, y, 'rightFoot', 0, moveStep);
-//                 }
-//                 if (moveStep == 32) {
-//                     core.setHeroLoc('y', '++');
-//                     core.moveOneStep();
-//                     if (core.status.heroStop) {
-//                         core.drawHero(direction, x, y + 1, 'stop');
-//                     }
-//                     if (core.isset(callback)) {
-//                         callback();
-//                     }
-//                 }
-//                 break;
-//             case 'right':
-//                 moveStep+=4;
-//                 if(moveStep == 4 || moveStep == 8 || moveStep == 12 || moveStep == 16) {
-//                     core.drawHero(direction, x, y, 'leftFoot', moveStep);
-//                 }
-//                 else if(moveStep == 20 || moveStep == 24 ||moveStep == 28 || moveStep == 32) {
-//                     core.drawHero(direction, x, y, 'rightFoot', moveStep);
-//                 }
-//                 if (moveStep == 32) {
-//                     core.setHeroLoc('x', '++');
-//                     core.moveOneStep();
-//                     if (core.status.heroStop) {
-//                         core.drawHero(direction, x + 1, y, 'stop');
-//                     }
-//                     if (core.isset(callback)) {
-//                         callback();
-//                     }
-//                 }
-//                 break;
-//         }
-//     }, 10);
-// }
+core.prototype.setHeroMoveInterval = function (direction, x, y, callback) {
+    if (core.status.heroMoving) {
+        return;
+    }
+    core.status.heroMoving = true;
+    var moveStep = 0;
+    core.interval.heroMoveInterval = window.setInterval(function () {
+        switch (direction) {
+            case 'up':
+                moveStep -= 4;
+                if (moveStep == -4 || moveStep == -8 || moveStep == -12 || moveStep == -16) {
+                    core.drawHero(direction, x, y, 'leftFoot', 0, moveStep);
+                }
+                else if (moveStep == -20 || moveStep == -24 || moveStep == -28 || moveStep == -32) {
+                    core.drawHero(direction, x, y, 'rightFoot', 0, moveStep);
+                }
+                if (moveStep == -32) {
+                    core.setHeroLoc('y', '--');
+                    core.moveOneStep();
+                    if (core.status.heroStop) {
+                        core.drawHero(direction, x, y - 1, 'stop');
+                    }
+                    if (core.isset(callback)) {
+                        callback();
+                    }
+                }
+                break;
+            case 'left':
+                moveStep -= 4;
+                if (moveStep == -4 || moveStep == -8 || moveStep == -12 || moveStep == -16) {
+                    core.drawHero(direction, x, y, 'leftFoot', moveStep);
+                }
+                else if (moveStep == -20 || moveStep == -24 || moveStep == -28 || moveStep == -32) {
+                    core.drawHero(direction, x, y, 'rightFoot', moveStep);
+                }
+                if (moveStep == -32) {
+                    core.setHeroLoc('x', '--');
+                    core.moveOneStep();
+                    if (core.status.heroStop) {
+                        core.drawHero(direction, x - 1, y, 'stop');
+                    }
+                    if (core.isset(callback)) {
+                        callback();
+                    }
+                }
+                break;
+            case 'down':
+                moveStep+=4;
+                if(moveStep == 4 || moveStep == 8 || moveStep == 12 || moveStep == 16) {
+                    core.drawHero(direction, x, y, 'leftFoot', 0, moveStep);
+                }
+                else if(moveStep == 20 || moveStep == 24 ||moveStep == 28 || moveStep == 32) {
+                    core.drawHero(direction, x, y, 'rightFoot', 0, moveStep);
+                }
+                if (moveStep == 32) {
+                    core.setHeroLoc('y', '++');
+                    core.moveOneStep();
+                    if (core.status.heroStop) {
+                        core.drawHero(direction, x, y + 1, 'stop');
+                    }
+                    if (core.isset(callback)) {
+                        callback();
+                    }
+                }
+                break;
+            case 'right':
+                moveStep+=4;
+                if(moveStep == 4 || moveStep == 8 || moveStep == 12 || moveStep == 16) {
+                    core.drawHero(direction, x, y, 'leftFoot', moveStep);
+                }
+                else if(moveStep == 20 || moveStep == 24 ||moveStep == 28 || moveStep == 32) {
+                    core.drawHero(direction, x, y, 'rightFoot', moveStep);
+                }
+                if (moveStep == 32) {
+                    core.setHeroLoc('x', '++');
+                    core.moveOneStep();
+                    if (core.status.heroStop) {
+                        core.drawHero(direction, x + 1, y, 'stop');
+                    }
+                    if (core.isset(callback)) {
+                        callback();
+                    }
+                }
+                break;
+        }
+    }, 10);
+}
 
-// core.prototype.setHeroMoveTriggerInterval = function () {
-//     var direction, x, y;
-//     var scan = {
-//         'up': {'x': 0, 'y': -1},
-//         'left': {'x': -1, 'y': 0},
-//         'down': {'x': 0, 'y': 1},
-//         'right': {'x': 1, 'y': 0}
-//     };
-//     core.interval.heroMoveTriggerInterval = window.setInterval(function () {
-//         if (!core.status.heroStop) {
-//             direction = core.getHeroLoc('direction');
-//             x = core.getHeroLoc('x');
-//             y = core.getHeroLoc('y');
-//             var noPass;
-//             noPass = core.noPass(x + scan[direction].x, y + scan[direction].y);
-//             if (noPass) {
-//                 core.trigger(x + scan[direction].x, y + scan[direction].y);
-//                 core.drawHero(direction, x, y, 'stop');
-//                 if (core.status.autoHeroMove) {
-//                     core.status.movedStep++;
-//                     if (core.status.destStep == core.status.movedStep) {
-//                         core.status.autoHeroMove = false;
-//                         core.status.destStep = 0;
-//                         core.status.movedStep = 0;
-//                         // core.stopHero();
-//                         core.status.moveStepBeforeStop=[];
-//                         core.stopAutomaticRoute();
-//                     }
-//                 }
-//                 else {
-//                     core.status.heroStop = true;
-//                 }
-//                 return;
-//             }
-//             core.setHeroMoveInterval(direction, x, y, function () {
-//                 if (core.status.autoHeroMove) {
-//                     core.status.movedStep++;
-//                     if (core.status.destStep == core.status.movedStep) {
-//                         core.status.autoHeroMove = false;
-//                         core.status.destStep = 0;
-//                         core.status.movedStep = 0;
-//                         core.stopHero();
-//                         core.drawHero(core.getHeroLoc('direction'), core.getHeroLoc('x'), core.getHeroLoc('y'), 'stop');
-//                     }
-//                 }
-//                 else if (core.status.heroStop) {
-//                     core.drawHero(core.getHeroLoc('direction'), core.getHeroLoc('x'), core.getHeroLoc('y'), 'stop');
-//                 }
-//                 core.trigger(core.getHeroLoc('x'), core.getHeroLoc('y'));
-//                 clearInterval(core.interval.heroMoveInterval);
-//                 core.status.heroMoving = false;
-//             });
-//         }
-//     }, 50);
-// }
+core.prototype.setHeroMoveTriggerInterval = function () {
+    var direction, x, y;
+    var scan = {
+        'up': {'x': 0, 'y': -1},
+        'left': {'x': -1, 'y': 0},
+        'down': {'x': 0, 'y': 1},
+        'right': {'x': 1, 'y': 0}
+    };
+    core.interval.heroMoveTriggerInterval = window.setInterval(function () {
+        if (!core.status.heroStop) {
+            direction = core.getHeroLoc('direction');
+            x = core.getHeroLoc('x');
+            y = core.getHeroLoc('y');
+            var noPass;
+            noPass = core.noPass(x + scan[direction].x, y + scan[direction].y);
+            if (noPass) {
+                core.trigger(x + scan[direction].x, y + scan[direction].y);
+                core.drawHero(direction, x, y, 'stop');
+                if (core.status.autoHeroMove) {
+                    core.status.movedStep++;
+                    if (core.status.destStep == core.status.movedStep) {
+                        core.status.autoHeroMove = false;
+                        core.status.destStep = 0;
+                        core.status.movedStep = 0;
+                        // core.stopHero();
+                        core.status.moveStepBeforeStop=[];
+                        core.stopAutomaticRoute();
+                    }
+                }
+                else {
+                    core.status.heroStop = true;
+                }
+                return;
+            }
+            core.setHeroMoveInterval(direction, x, y, function () {
+                if (core.status.autoHeroMove) {
+                    core.status.movedStep++;
+                    if (core.status.destStep == core.status.movedStep) {
+                        core.status.autoHeroMove = false;
+                        core.status.destStep = 0;
+                        core.status.movedStep = 0;
+                        core.stopHero();
+                        core.drawHero(core.getHeroLoc('direction'), core.getHeroLoc('x'), core.getHeroLoc('y'), 'stop');
+                    }
+                }
+                else if (core.status.heroStop) {
+                    core.drawHero(core.getHeroLoc('direction'), core.getHeroLoc('x'), core.getHeroLoc('y'), 'stop');
+                }
+                core.trigger(core.getHeroLoc('x'), core.getHeroLoc('y'));
+                clearInterval(core.interval.heroMoveInterval);
+                core.status.heroMoving = false;
+            });
+        }
+    }, 50);
+}
 
 // core.prototype.turnHero = function(direction) {
 //     if (core.isset(direction)) {
@@ -1232,14 +1232,14 @@ core.prototype.stopAutoHeroMove = function () {
 //     core.canvas.ui.clearRect(0, 0, 416, 416);
 // }
 
-// core.prototype.moveHero = function (direction) {
-//     core.setHeroLoc('direction', direction);
-//     core.status.heroStop = false;
-// }
+core.prototype.moveHero = function (direction) {
+    core.setHeroLoc('direction', direction);
+    core.status.heroStop = false;
+}
 
-// core.prototype.moveOneStep = function() {
-//     core.status.hero.steps++;
-// }
+core.prototype.moveOneStep = function() {
+    core.status.hero.steps++;
+}
 
 // core.prototype.waitHeroToStop = function(callback) {
 //     core.stopAutomaticRoute();
@@ -1463,22 +1463,22 @@ core.prototype.setLineWidth = function (map, lineWidth) {
     core.canvas[map].lineWidth = lineWidth;
 }
 
-// core.prototype.saveCanvas = function (map) {
-//     core.canvas[map].save();
-// }
+core.prototype.saveCanvas = function (map) {
+    core.canvas[map].save();
+}
 
-// core.prototype.loadCanvas = function (map) {
-//     core.canvas[map].restore();
-// }
+core.prototype.loadCanvas = function (map) {
+    core.canvas[map].restore();
+}
 
-// core.prototype.setOpacity = function (map, opacity) {
-//     if (map == 'all') {
-//         for (var m in core.canvas) {
-//             core.canvas[m].globalAlpha = opacity;
-//         }
-//     }
-//     core.canvas[map].globalAlpha = opacity;
-// }
+core.prototype.setOpacity = function (map, opacity) {
+    if (map == 'all') {
+        for (var m in core.canvas) {
+            core.canvas[m].globalAlpha = opacity;
+        }
+    }
+    core.canvas[map].globalAlpha = opacity;
+}
 
 core.prototype.setStrokeStyle = function (map, style) {
     if (map == 'all') {
@@ -1672,26 +1672,26 @@ core.prototype.drawMap = function (mapName, callback) {
 //     return false;
 // }
 
-// core.prototype.removeBlock = function (map, x, y) {
-//     var map = map.split(',');
-//     var mapBlocks = core.status.thisMap.blocks;
-//     var blockIcon;
-//     for (var b = 0; b < mapBlocks.length; b++) {
-//         if (mapBlocks[b].x == x && mapBlocks[b].y == y) {
-//             core.rmGlobalAnimate(x, y);
-//             for (var m = 0; m < map.length; m++) {
-//                 if (!core.isset(mapBlocks[b][map[m]])) {
-//                     continue;
-//                 }
-//                 blockIcon = core.material.icons[mapBlocks[b][map[m]].cls][mapBlocks[b][map[m]].id];
-//                 core.canvas[map[m]].clearRect(x * blockIcon.size, y * blockIcon.size, blockIcon.size, blockIcon.size);
-//                 // delete core.status.thisMap.blocks[b][map[m]];
-//             }
-//             core.status.thisMap.blocks.splice(b, 1);
-//             break;
-//         }
-//     }
-// }
+core.prototype.removeBlock = function (map, x, y) {
+    var map = map.split(',');
+    var mapBlocks = core.status.thisMap.blocks;
+    var blockIcon;
+    for (var b = 0; b < mapBlocks.length; b++) {
+        if (mapBlocks[b].x == x && mapBlocks[b].y == y) {
+            core.rmGlobalAnimate(x, y);
+            for (var m = 0; m < map.length; m++) {
+                if (!core.isset(mapBlocks[b][map[m]])) {
+                    continue;
+                }
+                blockIcon = core.material.icons[mapBlocks[b][map[m]].cls][mapBlocks[b][map[m]].id];
+                core.canvas[map[m]].clearRect(x * blockIcon.size, y * blockIcon.size, blockIcon.size, blockIcon.size);
+                // delete core.status.thisMap.blocks[b][map[m]];
+            }
+            core.status.thisMap.blocks.splice(b, 1);
+            break;
+        }
+    }
+}
 
 // core.prototype.removeBlockByIds = function (floorId, ids) {
 //     ids.sort(function (a,b) {return b-a}).forEach(function (id) {
@@ -1699,49 +1699,49 @@ core.prototype.drawMap = function (mapName, callback) {
 //     });
 // }
 
-// core.prototype.noPass = function (x, y) {
-//     if (x > 12 || y > 12 || x < 0 || y < 0) {
-//         return true;
-//     }
-//     var mapBlocks = core.status.thisMap.blocks;
-//     var noPass;
-//     for (var b = 0; b < mapBlocks.length; b++) {
-//         if (mapBlocks[b].x == x && mapBlocks[b].y == y) {
-//             return noPass = (mapBlocks[b].event && mapBlocks[b].event.noPass) || (mapBlocks[b].bg && mapBlocks[b].bg.noPass);
-//         }
-//     }
-// }
+core.prototype.noPass = function (x, y) {
+    if (x > 12 || y > 12 || x < 0 || y < 0) {
+        return true;
+    }
+    var mapBlocks = core.status.thisMap.blocks;
+    var noPass;
+    for (var b = 0; b < mapBlocks.length; b++) {
+        if (mapBlocks[b].x == x && mapBlocks[b].y == y) {
+            return noPass = (mapBlocks[b].event && mapBlocks[b].event.noPass) || (mapBlocks[b].bg && mapBlocks[b].bg.noPass);
+        }
+    }
+}
 
-// core.prototype.trigger = function (x, y) {
-//     var mapBlocks = core.status.thisMap.blocks;
-//     var noPass;
-//     for (var b = 0; b < mapBlocks.length; b++) {
-//         if (mapBlocks[b].x == x && mapBlocks[b].y == y) {
-//             noPass = (mapBlocks[b].event && mapBlocks[b].event.noPass) || (mapBlocks[b].bg && mapBlocks[b].bg.noPass);
-//             if (noPass) {
-//                 core.clearAutomaticRouteNode(x, y);
-//             }
-//             /*
-//             if(core.isset(mapBlocks[b].fg) && core.isset(mapBlocks[b].fg.trigger) && (core.isset(mapBlocks[b].fg.disabledTrigger) ? mapBlocks[b].fg.disabledTrigger == false : true)) {
-//                 core.material.events[mapBlocks[b].fg.trigger](mapBlocks[b], core, function(data) {
+core.prototype.trigger = function (x, y) {
+    var mapBlocks = core.status.thisMap.blocks;
+    var noPass;
+    for (var b = 0; b < mapBlocks.length; b++) {
+        if (mapBlocks[b].x == x && mapBlocks[b].y == y) {
+            noPass = (mapBlocks[b].event && mapBlocks[b].event.noPass) || (mapBlocks[b].bg && mapBlocks[b].bg.noPass);
+            if (noPass) {
+                core.clearAutomaticRouteNode(x, y);
+            }
+            /*
+            if(core.isset(mapBlocks[b].fg) && core.isset(mapBlocks[b].fg.trigger) && (core.isset(mapBlocks[b].fg.disabledTrigger) ? mapBlocks[b].fg.disabledTrigger == false : true)) {
+                core.material.events[mapBlocks[b].fg.trigger](mapBlocks[b], core, function(data) {
 
-//                 });
-//             }
-//             */
-//             if (core.isset(mapBlocks[b].event) && core.isset(mapBlocks[b].event.trigger) && (core.isset(mapBlocks[b].event.disabledTrigger) ? mapBlocks[b].event.disabledTrigger == false : true)
-//                     && !(core.isset(mapBlocks[b].event.noTriggerCross) && mapBlocks[b].event.noTriggerCross && (core.status.autoHeroMove || core.status.autoStep<core.status.autoStepRoutes.length))) {
-//                 core.material.events[mapBlocks[b].event.trigger](mapBlocks[b], core, function (data) {
+                });
+            }
+            */
+            if (core.isset(mapBlocks[b].event) && core.isset(mapBlocks[b].event.trigger) && (core.isset(mapBlocks[b].event.disabledTrigger) ? mapBlocks[b].event.disabledTrigger == false : true)
+                    && !(core.isset(mapBlocks[b].event.noTriggerCross) && mapBlocks[b].event.noTriggerCross && (core.status.autoHeroMove || core.status.autoStep<core.status.autoStepRoutes.length))) {
+                core.material.events[mapBlocks[b].event.trigger](mapBlocks[b], core, function (data) {
 
-//                 });
-//             }
-//             else if (core.isset(mapBlocks[b].bg) && core.isset(mapBlocks[b].bg.trigger) && (core.isset(mapBlocks[b].bg.disabledTrigger) ? mapBlocks[b].bg.disabledTrigger == false : true)) {
-//                 core.material.events[mapBlocks[b].bg.trigger](mapBlocks[b], core, function (data) {
+                });
+            }
+            else if (core.isset(mapBlocks[b].bg) && core.isset(mapBlocks[b].bg.trigger) && (core.isset(mapBlocks[b].bg.disabledTrigger) ? mapBlocks[b].bg.disabledTrigger == false : true)) {
+                core.material.events[mapBlocks[b].bg.trigger](mapBlocks[b], core, function (data) {
 
-//                 });
-//             }
-//         }
-//     }
-// }
+                });
+            }
+        }
+    }
+}
 
 // core.prototype.setTrigger = function (x, y, map, triggerName) {
 //     var mapBlocks = core.status.thisMap.blocks;
@@ -1990,115 +1990,115 @@ core.prototype.hasItem = function (itemId) {
 //     return core.items.canUseItem(itemId);
 // }
 
-// core.prototype.addItem = function (itemId, itemNum) {
-//     var itemData = core.material.items[itemId];
-//     var itemCls = itemData.cls;
-//     if (itemCls == 'item') return;
-//     if (!core.isset(core.status.hero.items[itemCls])) {
-//         core.status.hero.items[itemCls] = {};
-//         core.status.hero.items[itemCls][itemId] = 0;
-//     }
-//     else if (!core.isset(core.status.hero.items[itemCls][itemId])) {
-//         core.status.hero.items[itemCls][itemId] = 0;
-//     }
-//     core.status.hero.items[itemCls][itemId] += itemNum;
-// }
+core.prototype.addItem = function (itemId, itemNum) {
+    var itemData = core.material.items[itemId];
+    var itemCls = itemData.cls;
+    if (itemCls == 'item') return;
+    if (!core.isset(core.status.hero.items[itemCls])) {
+        core.status.hero.items[itemCls] = {};
+        core.status.hero.items[itemCls][itemId] = 0;
+    }
+    else if (!core.isset(core.status.hero.items[itemCls][itemId])) {
+        core.status.hero.items[itemCls][itemId] = 0;
+    }
+    core.status.hero.items[itemCls][itemId] += itemNum;
+}
 
-// /*
-// core.prototype.removeBlock = function(itemX, itemY) {
-//    var mapBlocks = core.status.thisMap.blocks;
-//    for(var b = 0;b < mapBlocks.length;b++) {
-//        if(mapBlocks[b].x == itemX && mapBlocks[b].y == itemY) {
-//            // delete mapBlocks[b].event;
-//            // mapBlocks[b]
-//            core.status.thisMap.blocks.splice(b,1);
-//            break;
-//        }
-//    }
-// }
-// */
+/*
+core.prototype.removeBlock = function(itemX, itemY) {
+   var mapBlocks = core.status.thisMap.blocks;
+   for(var b = 0;b < mapBlocks.length;b++) {
+       if(mapBlocks[b].x == itemX && mapBlocks[b].y == itemY) {
+           // delete mapBlocks[b].event;
+           // mapBlocks[b]
+           core.status.thisMap.blocks.splice(b,1);
+           break;
+       }
+   }
+}
+*/
 
-// core.prototype.getItemEffect = function (itemId, itemNum) {
-//     core.items.getItemEffect(itemId, itemNum);
-// }
+core.prototype.getItemEffect = function (itemId, itemNum) {
+    core.items.getItemEffect(itemId, itemNum);
+}
 
 // core.prototype.getItemEffectTip = function (itemId) {
 //     return core.items.getItemEffectTip(itemId);
 // }
 
-// core.prototype.getItem = function (itemId, itemNum, itemX, itemY, callback) {
-//     // core.getItemAnimate(itemId, itemNum, itemX, itemY);
-//     core.playSound('item', 'ogg');
-//     var itemCls = core.material.items[itemId].cls;
-//     core.getItemEffect(itemId, itemNum);
-//     core.removeBlock('event', itemX, itemY);
-//     var text = '获得 ' + core.material.items[itemId].name;
-//     if (itemNum > 1) text += "x" + itemNum;
-//     if (itemCls === 'items') text += core.getItemEffectTip(itemId);
-//     core.drawTip(text, 'image', core.material.icons.items[itemId]);
-//     core.canvas.event.clearRect(itemX * 32, itemY * 32, 32, 32);
-//     core.updateStatusBar();
-//     if (core.isset(callback)) callback();
-// }
+core.prototype.getItem = function (itemId, itemNum, itemX, itemY, callback) {
+    // core.getItemAnimate(itemId, itemNum, itemX, itemY);
+    core.playSound('item', 'ogg');
+    var itemCls = core.material.items[itemId].cls;
+    core.getItemEffect(itemId, itemNum);
+    core.removeBlock('event', itemX, itemY);
+    var text = '获得 ' + core.material.items[itemId].name;
+    if (itemNum > 1) text += "x" + itemNum;
+    if (itemCls === 'items') text += core.getItemEffectTip(itemId);
+    core.drawTip(text, 'image', core.material.icons.items[itemId]);
+    core.canvas.event.clearRect(itemX * 32, itemY * 32, 32, 32);
+    core.updateStatusBar();
+    if (core.isset(callback)) callback();
+}
 
-// core.prototype.drawTip = function (text, type, itemIcon) {
-//     type = type || 'normal';
-//     var textX, textY, width, height, hide = false, opacityVal = 0;
-//     clearInterval(core.interval.tipAnimate);
-//     core.setFont('data', "16px Arial");
-//     core.saveCanvas('data');
-//     core.setOpacity('data', 0);
-//     if (type == 'normal') {
-//         textX = 16;
-//         textY = 18;
-//         width = textX + core.canvas.data.measureText(text).width + 16;
-//         height = 42;
-//     }
-//     else if (type == 'image' && core.isset(itemIcon)) {
-//         textX = 44;
-//         textY = 18;
-//         width = textX + core.canvas.data.measureText(text).width + 8;
-//         height = 42;
-//     }
-//     else {
-//         core.loadCanvas('data');
-//         return;
-//     }
-//     core.interval.tipAnimate = window.setInterval(function () {
-//         if (hide) {
-//             opacityVal -= 0.1;
-//         }
-//         else {
-//             opacityVal += 0.1;
-//         }
-//         core.setOpacity('data', opacityVal);
-//         core.clearMap('data', 5, 5, 400, height);
-//         core.fillRect('data', 5, 5, width, height, '#000');
-//         if (core.isset(itemIcon)) {
-//             core.canvas.data.drawImage(core.material.images.items, 0, itemIcon.loc * itemIcon.size, itemIcon.size, itemIcon.size, 10, 8, itemIcon.size, itemIcon.size);
-//         }
-//         core.fillText('data', text, textX + 5, textY + 15, '#fff');
-//         if (opacityVal > 0.6 || opacityVal < 0) {
-//             if (hide) {
-//                 core.loadCanvas('data');
-//                 core.clearMap('data', 5, 5, 400, height);
-//                 core.setOpacity('data', 1);
-//                 clearInterval(core.interval.tipAnimate);
-//                 return;
-//             }
-//             else {
-//                 if (!core.timeout.getItemTipTimeout) {
-//                     core.timeout.getItemTipTimeout = window.setTimeout(function () {
-//                         hide = true;
-//                         core.timeout.getItemTipTimeout = null;
-//                     }, 1000);
-//                 }
-//                 opacityVal = 0.6;
-//                 core.setOpacity('data', opacityVal);
-//             }
-//         }
-//     }, 30);
-// }
+core.prototype.drawTip = function (text, type, itemIcon) {
+    type = type || 'normal';
+    var textX, textY, width, height, hide = false, opacityVal = 0;
+    clearInterval(core.interval.tipAnimate);
+    core.setFont('data', "16px Arial");
+    core.saveCanvas('data');
+    core.setOpacity('data', 0);
+    if (type == 'normal') {
+        textX = 16;
+        textY = 18;
+        width = textX + core.canvas.data.measureText(text).width + 16;
+        height = 42;
+    }
+    else if (type == 'image' && core.isset(itemIcon)) {
+        textX = 44;
+        textY = 18;
+        width = textX + core.canvas.data.measureText(text).width + 8;
+        height = 42;
+    }
+    else {
+        core.loadCanvas('data');
+        return;
+    }
+    core.interval.tipAnimate = window.setInterval(function () {
+        if (hide) {
+            opacityVal -= 0.1;
+        }
+        else {
+            opacityVal += 0.1;
+        }
+        core.setOpacity('data', opacityVal);
+        core.clearMap('data', 5, 5, 400, height);
+        core.fillRect('data', 5, 5, width, height, '#000');
+        if (core.isset(itemIcon)) {
+            core.canvas.data.drawImage(core.material.images.items, 0, itemIcon.loc * itemIcon.size, itemIcon.size, itemIcon.size, 10, 8, itemIcon.size, itemIcon.size);
+        }
+        core.fillText('data', text, textX + 5, textY + 15, '#fff');
+        if (opacityVal > 0.6 || opacityVal < 0) {
+            if (hide) {
+                core.loadCanvas('data');
+                core.clearMap('data', 5, 5, 400, height);
+                core.setOpacity('data', 1);
+                clearInterval(core.interval.tipAnimate);
+                return;
+            }
+            else {
+                if (!core.timeout.getItemTipTimeout) {
+                    core.timeout.getItemTipTimeout = window.setTimeout(function () {
+                        hide = true;
+                        core.timeout.getItemTipTimeout = null;
+                    }, 1000);
+                }
+                opacityVal = 0.6;
+                core.setOpacity('data', opacityVal);
+            }
+        }
+    }, 30);
+}
 
 core.prototype.drawText = function (contents, callback) {
     if (core.isset(contents)) {

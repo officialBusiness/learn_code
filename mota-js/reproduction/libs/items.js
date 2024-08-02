@@ -238,38 +238,38 @@ main.instance.items = new items();
 //     return false;
 // }
 
-// items.prototype.getItemEffect = function(itemId, itemNum) {
-//     var itemCls = core.material.items[itemId].cls;
-//     // 消耗品
-//     if (itemCls === 'items') {
-//         if (itemId === 'redJewel') core.status.hero.atk += 3;
-//         if (itemId === 'blueJewel') core.status.hero.def += 3;
-//         if (itemId === 'greenJewel') core.status.hero.mdef += 3;
-//         // if (itemId == 'yellowJewel') core.status.hero.atk+=0;
-//         if (itemId === 'redPotion') core.status.hero.hp += 200;
-//         if (itemId === 'bluePotion') core.status.hero.hp += 500;
-//         if (itemId === 'yellowPotion') core.status.hero.hp += 500;
-//         if (itemId === 'greenPotion') core.status.hero.hp += 800;
-//         if (itemId === 'sword1') core.status.hero.atk += 10;
-//         if (itemId === 'sword2') core.status.hero.atk += 100;
-//         if (itemId === 'sword5') core.status.hero.atk += 1000;
-//         if (itemId === 'shield1') core.status.hero.def += 10;
-//         if (itemId === 'shield2') core.status.hero.def += 100;
-//         if (itemId === 'shield5') {
-//             core.status.hero.def += 1000;
-//             core.status.hero.flags.hasShield5 = true;
-//         }
-//         if (itemId === 'bigKey') {
-//             core.status.hero.items.keys.yellowKey++;
-//             core.status.hero.items.keys.blueKey++;
-//             core.status.hero.items.keys.redKey++;
-//         }
-//         if (itemId == 'superPotion') core.status.hero.hp *= 2;
-//     }
-//     else {
-//         core.addItem(itemId, itemNum);
-//     }
-// }
+items.prototype.getItemEffect = function(itemId, itemNum) {
+    var itemCls = core.material.items[itemId].cls;
+    // 消耗品
+    if (itemCls === 'items') {
+        if (itemId === 'redJewel') core.status.hero.atk += 3;
+        if (itemId === 'blueJewel') core.status.hero.def += 3;
+        if (itemId === 'greenJewel') core.status.hero.mdef += 3;
+        // if (itemId == 'yellowJewel') core.status.hero.atk+=0;
+        if (itemId === 'redPotion') core.status.hero.hp += 200;
+        if (itemId === 'bluePotion') core.status.hero.hp += 500;
+        if (itemId === 'yellowPotion') core.status.hero.hp += 500;
+        if (itemId === 'greenPotion') core.status.hero.hp += 800;
+        if (itemId === 'sword1') core.status.hero.atk += 10;
+        if (itemId === 'sword2') core.status.hero.atk += 100;
+        if (itemId === 'sword5') core.status.hero.atk += 1000;
+        if (itemId === 'shield1') core.status.hero.def += 10;
+        if (itemId === 'shield2') core.status.hero.def += 100;
+        if (itemId === 'shield5') {
+            core.status.hero.def += 1000;
+            core.status.hero.flags.hasShield5 = true;
+        }
+        if (itemId === 'bigKey') {
+            core.status.hero.items.keys.yellowKey++;
+            core.status.hero.items.keys.blueKey++;
+            core.status.hero.items.keys.redKey++;
+        }
+        if (itemId == 'superPotion') core.status.hero.hp *= 2;
+    }
+    else {
+        core.addItem(itemId, itemNum);
+    }
+}
 
 // items.prototype.getItemEffectTip = function(itemId) {
 //     if (itemId === 'redJewel') return "，攻击+3";

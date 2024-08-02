@@ -150,10 +150,10 @@ main.init();
 //     }catch (e) {}
 // }
 
-// main.dom.body.onkeydown = function(e) {
-//     if (main.core.isPlaying())
-//     	main.core.keyDown(e);
-// }
+main.dom.body.onkeydown = function(e) {
+    if (main.core.isPlaying())
+    	main.core.keyDown(e);
+}
 
 // main.dom.body.onkeyup = function(e) {
 //     try {
